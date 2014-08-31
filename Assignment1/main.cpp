@@ -156,11 +156,16 @@ void	generateRandomValues(int arr[], int max)
 
 int readVal(const string pmpt, const int max)
 {
-
-
-//	YOUR CODE GOES HERE
-
-
+  int input;
+  while(true) {
+    cout << pmpt << endl;
+    cin >> input;
+    if(input < 1 || input > max) {
+      cout << "Error, input cannot be less than 1 or greater than " << max << endl;
+    } else {
+      break;
+		}
+  }
 }
 
 // *******************************************************************
@@ -173,11 +178,20 @@ int readVal(const string pmpt, const int max)
 
 void selectionSort(int arr[], int b, int e)
 {
+  int iMin;
+  for (int i=b; i<e; i++) {
+    //find the min element in the unsorted arr[i..e]
+    iMin = i;
+    for( int k=i+1; k<e; k++) {
+      if(arr[k] < arr[iMin]) {
+        iMin = i;
+      }
+    }
 
-
-//	YOUR CODE GOES HERE
-
-
+    if(iMin != i) {
+      swap(arr[i], arr[iMin]);
+    }
+  }
 }
 
 // *******************************************************************
@@ -235,9 +249,7 @@ void quickSelect(int arr[], int left, int right, int k)
 
 void swap (int &a, int &b)
 {
-
-
-//	YOUR CODE GOES HERE
-
-
+  int temp = a;
+  a = b;
+  b = temp;
 }
