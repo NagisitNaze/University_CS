@@ -30,9 +30,10 @@ void	swap(int &, int &);
 
 int main(int argc, char *argv[])
 {
+
+
 // ------------------------------
 //  Declarations and headers.
-
 	enum	algorithmOption { SORTSELECT, QUICKSELECT, PRINT, NONE };
 	string	stars, bars;
 	stars.append(60,'*');
@@ -99,7 +100,6 @@ int main(int argc, char *argv[])
 
 // ------------------------------
 //  Call select()
-
 	switch (userChoice) {
 
 		case PRINT:
@@ -130,7 +130,6 @@ int main(int argc, char *argv[])
 	}
 
 // ------------------------------
-
 	return 0;
 }
 
@@ -179,17 +178,17 @@ int readVal(const string pmpt, const int max)
 void selectionSort(int arr[], int b, int e)
 {
   int iMin;
-  for (int i=b; i<e; i++) {
+  for (int j=b; j<e; j++) {
     //find the min element in the unsorted arr[i..e]
-    iMin = i;
-    for( int k=i+1; k<e; k++) {
-      if(arr[k] < arr[iMin]) {
+    iMin = j;
+    for( int i=j+1; i<e+1; i++) {
+      if(arr[i] < arr[iMin]) {
         iMin = i;
       }
     }
 
-    if(iMin != i) {
-      swap(arr[i], arr[iMin]);
+    if(iMin != j) {
+      swap(arr[j], arr[iMin]);
     }
   }
 }
@@ -214,29 +213,20 @@ void quickSelect(int arr[], int len, int k)
 
 int median3(int arr[], int left, int right)
 {
-	int d_left 		= arr[left];									//left
-	int d_center 	= arr[(right-left)/2+left];		//center
-	int d_right 	= arr[right-1];								//right
-	int i					= left-1, j=right;						//represents positions in array
+	int center = ( left + right ) / 2;
+	if( arr[center] < arr[left] )
+		swap( arr[right], arr[left] );
+	if( arr[right] < arr[left] )
+		swap( arr[left], arr[right] );
+	if( arr[right] < arr[center] )
+		swap( arr[center], arr[right] );
 
-	if (d_center > d_left && d_center < d_right ||
-			d_center > d_right && d_center < d_left )
-		d_left = d_center;
-	else if (d_right > d_left && d_right < d_center ||
-					 d_right > d_center && d_right < d_left )
-		d_left=d_right;
-	while (1) {
-		do  {j--;} while (arr[j] > d_left);
-		do  {i++;} while (arr[i] < d_left);
-		if  (i < j)
-			swap( arr[i], arr[j]);
-		else
-			return j+1;
-	}
+	swap( arr[center], arr[right - 1] );
+	return arr[right-1];
 }
 
 // -------------------------------------------------------------------
-//  Basic recursive quick select fucntion.
+//  Barrsic recursive quick select fucntion.
 //	NOTE, changes order to array elements.
 //	Places the kth smallest item in arr[k-1]
 
@@ -249,10 +239,9 @@ void quickSelect(int arr[], int left, int right, int k)
 {
 	if(left + 10 <= right) {
 		const int & pivot = median3(arr, left, right);
-
 		//begin partition
 		int i = left;
-		int j = right - 1;
+		int j = right-1;
 		for( ; ; ) {
 			while( arr[++i] < pivot ) {}
 			while( pivot < arr[--j] ) {}
@@ -264,7 +253,7 @@ void quickSelect(int arr[], int left, int right, int k)
 
 		swap( arr[i], arr[right-1] ); //restore pivot
 
-		if( k <= 1 )
+		if( k <= i )
 			quickSelect( arr, left, i-1, k);
 		else if ( k > i + 1 )
 			quickSelect( arr, i+1, right, k);
