@@ -204,7 +204,7 @@ void selectionSort(int arr[], int b, int e)
 
 void quickSelect(int arr[], int len, int k)
 {
-	quickSelect( arr, 0, len, k);
+	quickSelect( arr, 0, len-1, k);
 }
 
 // -------------------------------------------------------------------
