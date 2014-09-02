@@ -205,11 +205,7 @@ void selectionSort(int arr[], int b, int e)
 
 void quickSelect(int arr[], int len, int k)
 {
-
-
-//	YOUR CODE GOES HERE
-
-
+	quickSelect( arr, 0, len, k);
 }
 
 // -------------------------------------------------------------------
@@ -218,11 +214,25 @@ void quickSelect(int arr[], int len, int k)
 
 int median3(int arr[], int left, int right)
 {
+	int d_left 		= arr[left];									//left
+	int d_center 	= arr[(right-left)/2+left];		//center
+	int d_right 	= arr[right-1];								//right
+	int i					= left-1, j=right;						//represents positions in array
 
-
-//	YOUR CODE GOES HERE
-
-
+	if (d_center > d_left && d_center < d_right ||
+			d_center > d_right && d_center < d_left )
+		d_left = d_center;
+	else if (d_right > d_left && d_right < d_center ||
+					 d_right > d_center && d_right < d_left )
+		d_left=d_right;
+	while (1) {
+		do  {j--;} while (arr[j] > d_left);
+		do  {i++;} while (arr[i] < d_left);
+		if  (i < j)
+			swap( arr[i], arr[j]);
+		else
+			return j+1;
+	}
 }
 
 // -------------------------------------------------------------------
@@ -237,11 +247,30 @@ int median3(int arr[], int left, int right)
 
 void quickSelect(int arr[], int left, int right, int k)
 {
+	if(left + 10 <= right) {
+		const int & pivot = median3(arr, left, right);
 
+		//begin partition
+		int i = left;
+		int j = right - 1;
+		for( ; ; ) {
+			while( arr[++i] < pivot ) {}
+			while( pivot < arr[--j] ) {}
+			if( i < j )
+				swap( arr[i], arr[j] );
+			else
+				break;
+		}
 
-//	YOUR CODE GOES HERE
+		swap( arr[i], arr[right-1] ); //restore pivot
 
-
+		if( k <= 1 )
+			quickSelect( arr, left, i-1, k);
+		else if ( k > i + 1 )
+			quickSelect( arr, i+1, right, k);
+	}
+	else
+		selectionSort( arr, left, right );
 }
 
 // -------------------------------------------------------------------
