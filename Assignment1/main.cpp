@@ -215,7 +215,7 @@ int median3(int arr[], int left, int right)
 {
 	int center = ( left + right ) / 2;
 	if( arr[center] < arr[left] )
-		swap( arr[right], arr[left] );
+		swap( arr[left], arr[center] );
 	if( arr[right] < arr[left] )
 		swap( arr[left], arr[right] );
 	if( arr[right] < arr[center] )
