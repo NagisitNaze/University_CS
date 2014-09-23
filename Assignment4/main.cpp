@@ -216,19 +216,24 @@ int main()
 	linkedStack<int> iStackBig;
 	int	testSize2=400000;
 
-	for (int i=1; i<=testSize2; i++)
+	for (int i=1; i<=testSize2; i++) {
 		iStackBig.push(i);
+	}
 
-	if (iStackBig.stackCount() != testSize)
+	if (iStackBig.stackCount() != testSize2)
 		cout << "main: error, incorrect queue size." << endl;
 
-	for (int i=testSize2; i>0 ; i--) {
-		if (iStackBig.top() != i)
+	for (int i=testSize2; i>testSize2; i--) {
+		if (iStackBig.top() != i) {
 			workedStk = false;
+		}
 		iStackBig.pop();
 	}
-	if (iStackBig.stackCount() != 0)
+
+	if (iStackBig.stackCount() != 0) {
 		workedStk = false;
+		std::cout << iStackBig.stackCount();
+	}
 
 	if (workedStk)
 		cout << "Many items, test passed." << endl;

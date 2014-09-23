@@ -91,7 +91,6 @@ void linkedQueue<myType>::addItem(const myType& newItem)
   queueRear->dataSet[queueRear->back%SIZE] = newItem;
   count++;
   queueRear->back++;
-  queueNode<myType> *counter = queueFront;
 }
 
 template <class myType>

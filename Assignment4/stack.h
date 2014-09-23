@@ -2,6 +2,7 @@
 #define STACK_H_
 
 #define SIZE 32000
+#include <iostream>
 
 template <class myType>
 struct nodeType {
@@ -19,7 +20,7 @@ class linkedStack {
     void initializeStack();
     int stackCount();
     void push(const myType& newItem);
-    myType top();
+    myType top() const;
     void pop();
   private:
     nodeType<myType> *stackTop;
@@ -61,8 +62,8 @@ void linkedStack<myType>::initializeStack()
       stackTop = stackTop->link;
       delete toDelete;
     }
-    count = 0;
   }
+  count = 0;
   stackTop = NULL;
 }
 
@@ -76,31 +77,32 @@ template <class myType>
 void linkedStack<myType>::push(const myType& newItem)
 {
     //if a new node needs to be created
-    if(count % 32000) {
+    if(count % SIZE == 0) {
       nodeType<myType> *newNode = new nodeType<myType>;
       newNode->top = 0;
       newNode->link = stackTop;
       stackTop = newNode;
     }
-    stackTop->dataSet[stackTop->top++] = newItem;
+    //std::cout << newItem << stackTop->top << std::endl;
+    stackTop->dataSet[stackTop->top] = newItem;
+    stackTop->top++;
     count++;
 }
 
 template <class myType>
-myType linkedStack<myType>::top()
+myType linkedStack<myType>::top() const
 {
-  return stackTop->dataSet[stackTop->top];
+  return stackTop->dataSet[stackTop->top-1];
 }
 
 template <class myType>
 void linkedStack<myType>::pop()
 {
+  stackTop->top--;
   if(stackTop->top == 0) {
     nodeType<myType> *toDelete = stackTop;
     stackTop = stackTop->link;
     delete stackTop;
-  } else {
-    stackTop->top--;
   }
   count--;
 }
