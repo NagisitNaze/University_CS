@@ -38,7 +38,7 @@ linkedQueue<myType>::linkedQueue()
 template <class myType>
 linkedQueue<myType>::~linkedQueue()
 {
-  while(queueFront != queueRear) {
+  while(queueFront != NULL) {
     queueNode<myType> *toDelete = queueFront;
     queueFront = queueFront->link;
     delete toDelete;
