@@ -83,10 +83,9 @@ void linkedStack<myType>::push(const myType& newItem)
       newNode->link = stackTop;
       stackTop = newNode;
     }
-    //std::cout << newItem << stackTop->top << std::endl;
     stackTop->dataSet[stackTop->top] = newItem;
-    stackTop->top++;
     count++;
+    stackTop->top++;
 }
 
 template <class myType>
@@ -102,7 +101,7 @@ void linkedStack<myType>::pop()
   if(stackTop->top == 0) {
     nodeType<myType> *toDelete = stackTop;
     stackTop = stackTop->link;
-    delete stackTop;
+    delete toDelete;
   }
   count--;
 }

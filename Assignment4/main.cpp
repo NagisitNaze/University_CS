@@ -223,7 +223,7 @@ int main()
 	if (iStackBig.stackCount() != testSize2)
 		cout << "main: error, incorrect queue size." << endl;
 
-	for (int i=testSize2; i>testSize2; i--) {
+	for (int i=testSize2; i>0; i--) {
 		if (iStackBig.top() != i) {
 			workedStk = false;
 		}
@@ -232,7 +232,6 @@ int main()
 
 	if (iStackBig.stackCount() != 0) {
 		workedStk = false;
-		std::cout << iStackBig.stackCount();
 	}
 
 	if (workedStk)
