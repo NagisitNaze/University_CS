@@ -219,7 +219,6 @@ Results:
 // *****************************************************************
 //  Large Test Tree
 
-/*
 	avlTree<int>	myTree3;
 
 	for (int i=1; i<10000; i+=2)
@@ -255,7 +254,7 @@ Results:
 
 // *****************************************************************
 //  All done.
-*/
+
 	cout << bars << endl << "Game Over, thank you for playing." << endl;
 
 	return 0;
