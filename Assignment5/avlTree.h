@@ -64,8 +64,6 @@ template <class myType>
 void avlTree<myType>::destroyTree()
 {
   destroyTree(root);
-  if(root == NULL)
-    std::cout << "destroyed" << std::endl;
 }
 
 template <class myType>
@@ -84,7 +82,6 @@ template <class myType>
 bool avlTree<myType>::search(myType key) const
 {
   nodeType<myType> *result = search(key, root);
-  std::cout << std::endl << "searched ";
   if(result == NULL)
     return false;
   return true;
@@ -105,7 +102,9 @@ void avlTree<myType>::insert(myType nodeValue)
 template <class myType>
 void avlTree<myType>::deleteNode(myType nodeValue)
 {
-  deleteNode(nodeValue, root);
+  nodeType<myType> *find = search(nodeValue, root);
+  if(find != NULL)
+    root = deleteNode(nodeValue, root);
 }
 
 template <class myType>
@@ -175,7 +174,7 @@ void avlTree<myType>::printTree(nodeType<myType> *node, treeTraversalOptions opt
     case LEVELORDER:
       for(int i = 1; i <=  height(node); i++) {
         printGivenLevel(node, i);
-
+        std::cout << "\n";
       }
     break;
     case NONE:
@@ -206,38 +205,32 @@ nodeType<myType> *avlTree<myType>::insert(myType key, nodeType<myType> *node)
     newNode->left = NULL;
     newNode->right = NULL;
     newNode->keyValue = key;
-    newNode->nodeHeight = 0;
     return newNode;
-  }
-
-  if(key < node->keyValue)
+  }else if(key < node->keyValue)
     node->left = insert(key, node->left);
   else if(key > node->keyValue)
     node->right = insert(key, node->right);
 
+  if(node != NULL) {
+    if(height(node->left) - height(node->right) > 1) {
+      if(height(node->left->left) >= height(node->left->right)) {
+        node = leftRotate(node);
+      }else{
+        node->left = rightRotate(node->left);
+        node = leftRotate(node);
+      }
+    }else if(height(node->right) - height(node->left) > 1) {
+      if(height(node->right->right) >= height(node->right->left)){
+        node = rightRotate(node);
+      }else{
+        node->right = leftRotate(node->right);
+        node = rightRotate(node);
+      }
+    }
   //update height of node
   node->nodeHeight = std::max(height(node->left), height(node->right)) + 1;
-
-  //get balance factor of node to check wheather node became unbalanced
-  int bal = getBalance(node);
-  std::cout << "not cras";
-  if(height(node->left) - height(node->right) > 1) {
-    if(height(node->left->left) >= height(node->left->right)) {
-      rightRotate(node);
-    }else{
-      leftRotate(node->right);
-      rightRotate(node);
-    }
-  }else if(height(node->right) - height(node->left) > 1) {
-    if(height(node->right->right) >= height(node->right->left)){
-      leftRotate(node);
-    }else{
-      rightRotate(node->left);
-      leftRotate(node);
-    }
-
   }
-  std::cout << "hed ";
+
 
   return node;
 }
@@ -250,6 +243,8 @@ nodeType<myType> *avlTree<myType>::leftRotate(nodeType<myType> *node)
   otherNode = node->left;
   node->left = otherNode->right;
   otherNode->right = node;
+  node->nodeHeight = std::max( height(node->left), height(node->right) ) + 1;
+  otherNode->nodeHeight = std::max( height(otherNode->left), height(otherNode->right) ) + 1;
   node = otherNode;
 
   return node;
@@ -263,6 +258,8 @@ nodeType<myType> *avlTree<myType>::rightRotate(nodeType<myType> *node)
   otherNode = node->right;
   node->right = otherNode->left;
   otherNode->left = node;
+  node->nodeHeight = std::max( height(node->left), height(node->right) ) + 1;
+  otherNode->nodeHeight = std::max( height(otherNode->left), height(otherNode->right) ) + 1;
   node = otherNode;
 
   return node;
@@ -283,6 +280,8 @@ int avlTree<myType>::getBalance(nodeType<myType> *node) const
 template <class myType>
 nodeType<myType> *avlTree<myType>::deleteNode(myType key, nodeType<myType> *node)
 {
+  std::cout << key << " " << node->keyValue << std::endl;
+
   if(node == NULL)
     return node;
 
@@ -290,51 +289,35 @@ nodeType<myType> *avlTree<myType>::deleteNode(myType key, nodeType<myType> *node
     node->left = deleteNode(key, node->left);
   else if(key > node->keyValue)
     node->right = deleteNode(key, node->right);
-  else{
-    if( (node->left == NULL) || (node->right == NULL) ) {
-      nodeType<myType> *temp = node->left == NULL ? node->left : node->right;
+  else if(node->left != NULL && node->right != NULL) {
+    node->keyValue = minValueNode(node->right)->keyValue;
+    node->right = deleteNode(node->keyValue, node->right);
+  }else{
+    nodeType<myType> *oldNode = node;
+    node = (node->left != NULL) ? node->left : node->right;
+    delete oldNode;
+  }
 
-      if(temp == NULL) {
-        temp = node;
-        node = NULL;
-      }else
-        *node = *temp;
-
-      delete temp;
-    }else{
-      nodeType<myType> *temp = minValueNode(node->right);
-      node->keyValue = temp->keyValue;
-      node->right = deleteNode(temp->keyValue, node->right);
+  if(node != NULL) {
+    if(height(node->left) - height(node->right) > 1) {
+      if(height(node->left->left) >= height(node->left->right)) {
+        node = leftRotate(node);
+      }else{
+        node = rightRotate(node->left);
+        node = leftRotate(node);
+      }
+    }else if(height(node->right) - height(node->left) > 1) {
+      if(height(node->right->right) >= height(node->right->left)){
+        node = rightRotate(node);
+      }else{
+        node = leftRotate(node->right);
+        node = rightRotate(node);
+      }
     }
+    //update height of node
+    node->nodeHeight = std::max(height(node->left), height(node->right)) + 1;
   }
-
-  if(node == NULL)
-    return node;
-
-  node->nodeHeight = std::max(height(node->left), height(node->right)) + 1;
-
-  int bal = getBalance(node);
-
-    // Left Left Case
-  if (bal > 1 && getBalance(node->left) >= 0)
-      return rightRotate(node);
-
-  // Left Right Case
-  if (bal > 1 && getBalance(node->left) < 0) {
-      node->left =  leftRotate(node->left);
-      return rightRotate(node);
-  }
-
-  // Right Right Case
-  if (bal < -1 && getBalance(node->right) <= 0)
-      return leftRotate(node);
-
-  // Right Left Case
-  if (bal < -1 && getBalance(node->right) > 0) {
-      node->right = rightRotate(node->right);
-      return leftRotate(node);
-  }
-
+  //std::cout << node->keyValue << " ";
   return node;
 }
 

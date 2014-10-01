@@ -50,10 +50,8 @@ Results:
 	int	arr0[] = { 10, 6, 14, 5, 8, 11, 18 };
 	int	len0 = sizeof(arr0) / sizeof(arr0[1]);
 
-	for (int i=0; i<len0; i++) {
+	for (int i=0; i<len0; i++)
 		myTree0.insert(arr0[i]);
-		std::cout << i << std::endl;
-	}
 
 	cout << bars << endl << "Test Set #0" << endl;
 	cout << "\tNodes:  " << myTree0.countNodes() << endl;
@@ -116,10 +114,9 @@ Results:
 */
 
 	avlTree<int>	myTree1;
-	for (int i=1; i<=24; i++){
+	for (int i=1; i<=24; i++)
 		myTree1.insert(i);
-		std::cout << i << std::endl;
-	}
+
 	cout << bars << endl << "Test Set #1" << endl;
 	cout << "\tNodes:  " << myTree1.countNodes() << endl;
 	cout << "\tHeight: " << myTree1.height() << endl << endl;
@@ -189,6 +186,9 @@ Results:
 	myTree2.deleteNode(5);		// does not exist
 	myTree2.deleteNode(78);		// does not exist
 	myTree2.deleteNode(28);
+
+	myTree2.printTree(LEVELORDER);
+
 	myTree2.deleteNode(17);
 	myTree2.deleteNode(65);
 	myTree2.deleteNode(82);
@@ -219,6 +219,7 @@ Results:
 // *****************************************************************
 //  Large Test Tree
 
+/*
 	avlTree<int>	myTree3;
 
 	for (int i=1; i<10000; i+=2)
@@ -254,7 +255,7 @@ Results:
 
 // *****************************************************************
 //  All done.
-
+*/
 	cout << bars << endl << "Game Over, thank you for playing." << endl;
 
 	return 0;
