@@ -33,7 +33,7 @@ class avlTree {
     void insert(myType);
     void deleteNode(myType);
   private:
-    void destroyTree(nodeType<myType> *&);
+    void destroyTree(nodeType<myType> *);
     int countNodes(nodeType<myType> *) const;
     int height(nodeType<myType> *) const;
     nodeType<myType> *search(myType, nodeType<myType> *) const;
@@ -64,8 +64,7 @@ template <class myType>
 void avlTree<myType>::destroyTree()
 {
   destroyTree(root);
-  if(root == NULL)
-    std::cout << "destroyed" << std::endl;
+  root = NULL;
 }
 
 template <class myType>
@@ -84,7 +83,6 @@ template <class myType>
 bool avlTree<myType>::search(myType key) const
 {
   nodeType<myType> *result = search(key, root);
-  std::cout << std::endl << "searched ";
   if(result == NULL)
     return false;
   return true;
@@ -109,14 +107,17 @@ void avlTree<myType>::deleteNode(myType nodeValue)
 }
 
 template <class myType>
-void avlTree<myType>::destroyTree(nodeType<myType> *&node)
+void avlTree<myType>::destroyTree(nodeType<myType> *node)
 {
   if(node != NULL) {
     destroyTree(node->left);
     destroyTree(node->right);
+    node->nodeHeight=0;
+    node->left = NULL;
+    node->right = NULL;
     delete node;
   }
-  node = NULL;
+  node = NULL;;
 }
 
 template <class myType>
@@ -153,6 +154,7 @@ nodeType<myType> *avlTree<myType>::search(myType key, nodeType<myType> *node) co
 template <class myType>
 void avlTree<myType>::printTree(nodeType<myType> *node, treeTraversalOptions options) const
 {
+  std::cout << "ends" << std::endl;
   if(node == NULL)
     return;
 
@@ -212,7 +214,7 @@ nodeType<myType> *avlTree<myType>::insert(myType key, nodeType<myType> *node)
 
   if(key < node->keyValue)
     node->left = insert(key, node->left);
-  else if(key > node->keyValue)
+  else
     node->right = insert(key, node->right);
 
   //update height of node
@@ -220,24 +222,26 @@ nodeType<myType> *avlTree<myType>::insert(myType key, nodeType<myType> *node)
 
   //get balance factor of node to check wheather node became unbalanced
   int bal = getBalance(node);
-  std::cout << "not cras";
-  if(height(node->left) - height(node->right) > 1) {
-    if(height(node->left->left) >= height(node->left->right)) {
-      rightRotate(node);
-    }else{
-      leftRotate(node->right);
-      rightRotate(node);
-    }
-  }else if(height(node->right) - height(node->left) > 1) {
-    if(height(node->right->right) >= height(node->right->left)){
-      leftRotate(node);
-    }else{
-      rightRotate(node->left);
-      leftRotate(node);
-    }
 
+  //right rotate needed
+  if(bal > 1 && key < node->left->keyValue)
+    return rightRotate(node);
+
+  //left rotate needed
+  if(bal < -1 && key > node->right->keyValue)
+    return leftRotate(node);
+
+  //left-right rotate needed
+  if(bal > 1 && key > node->left->keyValue) {
+    node->left = leftRotate(node->left);
+    return rightRotate(node);
   }
-  std::cout << "hed ";
+
+  //right-left rotate needed
+  if(bal < -1 && key < node->right->keyValue) {
+    node->right = rightRotate(node->right);
+    return leftRotate(node);
+  }
 
   return node;
 }
@@ -245,12 +249,12 @@ nodeType<myType> *avlTree<myType>::insert(myType key, nodeType<myType> *node)
 template <class myType>
 nodeType<myType> *avlTree<myType>::leftRotate(nodeType<myType> *node)
 {
-  nodeType<myType> *otherNode;
+  nodeType<myType> *oldnode = node;
 
-  otherNode = node->left;
-  node->left = otherNode->right;
-  otherNode->right = node;
-  node = otherNode;
+  //perform rotation
+  node = node->left;
+  oldnode->left = node->right;
+  node->right = oldnode;
 
   return node;
 }
@@ -258,12 +262,11 @@ nodeType<myType> *avlTree<myType>::leftRotate(nodeType<myType> *node)
 template <class myType>
 nodeType<myType> *avlTree<myType>::rightRotate(nodeType<myType> *node)
 {
-  nodeType<myType> *otherNode;
+  nodeType<myType> *oldnode = node;
 
-  otherNode = node->right;
-  node->right = otherNode->left;
-  otherNode->left = node;
-  node = otherNode;
+  node = node->right;
+  oldnode->right = node->left;
+  node->left = oldnode;
 
   return node;
 }
