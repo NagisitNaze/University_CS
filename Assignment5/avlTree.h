@@ -2,6 +2,7 @@
 #define AVLTREE_H_
 
 #include <math.h>
+#include <iostream>
 
 template <class myType>
 struct nodeType {
@@ -22,8 +23,8 @@ enum treeTraversalOptions {
 template <class myType>
 class avlTree {
   public:
-    avlTree();
-    ~avlTree();
+    avlTree<myType>();
+    ~avlTree<myType>();
     void destroyTree();
     int countNodes() const;
     int height() const;
@@ -32,9 +33,9 @@ class avlTree {
     void insert(myType);
     void deleteNode(myType);
   private:
-    void destroyTree(nodeType<myType> *);
-    int countNodes(nodeType<myType> *);
-    int height(nodeType<myType> *);
+    void destroyTree(nodeType<myType> *&);
+    int countNodes(nodeType<myType> *) const;
+    int height(nodeType<myType> *) const;
     nodeType<myType> *search(myType, nodeType<myType> *) const;
     void printTree(nodeType<myType> *, treeTraversalOptions) const;
     void printGivenLevel(nodeType<myType> *, int) const;
@@ -48,210 +49,224 @@ class avlTree {
 };
 
 template <class myType>
-avlTree::avlTree()
+avlTree<myType>::avlTree()
 {
   root = NULL;
 }
 
 template <class myType>
-avlTree::~avlTree()
+avlTree<myType>::~avlTree<myType>()
 {
   destroyTree(root);
 }
 
 template <class myType>
-void avlTree::destroyTree()
+void avlTree<myType>::destroyTree()
 {
   destroyTree(root);
 }
 
 template <class myType>
-int avlTree::countNodes() const
+int avlTree<myType>::countNodes() const
 {
   return countNodes(root);
 }
 
 template <class myType>
-int avlTree::height() const
+int avlTree<myType>::height() const
 {
   return height(root);
 }
 
 template <class myType>
-bool avlTree::search(myType key) const
+bool avlTree<myType>::search(myType key) const
 {
-    return search(key, root) != NULL ? true : false;
+  nodeType<myType> *result = search(key, root);
+  if(result == NULL)
+    return false;
+  return true;
 }
 
 template <class myType>
-void avlTree::printTree(treeTraversalOptions options) const
+void avlTree<myType>::printTree(treeTraversalOptions options) const
 {
   printTree(root, options);
 }
 
 template <class myType>
-void avlTree::insert(myType nodeValue)
+void avlTree<myType>::insert(myType nodeValue)
 {
-  insert(nodeValue, root);
+  root = insert(nodeValue, root);
 }
 
 template <class myType>
-void avlTree::deleteNode(myType nodeValue)
+void avlTree<myType>::deleteNode(myType nodeValue)
 {
-  deleteNode(nodeValue, root);
+  nodeType<myType> *find = search(nodeValue, root);
+  if(find != NULL)
+    root = deleteNode(nodeValue, root);
 }
 
 template <class myType>
-void avlTree::destroyTree(nodeType<myType> *node)
+void avlTree<myType>::destroyTree(nodeType<myType> *&node)
 {
   if(node != NULL) {
     destroyTree(node->left);
     destroyTree(node->right);
     delete node;
   }
+  node = NULL;
 }
 
 template <class myType>
-int avlTree::countNodes(nodeType<myType> *node)
+int avlTree<myType>::countNodes(nodeType<myType> *node) const
 {
   if(node == NULL)
     return 0;
-  return countNodes(node->left) + 1;
-  return countNodes(node->right) + 1;
+  return 1 + countNodes(node->left) + countNodes(node->right);
 }
 
 template <class myType>
-int avlTree::height(nodeType<myType> *node)
+int avlTree<myType>::height(nodeType<myType> *node) const
 {
   if(node == NULL)
     return 0;
 
   // if tree is not empty height is 1 + max of either path
-  return 1 + max(height(node->left), height(node->right));
+  return 1 + std::max(height(node->left), height(node->right));
 }
 
 template <class myType>
-nodeType<myType> *avlTree::search(myType key, nodeType<myType> *node) const
+nodeType<myType> *avlTree<myType>::search(myType key, nodeType<myType> *node) const
 {
   if(node == NULL)
     return NULL;
-  if(key == node->keyValue)
-    return node;
+  else if(key < node->keyValue)
+    return search(key, node->left);
   else if(key > node->keyValue)
     return search(key, node->right);
-  else if(key > node->keyValue)
-    return search(key, node->left);
+  else
+    return node;
 }
 
 template <class myType>
-void avlTree::printTree(nodeType<myType> *node, treeTraversalOptions options) const
-{
-  switch(options) {
-    case INORDER:
-
-    break;
-    case PREORDER:
-
-    break;
-    case POSTORDER:
-
-    break;
-    case LEVELORDER:
-
-    break;
-    case NONE:
-
-    break;
-  }
-}
-
-template <class myType>
-void avlTree::printGivenLevel(nodeType<myType> *node, int level) const
+void avlTree<myType>::printTree(nodeType<myType> *node, treeTraversalOptions options) const
 {
   if(node == NULL)
     return;
 
-  if(node->nodeHeight == level) {
-    std::cout << node->keyValue << " ";
+  switch(options) {
+    case INORDER:
+       printTree(node->left, options);
+       std::cout << node->keyValue << " ";
+       printTree(node->right, options);
+    break;
+    case PREORDER:
+      std::cout << node->keyValue << " ";
+      printTree(node->left, options);
+      printTree(node->right, options);
+    break;
+    case POSTORDER:
+      printTree(node->left, options);
+      printTree(node->right, options);
+      std::cout << node->keyValue << " ";
+    break;
+    case LEVELORDER:
+      for(int i = 1; i <=  height(node); i++) {
+        printGivenLevel(node, i);
+        std::cout << "\n";
+      }
+    break;
+    case NONE:
+      return;
+    break;
   }
-
-  printGivenLevel(node->right);
-  printGivenLevel(node->left);
 }
 
 template <class myType>
-nodeType<myType> *avlTree::insert(myType key, nodeType<myType> *node)
+void avlTree<myType>::printGivenLevel(nodeType<myType> *node, int level) const
+{
+  if(node == NULL)
+    return;
+
+  if(level == 1)
+    std::cout << node->keyValue << " ";
+  else if(level > 1){
+    printGivenLevel(node->left, level-1);
+    printGivenLevel(node->right, level-1);
+  }
+}
+
+template <class myType>
+nodeType<myType> *avlTree<myType>::insert(myType key, nodeType<myType> *node)
 {
   if(node == NULL) {
     nodeType<myType> *newNode = new nodeType<myType>;
     newNode->left = NULL;
     newNode->right = NULL;
     newNode->keyValue = key;
-    newNode->nodeHeight = 1;
     return newNode;
-  }
+  }else if(key < node->keyValue)
+    node->left = insert(key, node->left);
+  else if(key > node->keyValue)
+    node->right = insert(key, node->right);
 
-  if(key < node->keyValue)
-    node->left = insert(node->left, key);
-  else
-    node->right = insert(node->right, key);
-
+  if(node != NULL) {
+    if(height(node->left) - height(node->right) > 1) {
+      if(height(node->left->left) >= height(node->left->right)) {
+        node = leftRotate(node);
+      }else{
+        node->left = rightRotate(node->left);
+        node = leftRotate(node);
+      }
+    }else if(height(node->right) - height(node->left) > 1) {
+      if(height(node->right->right) >= height(node->right->left)){
+        node = rightRotate(node);
+      }else{
+        node->right = leftRotate(node->right);
+        node = rightRotate(node);
+      }
+    }
   //update height of node
-  node->height = max(height(node->left), height(node->right)) + 1;
-
-  //get balance factor of node to check wheather node became unbalanced
-  int bal = getBalance(node);
-
-  //right rotate needed
-  if(bal > 1 && key < node->left->keyValue)
-    return rightRotate(node);
-
-  //left rotate needed
-  if(bal < -1 && key > node->right->keyValue)
-    return leftRotate(node);
-
-  //left-right rotate needed
-  if(bal > 1 && key > node->left->keyValue) {
-    node->left = leftRotate(node->left);
-    return rightRotate(node);
+  node->nodeHeight = std::max(height(node->left), height(node->right)) + 1;
   }
 
-  //right-left rotate needed
-  if(bal < -1 && key < node->right->keyValue) {
-    node->right = rightRotate(node->right);
-    return leftRotate(node);
-  }
 
   return node;
 }
 
 template <class myType>
-nodeType<myType> *avlTree::leftRotate(nodeType<myType> * node)
+nodeType<myType> *avlTree<myType>::leftRotate(nodeType<myType> *node)
 {
-  nodeType<myType> *oldnode = node;
+  nodeType<myType> *otherNode;
 
-  //perform rotation
-  node = node->left;
-  oldnode->left = node->right;
-  node->right = oldnode;
+  otherNode = node->left;
+  node->left = otherNode->right;
+  otherNode->right = node;
+  node->nodeHeight = std::max( height(node->left), height(node->right) ) + 1;
+  otherNode->nodeHeight = std::max( height(otherNode->left), height(otherNode->right) ) + 1;
+  node = otherNode;
 
   return node;
 }
 
 template <class myType>
-nodeType<myType> *avlTree::rightRotate(nodeType<myType> *)
+nodeType<myType> *avlTree<myType>::rightRotate(nodeType<myType> *node)
 {
-  nodeType<myType> *oldnode = node;
+  nodeType<myType> *otherNode;
 
-  node = node->right;
-  oldnode->right = node->left;
-  node->left = oldnode;
+  otherNode = node->right;
+  node->right = otherNode->left;
+  otherNode->left = node;
+  node->nodeHeight = std::max( height(node->left), height(node->right) ) + 1;
+  otherNode->nodeHeight = std::max( height(otherNode->left), height(otherNode->right) ) + 1;
+  node = otherNode;
 
   return node;
 }
 
 template <class myType>
-int avlTree::getBalance(nodeType<myType> *node) const
+int avlTree<myType>::getBalance(nodeType<myType> *node) const
 {
   if(node == NULL) {
     return 0;
@@ -263,67 +278,64 @@ int avlTree::getBalance(nodeType<myType> *node) const
 }
 
 template <class myType>
-nodeType<myType> *avlTree::deleteNode(myType key, nodeType<myType> *node)
+nodeType<myType> *avlTree<myType>::deleteNode(myType key, nodeType<myType> *node)
 {
   if(node == NULL)
     return node;
 
   if(key < node->keyValue)
-    node->left = deleteNode(node->left, key);
+    node->left = deleteNode(key, node->left);
   else if(key > node->keyValue)
-    node->right = deleteNode(node->right, key);
+    node->right = deleteNode(key, node->right);
   else{
-    if( (node->left == NULL) || (node->right == NULL) ) {
-      nodeType<myType> *temp = node->left == NULL ? node->left : node->right;
+    if((node->left == NULL) || (node->right == NULL)) {
+      nodeType<myType> *oldNode = (node->left != NULL) ? node->left : node->right;
 
-      if(temp == NULL) {
-        temp = node;
+      if(oldNode == NULL) {
+        oldNode = node;
         node = NULL;
-      }else
-        *node = *temp;
+      }
+      else
+        *node = *oldNode;
 
-      delete temp;
+      delete oldNode;
     }else{
-      nodeType<myType> *temp = minValueNode(node->right);
-      node->keyValue = temp->keyValue;
-      node->right = deleteNode(node->right, temp->keyValue);
+      nodeType<myType> *oldNode = minValueNode(node->right);
+
+      node->keyValue = oldNode->keyValue;
+
+      node->right = deleteNode(oldNode->keyValue, node->right);
     }
   }
 
   if(node == NULL)
     return node;
 
-  node->height = max(height(node->left), height(node->right)) + 1;
-
-  int bal = getBalance(node);
-
-    // Left Left Case
-  if (bal > 1 && getBalance(node->left) >= 0)
-      return rightRotate(node);
-
-  // Left Right Case
-  if (bal > 1 && getBalance(node->left) < 0) {
-      node->left =  leftRotate(node->left);
-      return rightRotate(node);
+  if(height(node->left) - height(node->right) > 1) {
+    if(height(node->left->left) >= height(node->left->right)) {
+      node = leftRotate(node);
+    }else{
+      node->left = rightRotate(node->left);
+      node = leftRotate(node);
+    }
+  }else if(height(node->right) - height(node->left) > 1) {
+    if(height(node->right->right) >= height(node->right->left)){
+      node = rightRotate(node);
+    }else{
+      node->right = leftRotate(node->right);
+      node = rightRotate(node);
+    }
   }
-
-  // Right Right Case
-  if (bal < -1 && getBalance(node->right) <= 0)
-      return leftRotate(node);
-
-  // Right Left Case
-  if (bal < -1 && getBalance(node->right) > 0) {
-      node->right = rightRotate(node->right);
-      return leftRotate(node);
-  }
+  //update height of node
+  node->nodeHeight = std::max(height(node->left), height(node->right)) + 1;
 
   return node;
 }
 
 template <class myType>
-nodeType<myType> *avlTree::minValueNode(nodeType<myType> *node) const
+nodeType<myType> *avlTree<myType>::minValueNode(nodeType<myType> *node) const
 {
-  nodeType<myType> *curent = node;
+  nodeType<myType> *current = node;
 
   while(current->left != NULL)
     current = current->left;

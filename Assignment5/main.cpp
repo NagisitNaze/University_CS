@@ -114,7 +114,6 @@ Results:
 */
 
 	avlTree<int>	myTree1;
-
 	for (int i=1; i<=24; i++)
 		myTree1.insert(i);
 
@@ -187,6 +186,9 @@ Results:
 	myTree2.deleteNode(5);		// does not exist
 	myTree2.deleteNode(78);		// does not exist
 	myTree2.deleteNode(28);
+
+	myTree2.printTree(LEVELORDER);
+
 	myTree2.deleteNode(17);
 	myTree2.deleteNode(65);
 	myTree2.deleteNode(82);
