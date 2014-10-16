@@ -112,21 +112,32 @@ int trieTree::countNodes(trieNodeType *node) const
 {
   if(node == NULL)
     return 0;
-  for(int i = 0; i < 26; i++)
-    return 1 + countNodes(node->children[i]);
+
+  trieNodeType ** i = node->children;
+  trieNodeType ** end = i + (sizeof(node->children) / sizeof(trieNodeType *));
+
+  int nodeCount = countNodes(*(i++));
+
+  while(i != end) {
+    nodeCount += countNodes(*(i++));
+  }
+
+  return 1 + nodeCount;
 }
 
 int trieTree::height(trieNodeType *node) const
 {
   if(node == NULL)
     return 0;
-  trieNodeType *i = node->children[0];
-  trieNodeType *end = node->children[25];
 
-  int max_height = height(i++);
+  trieNodeType ** i = node->children;
+  trieNodeType ** end = i + (sizeof(node->children) / sizeof(trieNodeType *));
 
-  while(i != end)
-    max_height = std::max(max_height, height(i++));
+  int max_height = height(*(i++));
+
+  while(i != end) {
+    max_height = std::max(max_height, height(*(i++)));
+  }
 
   return 1 + max_height;
 }
@@ -136,8 +147,8 @@ void trieTree::destroyTree(trieNodeType *&node)
   if(node != NULL) {
     for(int i = 0; i < 26; i++) {
       destroyTree(node->children[i]);
-      delete node;
     }
+    delete node;
   }
   node = NULL;
 }
