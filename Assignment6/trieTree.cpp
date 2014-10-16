@@ -1,3 +1,4 @@
+#include <iostream>
 #include "trieTree.h"
 
 trieTree::trieTree()
@@ -24,37 +25,37 @@ void trieTree::insert(std::string word)
 {
   if(root == NULL) {
     trieNodeType *node = new trieNodeType;
-    node->endWordMark = false;
+    node->endWordMark = true;
+    node->keyValue = ' ';
     for (int i = 0; i < 26; i++)
       node->children[i] = NULL;
-    root == node;
-  }else{
-    //create node for traversal
-    trieNodeType *node = root;
+    root = node;
+  }
 
-    //loop through word
-    for(int i=0; i < word.size(); i++) {
-      //declare the current char and create index
-      char currentChar = word[i];
-      int index = currentChar - 'a';
+  //create node for traversal
+  trieNodeType *node = root;
+  //loop through word
+  for(int i=0; i < word.size(); i++) {
+    //declare the current char and create index
+    char currentChar = word[i];
+    int index = currentChar - 'a';
 
-      //if a child exists alread
-      if(node->children[index] != NULL) {
-        node = node->children[index];
-      }else{
-        //current doesnt have char, create new one
-        trieNodeType *newNode = new trieNodeType;
-        trieNodeType->keyValue = currentChar;
-        trieNodeType->children[index] = newNode;
-        for (int i = 0; i < 26; i++)
-          newNode->children[i] == NULL;
-        //assign node to newNode
-        node = newNode;
-      }
-      if( i == word.size() - 1) {
-        //word is finished
-        currentNode->endWordMark = true;
-      }
+    //if a child exists alread
+    if(node->children[index] != NULL) {
+      node = node->children[index];
+    }else{
+      //current doesnt have char, create new one
+      trieNodeType *newNode = new trieNodeType;
+      newNode->keyValue = currentChar;
+      for (int i = 0; i < 26; i++)
+        newNode->children[i] = NULL;
+      node->children[index] = newNode;
+      //assign node to newNode
+      node = newNode;
+    }
+    if( i == word.size() - 1) {
+      //word is finished
+      node->endWordMark = true;
     }
   }
 }
@@ -104,7 +105,7 @@ void trieTree::printTree() const
 
 void trieTree::destoryTree()
 {
-  destoryTree(root);
+  destroyTree(root);
 }
 
 int trieTree::countNodes(trieNodeType *node) const
@@ -119,15 +120,22 @@ int trieTree::height(trieNodeType *node) const
 {
   if(node == NULL)
     return 0;
+  trieNodeType *i = node->children[0];
+  trieNodeType *end = node->children[25];
 
-  return 1 +
+  int max_height = height(i++);
+
+  while(i != end)
+    max_height = std::max(max_height, height(i++));
+
+  return 1 + max_height;
 }
 
-void trieTree::destoryTree(trieNodeType *&node)
+void trieTree::destroyTree(trieNodeType *&node)
 {
   if(node != NULL) {
     for(int i = 0; i < 26; i++) {
-      destoryTree(node->children[i]);
+      destroyTree(node->children[i]);
       delete node;
     }
   }

@@ -1,5 +1,5 @@
 //  Main program for testing
- 
+
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -45,6 +45,7 @@ int main()
 
 // *****************************************************************
 
+/*
 	trieTree	myTree1;
 	string		tmpStr, wrd;
 	const		int	order = 4;
@@ -72,9 +73,8 @@ int main()
 
 // *****************************************************************
 //  All done.
-
+*/
 	cout << bars << endl << "Game Over, thank you for playing." << endl;
 
 	return 0;
 }
-
