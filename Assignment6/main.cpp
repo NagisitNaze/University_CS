@@ -25,16 +25,17 @@ int main()
 // ------------------------------------------------------------------
 
 	wordPuzzle	pzl1;
-
+	std::cout << "h";
 	if (!pzl1.readDictionary("smallDictionary.txt")) {
 		cout << "main: Read dictionary error." << endl;
 		exit(1);
 	}
-
+	std::cout << "k";
 	if (!pzl1.readLetters("words1.txt")) {
 		cout << "main: Read letters file error." << endl;
 		exit(1);
 	}
+	std::cout << "k";
 
 	cout << bars << endl;
 	pzl1.showTitle();
@@ -55,7 +56,7 @@ int main()
 
 
 // ------------------------------------------------------------------
-
+/*
 {
 	wordPuzzle	pzl2;
 
@@ -171,9 +172,8 @@ int main()
 
 // *****************************************************************
 //  All done.
-
+*/
 	cout << bars << endl << "Game Over, thank you for playing." << endl;
 
 	return 0;
 }
-

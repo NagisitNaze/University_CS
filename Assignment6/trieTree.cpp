@@ -8,7 +8,7 @@ trieTree::trieTree()
 
 trieTree::~trieTree()
 {
-  destoryTree();
+  destroyTree();
 }
 
 int trieTree::countNodes() const
@@ -26,7 +26,7 @@ void trieTree::insert(std::string word)
   if(root == NULL) {
     trieNodeType *node = new trieNodeType;
     node->endWordMark = true;
-    node->keyValue = ' ';
+    node->keyValue = '-';
     for (int i = 0; i < 26; i++)
       node->children[i] = NULL;
     root = node;
@@ -103,7 +103,7 @@ void trieTree::printTree() const
   printTree(root);
 }
 
-void trieTree::destoryTree()
+void trieTree::destroyTree()
 {
   destroyTree(root);
 }
@@ -114,7 +114,7 @@ int trieTree::countNodes(trieNodeType *node) const
     return 0;
 
   trieNodeType ** i = node->children;
-  trieNodeType ** end = i + (sizeof(node->children) / sizeof(trieNodeType *));
+  trieNodeType ** end = i + 26;
 
   int nodeCount = countNodes(*(i++));
 

@@ -19,7 +19,7 @@ class trieTree {
     bool search(std::string) const;
     bool isPrefix(std::string) const;
     void printTree() const;
-    void destoryTree();
+    void destroyTree();
   private:
     int countNodes(trieNodeType *) const;
     int height(trieNodeType *) const;
