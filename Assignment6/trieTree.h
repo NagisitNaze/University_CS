@@ -23,7 +23,7 @@ class trieTree {
   private:
     int countNodes(trieNodeType *) const;
     int height(trieNodeType *) const;
-    void destroyTree(trieNodeType *);
+    void destroyTree(trieNodeType *&);
     void printTree(trieNodeType *) const;
     trieNodeType *root;
 };

@@ -61,40 +61,86 @@ void trieTree::insert(std::string word)
 
 bool trieTree::search(std::string word) const
 {
+  trieNodeType *current = root;
 
+  while(current != NULL) {
+    for( int i = 0; i < word.length(); i++) {
+      int index = word[i] - 'a';
+      if(current->children[index] == NULL)
+        return false;
+      current = current->children[index];
+    }
+
+    if( current->endWordMark )
+      return true;
+    else
+      return false;
+  }
 }
 
 bool trieTree::isPrefix(std::string word) const
 {
+  trieNodeType *current = root;
 
+  while(current != NULL) {
+    for(int i = 0; i < word.length(); i++) {
+      int index = word[i] - 'a';
+      if(current->children[index] == NULL)
+        return false;
+      current = current->children[index];
+    }
+
+    if(current->keyValue == word[word.length()-1])
+      return true;
+    else
+      return false;
+  }
 }
 
 void trieTree::printTree() const
 {
-
+  printTree(root);
 }
 
-void trieTree:destoryTree()
+void trieTree::destoryTree()
 {
-
+  destoryTree(root);
 }
 
 int trieTree::countNodes(trieNodeType *node) const
 {
-
+  if(node == NULL)
+    return 0;
+  for(int i = 0; i < 26; i++)
+    return 1 + countNodes(node->children[i]);
 }
 
 int trieTree::height(trieNodeType *node) const
 {
+  if(node == NULL)
+    return 0;
 
+  return 1 +
 }
 
-void trieTree::destoryTree(trieNodeType *node)
+void trieTree::destoryTree(trieNodeType *&node)
 {
-
+  if(node != NULL) {
+    for(int i = 0; i < 26; i++) {
+      destoryTree(node->children[i]);
+      delete node;
+    }
+  }
+  node = NULL;
 }
 
 void trieTree::printTree(trieNodeType *node) const
 {
-  printTree(root);
+  if(node == NULL)
+    return;
+
+  std::cout << node->keyValue << " ";
+  for(int i = 0; i < 26; i++) {
+    printTree(node->children[i]);
+  }
 }
