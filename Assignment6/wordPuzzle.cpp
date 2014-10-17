@@ -99,7 +99,7 @@ void wordPuzzle::printLetters() const
   for(int i = 0; i < order*3 + 1; i++) {
     for(int j = 0; j < order*4 + 1; j++) {
       if(i == 0) {
-        if(j == 0 || j = order*4){
+        if(j == 0 || j == order*4){
           std::cout << " ";
         }else{
           std::cout << "_";
