@@ -8,6 +8,7 @@
 
 wordPuzzle::wordPuzzle()
 {
+  //init private variables
   title = "";
   order = 0;
   letters = NULL;
@@ -15,6 +16,7 @@ wordPuzzle::wordPuzzle()
 
 wordPuzzle::~wordPuzzle()
 {
+  //free dynamically allocated memory
   if(letters != NULL) {
     for(int i = 0; i < sizeof(letters) / sizeof(std::string *); i++) {
         delete [] letters[i];
@@ -47,12 +49,15 @@ bool wordPuzzle::readLetters(const std::string word)
 
 bool wordPuzzle::readDictionary(const std::string word)
 {
+  //read every line in dictionary and place in trie
+  //data structure
   std::ifstream inFile(word.c_str());
   if(!inFile.is_open())
     return false;
   //create temp string to read in dictionary
   std::string tempRead;
   while(inFile >> tempRead) {
+    //ensure only lowercase words are grabbed
     if(islower(tempRead[0]))
       insert(tempRead);
   }
@@ -62,6 +67,7 @@ bool wordPuzzle::readDictionary(const std::string word)
 
 void wordPuzzle::findWords()
 {
+  //find all possible words in puzzle
   for(int i = 0; i < order; i++)
     for(int j = 0; j < order; j++)
       findWords(i,j,"");
@@ -69,42 +75,48 @@ void wordPuzzle::findWords()
 
 void wordPuzzle::showTitle() const
 {
+  //display title
   std::cout << title << std::endl;
 }
 
 void wordPuzzle::showWordCount() const
 {
+  //diplay word count
   std::cout << "Word Count: " <<
     wordsFound.countNodes() << std::endl;
 }
 
 void wordPuzzle::showWords() const
 {
+  //call private print function
   wordsFound.printTree(INORDER);
 }
 
 void wordPuzzle::printLetters() const
 {
-  //print top
-  for(int i = 0; i < order * 3; i++) {
-    std::cout << "-";
-  }
   std::cout << std::endl;
-  //print rest
-  for(int i = 0; i < order; i++) {
-    for(int j = 0; j < order*4; j++) {
-      if(j % 4 == 0)
+  //each cell will be 3 spaces wide, and 3 long.
+  for(int i = 0; i < order*3 + 1; i++) {
+    for(int j = 0; j < order*4 + 1; j++) {
+      if(i == 0) {
+        if(j == 0 || j = order*4){
+          std::cout << " ";
+        }else{
+          std::cout << "_";
+        }
+      }
+      else if(j % 4 == 0 || j == order*4) {
         std::cout << "|";
-      else if(i < 3){
-        std::cout << " ";
-      } else if(i == 3){
+      }else if(i % 3 == 0 && i != 0){
         std::cout << "_";
+      }else if(j % 2 == 0 && (i % 3 != 0 && i % 3 != 1)){
+        std::cout << letters[i/4][j/4];
+      }else if(i % 3 != 0){
+        std::cout << " ";
       }
     }
     std::cout << std::endl;
   }
-  char a;
-  std::cin >> a;
 }
 
 void wordPuzzle::findWords(int i, int j, std::string wrd)
@@ -116,9 +128,11 @@ void wordPuzzle::findWords(int i, int j, std::string wrd)
   if(letters[i][j] == "-")
     return;
 
+  //att letter to word
   wrd = wrd + letters[i][j];
   if(!isPrefix(wrd))
     return;
+  //if word exists, add to avl tree
   if(search(wrd)) {
     std::stringstream ss;
     ss << std::left << std::setw(15)
@@ -126,6 +140,7 @@ void wordPuzzle::findWords(int i, int j, std::string wrd)
        << "," << j << ")\n";
     wordsFound.insert(ss.str());
   }
+  //grab temp letter and move onto other combinations
   std::string tmpLter = letters[i][j];
   letters[i][j] = "-";
   //call findWords with all possible words around it

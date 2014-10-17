@@ -64,14 +64,17 @@ bool trieTree::search(std::string word) const
 {
   trieNodeType *current = root;
 
+  //loop through trie tree
   while(current != NULL) {
     for( int i = 0; i < word.length(); i++) {
+      //iterate to next child if it exists
       int index = word[i] - 'a';
       if(current->children[index] == NULL)
         return false;
       current = current->children[index];
     }
 
+    //if the word mark is found, true
     if( current->endWordMark )
       return true;
     else
@@ -83,6 +86,8 @@ bool trieTree::isPrefix(std::string word) const
 {
   trieNodeType *current = root;
 
+  //check if the word exists in the current state
+  //of the trie, same as search
   while(current != NULL) {
     for(int i = 0; i < word.length(); i++) {
       int index = word[i] - 'a';
@@ -113,6 +118,7 @@ int trieTree::countNodes(trieNodeType *node) const
   if(node == NULL)
     return 0;
 
+  //grab pointer to pointer at the beginning and end
   trieNodeType ** i = node->children;
   trieNodeType ** end = i + 26;
 
@@ -144,6 +150,7 @@ int trieTree::height(trieNodeType *node) const
 
 void trieTree::destroyTree(trieNodeType *&node)
 {
+  //recusivly delete all nodes
   if(node != NULL) {
     for(int i = 0; i < 26; i++) {
       destroyTree(node->children[i]);
@@ -157,7 +164,7 @@ void trieTree::printTree(trieNodeType *node) const
 {
   if(node == NULL)
     return;
-
+  //print tree
   std::cout << node->keyValue << " ";
   for(int i = 0; i < 26; i++) {
     printTree(node->children[i]);
