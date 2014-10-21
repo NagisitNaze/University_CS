@@ -29,6 +29,7 @@ int main()
 		cout << "main: Read dictionary error." << endl;
 		exit(1);
 	}
+    return 0;
 	if (!pzl1.readLetters("words1.txt")) {
 		cout << "main: Read letters file error." << endl;
 		exit(1);
@@ -51,7 +52,7 @@ int main()
 
 	pzl1.destroyTree();
 
-
+/*
 // ------------------------------------------------------------------
 {
 	wordPuzzle	pzl2;
@@ -168,6 +169,7 @@ int main()
 
 // *****************************************************************
 //  All done.
+*/
 	cout << bars << endl << "Game Over, thank you for playing." << endl;
 
 	return 0;

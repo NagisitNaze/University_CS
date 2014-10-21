@@ -96,12 +96,12 @@ bool avlTree<myType>::isPrefix(std::string word)
   //check is prefix exists in current state
   //of avlTree, same as search
   while(current != NULL) {
-    if(word < current->keyValue)
+    if((current->keyValue).find(word) != std::string::npos)
+      return true;
+    else if(word < current->keyValue)
       current = current->left;
     else if(word > current->keyValue)
       current = current->right;
-    else if((current->keyValue).length() >= word.length() && word == (current->keyValue).substr(0, word.length()))
-      return true;
   }
   return false;
 }
