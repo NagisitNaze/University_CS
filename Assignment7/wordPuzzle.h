@@ -2,10 +2,9 @@
 #define WORDPUZZLE_H_
 
 #include "avlTree.h"
-#include "trieTree.h"
 #include <string>
 
-class wordPuzzle: public trieTree {
+class wordPuzzle: public avlTree<std::string> {
   public:
     wordPuzzle();
     ~wordPuzzle();

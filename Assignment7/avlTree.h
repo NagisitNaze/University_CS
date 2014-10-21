@@ -32,6 +32,7 @@ class avlTree {
     void printTree(treeTraversalOptions) const;
     void insert(myType);
     void deleteNode(myType);
+    bool isPrefix(std::string word);
   private:
     void destroyTree(nodeType<myType> *&);
     int countNodes(nodeType<myType> *) const;
@@ -85,6 +86,24 @@ bool avlTree<myType>::search(myType key) const
   if(result == NULL)
     return false;
   return true;
+}
+
+template <class myType>
+bool avlTree<myType>::isPrefix(std::string word)
+{
+  nodeType<myType> *current = root;
+
+  //check is prefix exists in current state
+  //of avlTree, same as search
+  while(current != NULL) {
+    if(word < current->keyValue)
+      current = current->left;
+    else if(word > current->keyValue)
+      current = current->right;
+    else if((current->keyValue).length() >= word.length() && word == (current->keyValue).substr(0, word.length()))
+      return true;
+  }
+  return false;
 }
 
 template <class myType>
