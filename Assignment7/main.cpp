@@ -48,8 +48,6 @@ int main()
 	cout << "Trie Max Height: " << pzl1.height() << endl;
 	cout << "Trie Node Count: " << pzl1.countNodes() << endl;
 	cout << endl;
-	
-	cout << sizeof(nodeType<std::string>) * pzl1.countNodes() << endl;
 
 	pzl1.destroyTree();
 
