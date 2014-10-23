@@ -14,14 +14,13 @@ class phoneHash {
 
     bool readPhonebook(const std::string);
     std::string search(const std::string);
-    void printPhonebook(const std::string);
+    void printPhonebook() const;
     int getTablesize() const;
-    bool verifyPhoneNumber(const std::string);
-
     int showHash(std::string) const;
+  private:
     int hash(const std::string) const;
     void rehash();
-  private:
+    bool verifyPhoneNumber(const std::string);
     std::string title;
     int count;
     int tableSize;
