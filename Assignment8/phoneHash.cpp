@@ -52,9 +52,6 @@ bool phoneHash::insert(const std::string phoneNum, const std::string contact)
     count++;
     return true;
   } else {
-    if(phoneBook[hLoc][0] == phoneNum){
-      return true;
-    }
     while(true) {
       //if the spot is not empty, do linear probing
       hLoc++;
