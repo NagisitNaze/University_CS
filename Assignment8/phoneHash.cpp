@@ -52,9 +52,6 @@ bool phoneHash::insert(const std::string phoneNum, const std::string contact)
     count++;
     return true;
   } else {
-    if(phoneBook[hLoc][0] == phoneNum){
-      return true;
-    }
     while(true) {
       //if the spot is not empty, do linear probing
       hLoc++;
@@ -117,7 +114,7 @@ std::string phoneHash::search(const std::string phoneNum)
 {
   //verify correct phone number
   if(!verifyPhoneNumber(phoneNum))
-    return "ERROR";
+    return "";
   //grab hash and look up
   int hLoc = hash(phoneNum);
   for(int i = 0; i < tableSize;i++) {
@@ -128,21 +125,23 @@ std::string phoneHash::search(const std::string phoneNum)
     if(hLoc >= tableSize)
       hLoc = 0;
   }
-  return "Number not found";
+  return "";
 }
 
 void phoneHash::printPhonebook() const
 {
+  const char* bold = "\033[1m";
+  const char* unbold = "\033[0m";
   std::string dashes;
   dashes.append(60, '-');
-  std::cout << dashes << std::endl << title <<
-    std::endl << std::endl;
+  std::cout << dashes << std::endl << bold << title
+     << unbold << std::endl << std::endl;
   //cycle through and print all non NULL elements
   std::cout << std::left;
   for(int i = 0; i < tableSize; i++) {
     if(phoneBook[i] != NULL) {
-      std::cout << "  " << std::setw(14) << phoneBook[i][0]
-        << std::left << std::setw(2) <<
+      std::cout << "  " << std::setw(15) << phoneBook[i][0]
+        << std::left << std::setw(3) <<
         phoneBook[i][1] << std::endl;
     }
   }
