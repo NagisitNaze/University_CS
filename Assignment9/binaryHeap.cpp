@@ -120,8 +120,8 @@ void binaryHeap::reheapDown(int hole)
   }
   jobHeap[hole] = tmp;
   */
-  int leftChild = hole * 2 + 1;
-  int rightChild = hole * 2 + 2;
+  int leftChild = hole * 2;
+  int rightChild = hole * 2 + 1;
   if(leftChild <= count){
     int largest = leftChild;
     if(rightChild <= count && jobHeap[largest].priority < jobHeap[rightChild].priority)

@@ -20,6 +20,7 @@ dell  5
 google  1
 apple  4
 newegg  3
+
 ----------------------------------------
 Heap Size: 10
 Job Priority Order:
@@ -66,6 +67,7 @@ DapibusAssociates  22
 UltricesIaculisInc  16
 EuSemPellentesqueInc  8
 ElitLLP  27
+
 ----------------------------------------
 Heap Size: 24
 Job Priority Order:
@@ -83,8 +85,8 @@ InMiPC  50
 DuiIncorporated  45
 FelisOrciConsulting  38
 UltricesCompany  32
-ElitLLP  27
 ArcuIaculisLtd  27
+ElitLLP  27
 EratLLC  26
 IntegerPC  23
 DapibusAssociates  22
@@ -101,14 +103,14 @@ Heap Size: 76
 Top 10 Jobs:
 MusCompany  100
 TellusLimited  99
-FringillaCorp  98
-LoremLLP  98
 PellentesqueConsulting  98
-QuamInc  94
+LoremLLP  98
+FringillaCorp  98
 MaurisFoundation  94
+QuamInc  94
 VelLLP  93
-OrciAdipiscingInc  91
 ParturientConsulting  91
+OrciAdipiscingInc  91
 
 =================================================================
 [1mTest Set #3[0m
@@ -118,16 +120,16 @@ Test #3, 50 jobs processed...
 New Heap Size: 205
 
 Top 10 Jobs (after processing first 50):
-AdipiscingElitIndustries  73
+ScelerisqueLoremIndustries  73
 MusPC  72
-ProinNonMassaFoundation  71
 EgestasDuisCompany  71
-AdLitoraCompany  70
-SitAmetCompany  70
+ProinNonMassaFoundation  71
 ViverraPC  70
-SuspendisseInc  69
+SitAmetCompany  70
+AdLitoraCompany  70
 HabitantCorporation  69
-SitCorporation  68
+SuspendisseInc  69
+TinciduntInstitute  68
 
 =================================================================
 [1mTest Set #4[0m
@@ -137,16 +139,16 @@ Test #4, 2000 jobs processed...
 New Heap Size: 5000
 
 Top 10 Jobs (after processing first 4000):
-Voomm  20
-Dynabox  20
-Cogilith  20
+Skiba  20
+Gabtune  20
+Rhyloo  20
 Edgeblab  20
-Devshare  20
-Topiclounge  19
-Myworks  19
+Centidel  20
+Blogspan  19
+Aibox  19
 Jetwire  19
-Nlounge  19
-Edgeify  19
+Zoozzy  19
+Jaxspan  19
 
 *****************************************************************
 Game Over, thank you for playing.
