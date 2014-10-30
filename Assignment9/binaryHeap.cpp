@@ -106,6 +106,7 @@ void binaryHeap::reheapUp(int hole)
 
 void binaryHeap::reheapDown(int hole)
 {
+  /*
   int child;
   jobElement tmp = jobHeap[hole];
 
@@ -119,6 +120,20 @@ void binaryHeap::reheapDown(int hole)
       break;
   }
   jobHeap[hole] = tmp;
+  */
+  int leftChild = hole * 2 + 1;
+  int rightChild = hole * 2 + 2;
+  if(leftChild <= count){
+    int largest = leftChild;
+    if(rightChild <= count && jobHeap[largest].priority < jobHeap[rightChild].priority)
+      largest = rightChild;
+    if(jobHeap[hole].priority < jobHeap[largest].priority){
+      jobElement tmp = jobHeap[hole];
+      jobHeap[hole] = jobHeap[largest];
+      jobHeap[largest] = tmp;
+      reheapDown(largest);
+    }
+  }
 }
 
 void binaryHeap::buildHeap()
