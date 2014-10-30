@@ -5,8 +5,8 @@
 
 class binaryHeap
 {
-    binaryHeap(int=100);
   public:
+    binaryHeap(int=100);
     ~binaryHeap();
     int entries() const;
     bool readJobs(const std::string);
@@ -18,7 +18,7 @@ class binaryHeap
     struct jobElement {
       int priority;
       std::string name;
-    }
+    };
     int count;
     int heapSize;
     jobElement *jobHeap;
@@ -27,6 +27,6 @@ class binaryHeap
     void reheapDown(int);
     void buildHeap();
     void resize();
-}
+};
 
 #endif
