@@ -76,17 +76,16 @@ bool binaryHeap::isEmpty() const
 
 void binaryHeap::printJobHeap() const
 {
-  int n = 3;
+  int n =1;
   int cnt = 0;
   for(int i = 1; i < heapSize; i++) {
     if(jobHeap[i].name.length() > 0) {
       std::cout << jobHeap[i].name << "  " << jobHeap[i].priority << std::endl;
       ++cnt;
-      if(cnt == 1 || cnt == 3)
-        std::cout << std::endl;
-      else if(cnt > std::pow(2, n)){
+      if(cnt >= std::pow(2, n-1)){
         std::cout << std::endl;
         n++;
+	cnt=0;
       }
     }
   }
