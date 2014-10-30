@@ -105,21 +105,6 @@ void binaryHeap::reheapUp(int hole)
 
 void binaryHeap::reheapDown(int hole)
 {
-  /*
-  int child;
-  jobElement tmp = jobHeap[hole];
-
-  for(; hole * 2 <= count; hole = child) {
-    child = hole * 2;
-    if(child != count && jobHeap[child + 1].priority >= jobHeap[child].priority)
-      ++child;
-    if(jobHeap[child].priority >= tmp.priority)
-      jobHeap[hole] = jobHeap[child];
-    else
-      break;
-  }
-  jobHeap[hole] = tmp;
-  */
   int leftChild = hole * 2;
   int rightChild = hole * 2 + 1;
   if(leftChild <= count){
