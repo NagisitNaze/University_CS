@@ -38,7 +38,7 @@ bool binaryHeap::deleteMax(std::string &, int &)
 
 bool binaryHeap::isEmpty() const
 {
-
+  return count == 0;
 }
 
 void binaryHeap::printJobHeap() const
@@ -58,9 +58,12 @@ void binaryHeap::reheapDown(int)
 
 void binaryHeap::buildHeap()
 {
-  jobHeap = new jobElement[size];
-  for(int i = 0; i < size; i++)
-    jobHeap[i] = NULL;
+  int size = count;
+  int mixIdx = (size-2)/2;
+  while(midIdx >= 0) {
+    reheapUp(midIdx, size-1)
+    --midIdx;
+  }
 }
 
 void binaryHeap::resize()
