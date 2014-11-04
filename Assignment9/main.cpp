@@ -88,7 +88,6 @@ int main(int argc, char *argv[])
 		if (doPrint)
 			cout << currName << "  " << currPriority << endl;
 	}
-
 // ------------------------------------------------------------------
 //  Some very basic testing.
 
