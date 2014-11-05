@@ -12,7 +12,7 @@ class disjointSets {
     int setFind(int);
   private:
     int setSize;
-    int *link;
+    int *links;
     int *ranks;
 };
 
