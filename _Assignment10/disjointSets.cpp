@@ -74,7 +74,8 @@ int disjointSets::setUnion(int s1, int s2)
     c = s1;
   }
   links[c] = p;
-  ranks[p] += ranks[c];
+  if(ranks[s1] == ranks[s2])
+    ranks[p]++;
   return p;
 }
 
