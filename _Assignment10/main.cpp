@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <time.h>
 
 #include "mazeGen.h"
 
@@ -13,6 +14,8 @@ int main(int argc, char *argv[])
 
 // *****************************************************************
 //  Headers...
+
+		std::srand(time(NULL));
 
 	string	stars, bars, dashes;
 	string	fName;
@@ -38,8 +41,6 @@ int main(int argc, char *argv[])
 //  Basic error testing...
 
 	mazeGen testMaze0(15,5);
-	char cc;
-	std::cin >> cc;
 
 	int	r, c;
 

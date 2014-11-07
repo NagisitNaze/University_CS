@@ -27,27 +27,26 @@ mazeGen::mazeGen(int t_rows, int t_cols):
   for(int r = 0; r < rows; r++){
     for(int c = 0; c < cols-1; c++){
       int s = r > 0 ? -1*r : 0;
-      std::cout << r*rows+c+s << std::endl;
-      walls[r*rows+c+s][0] = r*rows+c;
-      walls[r*rows+c+s][1] = r*rows+c+1;
+      //std::cout << r*cols+c+s <<
+      //  ": " << r*cols+c << " - " << r*cols+c+1 << std::endl;
+      walls[r*cols+c+s][0] = r*cols+c;
+      walls[r*cols+c+s][1] = r*cols+c+1;
     }
   }
 
-  for(int r = 0; r < rows; r++){
-    for(int c = 0; c < cols-1; c++){
-      int s = r > 0 ? -1*r : 0;
-      std::cout << horiz+r*rows+c+s << std::endl;
-      walls[horiz+r*rows+c+s][0] = r+c*cols;
-      walls[horiz+r*rows+c+s][1] = r+c*cols+5;
+  for(int c = 0; c < cols; c++){
+    for(int r = 0; r < rows-1; r++){
+      int s = c > 0 ? -1*c : 0;
+      //std::cout << horiz+c*rows+r+s <<
+      //  ": " << c*rows+r << " - " << c*rows+r+5 << std::endl;
+      walls[horiz+c*rows+r+s][0] = c*rows+r;
+      walls[horiz+c*rows+r+s][1] = c*rows+r+5;
     }
   }
 
-  std::cout << "WordCount: " << arrSize << std::endl;
-  for(int i = 0; i < wallsCount; i++)
-    std::cout << walls[i][0] << " - " << walls[i][1] << std::endl;
-
-
-  std::cout << std::endl;
+  //std::cout << "WallCount: " << arrSize << std::endl;
+  //for(int i = 0; i < wallsCount; i++)
+    //std::cout << walls[i][0] << " - " << walls[i][1] << std::endl;
 }
 
 mazeGen::~mazeGen()
@@ -69,9 +68,8 @@ void mazeGen::getSize(int & t_rows, int & t_cols) const
 void mazeGen::generate()
 {
   randomize();
-  int wallsCount = rows * (cols-1) + cols * (rows-1);
-  disjointSets d(wallsCount);
-  for(int i = 0; i+1 < wallsCount; i++){
+  disjointSets d(arrSize);
+  for(int i = 0; i+1 < arrSize; i++){
     int s1 = d.setFind(walls[i][0]);
     int s2 = d.setFind(walls[i][1]);
     if(s1 != s2){
@@ -100,12 +98,19 @@ void mazeGen::printMazeText() const
 void mazeGen::randomize()
 {
   for(int i = arrSize-1;i > 0;i--){
-    int s = rand() % i;
+    int j = rand() % (i+1);
+
     int tmp = walls[i][0];
     int tmp2 = walls[i][1];
-    walls[i][0] = walls[s][0];
-    walls[i][1] = walls[s][1];
-    walls[s][0] = tmp;
-    walls[s][1] = tmp2;
+
+    walls[i][0] = walls[j][0];
+    walls[i][1] = walls[j][1];
+
+    walls[j][0] = tmp;
+    walls[j][1] = tmp2;
+  }
+
+  for(int i = 0; i < arrSize; i++) {
+    std::cout << walls[i][0] << " " << walls[i][1] << std::endl;
   }
 }
