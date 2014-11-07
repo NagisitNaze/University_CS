@@ -73,6 +73,9 @@ int main(int argc, char *argv[])
 		smallMaze0.printMazeText();
 		cout << endl << dashes << endl;
 	}
+	
+	char cc;
+	std::cin >> cc;
 
 	mazeGen	smallMaze1(5,15);
 	fName = "mazeFile1.txt";

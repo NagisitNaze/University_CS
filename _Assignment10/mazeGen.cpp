@@ -96,7 +96,39 @@ bool mazeGen::printMazeData(const std::string filename) const
 
 void mazeGen::printMazeText() const
 {
+	//print maze out in text form
+	//print first row with one opening
+	std::cout << "+  +";
+	for(int i = 0; i < cols-1; i++)
+		std::cout << "--+";
+	std::cout << std::endl;
 
+	//begin looking through every column and place a '|' when a wall appears
+	for(int i = 1; i < rows*2; i++) {
+		if(i % 2 == 0)
+			std::cout << "+";
+		else
+			std::cout << "|";
+		for(int j = 0; j < cols; j++) {
+			if(i % 2 == 0)
+				std::cout << "--+";
+			else
+				std::cout << "  |";
+		}
+/*
+		if(i % 2 == 0)
+			std::cout << "+";
+		else
+			std::cout << "|";
+*/
+		std::cout << std::endl;
+	}
+
+	//print out bottom bounding line
+	for(int i = 0; i < cols-1; i++)
+		std::cout << "+--";
+	std::cout << "+  +";
+	std::cout << std::endl;
 }
 
 void mazeGen::randomize()
