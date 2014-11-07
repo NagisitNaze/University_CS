@@ -15,8 +15,6 @@ int main(int argc, char *argv[])
 // *****************************************************************
 //  Headers...
 
-		std::srand(time(NULL));
-
 	string	stars, bars, dashes;
 	string	fName;
 	stars.append(65, '*');
@@ -39,9 +37,6 @@ int main(int argc, char *argv[])
 
 // ------------------------------------------------------------------
 //  Basic error testing...
-
-	mazeGen testMaze0(15,5);
-
 	int	r, c;
 
 	mazeGen	testMaze1(3, 3);

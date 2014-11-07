@@ -38,15 +38,17 @@ mazeGen::mazeGen(int t_rows, int t_cols):
     for(int r = 0; r < rows-1; r++){
       int s = c > 0 ? -1*c : 0;
       //std::cout << horiz+c*rows+r+s <<
-      //  ": " << c*rows+r << " - " << c*rows+r+5 << std::endl;
-      walls[horiz+c*rows+r+s][0] = c*rows+r;
-      walls[horiz+c*rows+r+s][1] = c*rows+r+5;
+      //  ": " << c+r*cols << " - " << c+r*cols+cols << std::endl;
+      walls[horiz+c*rows+r+s][0] = c+r*cols;
+      walls[horiz+c*rows+r+s][1] = c+r*cols+cols;
     }
   }
 
   //std::cout << "WallCount: " << arrSize << std::endl;
   //for(int i = 0; i < wallsCount; i++)
     //std::cout << walls[i][0] << " - " << walls[i][1] << std::endl;
+	//char cc;
+	//std::cin >> cc;
 }
 
 mazeGen::~mazeGen()
