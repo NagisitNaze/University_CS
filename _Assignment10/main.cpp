@@ -37,6 +37,10 @@ int main(int argc, char *argv[])
 // ------------------------------------------------------------------
 //  Basic error testing...
 
+	mazeGen testMaze0(15,5);
+	char cc;
+	std::cin >> cc;
+
 	int	r, c;
 
 	mazeGen	testMaze1(3, 3);
@@ -150,4 +154,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-

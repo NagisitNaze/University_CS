@@ -6,7 +6,7 @@
 class mazeGen
 {
   public:
-    mazeGen(int, int);
+    mazeGen(int=5, int=5);
     ~mazeGen();
     void getSize(int &, int &) const;
     void generate();
@@ -14,6 +14,7 @@ class mazeGen
     void printMazeText() const;
     void randomize();
   private:
+    int arrSize;
     int rows;
     int cols;
     int **walls;
