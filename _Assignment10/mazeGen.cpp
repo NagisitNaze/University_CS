@@ -81,13 +81,12 @@ void mazeGen::generate()
 
 bool mazeGen::printMazeData(const std::string filename) const
 {
-  std::cout << "started";
   std::ofstream outFile(filename.c_str());
   outFile << "ROWS " << rows << " COLS " << cols << std::endl;
   for(int i = 0; i < arrSize; i++)
-    outFile << "WALL " << walls[i][0] << " " << walls[i][1] << std::endl;
+    if(walls[i][0] != -1 && walls[i][1] != -1)
+		outFile << "WALL " << walls[i][0] << " " << walls[i][1] << std::endl;
   outFile.close();
-  std::cout << " ended";
 }
 
 void mazeGen::printMazeText() const
@@ -110,7 +109,5 @@ void mazeGen::randomize()
     walls[j][1] = tmp2;
   }
 
-  for(int i = 0; i < arrSize; i++) {
-    std::cout << walls[i][0] << " " << walls[i][1] << std::endl;
-  }
-}
+ }
+
