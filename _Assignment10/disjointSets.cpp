@@ -5,6 +5,7 @@
 disjointSets::disjointSets(int param):
   setSize(param)
 {
+	//dont allow sets smaller than 10
   if(setSize < 10)
     setSize = 10;
   ranks = new int[setSize];
@@ -17,6 +18,7 @@ disjointSets::disjointSets(int param):
 
 disjointSets::~disjointSets()
 {
+	//free memory
   if(links != NULL)
     delete [] links;
   if(ranks != NULL)
@@ -25,6 +27,8 @@ disjointSets::~disjointSets()
 
 int disjointSets::entries() const
 {
+	//return amount of entires currently in data
+	//structure, uses a simple loop to count
   int cnt = 0;
   for(int i = 0; i < setSize; i++) {
     if(links[i] != -1)
@@ -35,6 +39,8 @@ int disjointSets::entries() const
 
 bool disjointSets::isEmpty() const
 {
+	//checks if anything is inside the
+	//data structure
   for(int i = 0; i < setSize; i++)
     if(links[i] != -1)
       return false;
@@ -43,6 +49,7 @@ bool disjointSets::isEmpty() const
 
 void disjointSets::printSets() const
 {
+	//format and print the set to console
   std::cout << std::right;
   std::cout << "index:   ";
   for(int i = 0; i < setSize; i++) {
@@ -61,6 +68,7 @@ void disjointSets::printSets() const
 
 int disjointSets::setUnion(int s1, int s2)
 {
+	//join two sets together, using ranks
   int p, c;
   if(links[s1] != -1 || links[s2] != -1) {
     std::cout << "Union must be called on a set\n";
@@ -81,6 +89,7 @@ int disjointSets::setUnion(int s1, int s2)
 
 int disjointSets::setFind(int p)
 {
+	//recursivly find p, return root
   if(links[p] == -1)
     return p;
   links[p] = setFind(links[p]);
