@@ -74,9 +74,6 @@ int main(int argc, char *argv[])
 		cout << endl << dashes << endl;
 	}
 	
-	char cc;
-	std::cin >> cc;
-
 	mazeGen	smallMaze1(5,15);
 	fName = "mazeFile1.txt";
 
