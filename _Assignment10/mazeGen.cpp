@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <algorithm>
 #include "mazeGen.h"
 #include "disjointSets.h"
+
+bool comp (int *i, int *j) { return i[0] < j[0]; }
 
 mazeGen::mazeGen(int t_rows, int t_cols):
   rows(t_rows),
@@ -104,23 +107,39 @@ void mazeGen::printMazeText() const
 	std::cout << std::endl;
 
 	//begin looking through every column and place a '|' when a wall appears
-	for(int i = 1; i < rows*2; i++) {
-		if(i % 2 == 0)
+	for(int i = 1, r = 0; i < rows*2;r += (i-1) % 2, i++) {
+		if(i % 2 == 0) {
 			std::cout << "+";
-		else
+			for(int j = 0; j < cols; j++) {
+				bool fnd = false;
+				for(int h = 0; h < arrSize; h++) {
+					if(walls[h][0] == j+r*cols && walls[h][1] == j+r*cols+cols) {
+						std::cout << "--+";
+						fnd = true;
+						break;
+					}
+				}
+				if(!fnd)
+					std::cout << "  +";
+			}
+		}else{
 			std::cout << "|";
-		for(int j = 0; j < cols; j++) {
-			if(i % 2 == 0)
-				std::cout << "--+";
-			else
-				std::cout << "  |";
+			for(int j = 0; j < cols-1; j++) {				
+				bool fnd = false;
+				for(int h = 0; h < arrSize; h++) {
+					if(walls[h][0] == r*cols+j && walls[h][1] == r*cols+j+1) {
+						std::cout << "  |";
+						fnd = true;
+						break;
+					}
+				}
+				if(!fnd)
+					std::cout << "   ";
+			}
 		}
-/*
-		if(i % 2 == 0)
-			std::cout << "+";
-		else
-			std::cout << "|";
-*/
+		if(i % 2 != 0) {
+			std::cout << "  |";
+		}
 		std::cout << std::endl;
 	}
 
@@ -133,7 +152,6 @@ void mazeGen::printMazeText() const
 
 void mazeGen::randomize()
 {
-	//swap all elements in walls to randomize
 	//the array so generate() wont have to do
 	//anything special
   for(int i = arrSize-1;i > 0;i--){
