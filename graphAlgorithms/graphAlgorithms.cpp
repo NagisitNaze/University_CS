@@ -1,55 +1,69 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 #include <limits.h>
 #include "graphAlgorithms.h"
 
 
 graphAlgorithms::graphAlgorithms(int vertCount):
-vertexCount(vertCount), title(""), dist(NULL),
-topoNodes(NULL), topoCount(0)
+title(""),
+topoCount(0),
+vertexCount(0)
 {
-	if(vertexCount < 5){
-		std::cout << "vertexCount cannot be less than five, nothing to be done...\n"
-	}else{
-		newGraph(vertexCount);
-	}
+	dist = NULL;
+	topoNodes = NULL;
+	graphMatrix = NULL;
+	if(vertCount != 0)
+		newGraph(vertCount);
 }
 
 graphAlgorithms::~graphAlgorithms()
 {
-	destoryGraph();
+	destroyGraph();
 }
 
 void graphAlgorithms::newGraph(int vertCount)
 {
-	//free any existing memory
-	destroyGraph();
-	//allocate new adjacency matrix
-	graphMatrix = new *int[vertCount];
-	for(int i = 0; i < vertCount; i++)
-		graphMatrix[i] = new int[vertCount];
-	//set all elements in matrix to zero
-	for(int r = 0; r < vertCount; r++)
-		for(int c = 0; c < vertCount; c++)
-			graphMatrix[r][c] = 0;
+	if(vertCount < 5) {
+	  std::cout << "newGraph: Error, invalid graph size.\n";
+  }else{
+		//free any existing memory
+		destroyGraph();
+		//allocate new adjacency matrix
+    graphMatrix = new int*[vertCount];
+    for(int i = 0; i < vertCount; i++)
+      graphMatrix[i] = new int[vertCount];
+    //set all elements in matrix to zero
+    for(int r = 0; r < vertCount; r++)
+      for(int c = 0; c < vertCount; c++)
+        graphMatrix[r][c] = 0;
 
-	vertexCount = vertCount;
+    dist = new int[vertCount];
+    topoNodes = new int[vertCount];	
+
+
+    vertexCount = vertCount;
+	}
 }
 
 void graphAlgorithms::addEdge(int from, int to, int weight)
 {
-	if(from <= vertexCount && to <= vertexCount) {
-		graphMatrix[from-1][to-1] = weight;
+	if((from <= vertexCount && to <= vertexCount) &&
+     (from > 0 && to > 0)) {
+    if(from == to)
+      std::cout << "addEdge: Error, from and to cannot be the same.\n";
+    else
+		  graphMatrix[from-1][to-1] = weight;
 	}else
-		std::cout << "Error: the vertices passed to addEdge are out of range...\n";
+		std::cout << "addEdge: Error, invalid vertex\n";
 }
 
 bool graphAlgorithms::readGraph(const std::string fileName)
 {
 	std::ifstream inFile(fileName.c_str());
 	if(!inFile.is_open()){
-		std::cout << fileName << " cannot be opened...\n";
+		std::cout << "readGraph: Error, " << fileName << " cannot be opened...\n";
 		return false;
 	}
 	int from,to,weight, vc;
@@ -57,7 +71,7 @@ bool graphAlgorithms::readGraph(const std::string fileName)
 	std::getline(inFile, title);
 	inFile >> vc;
 	if(vc < 5){
-		std::cout << "vertex count cannot be less than 5...";
+		std::cout << "readGraph: Error, invalid vertex";
 		return false;
 	}
 	newGraph(vc);
@@ -75,21 +89,47 @@ int graphAlgorithms::getvertexCount() const
 }
 void graphAlgorithms::printMatrix() const
 {
-	for(int r = 0; r < vertexCount; r++) {
-		for(int c = 0; c < vertexCount; c++) {
-			std::cout << graphMatrix[r][c] << "  ";
-		}
-		std::cout << std::endl;
-	}
+  if(graphMatrix == NULL) {
+    std::cout << "printMatrix: Error, no graph data.\n"; 
+  }else{
+    //print first labeling row of adjacency matrix
+		std::cout << std::right << "      ";
+		for(int j = 0; j < 2; j++) {
+      for(int i = 0; i < vertexCount; i++) {
+        if(j == 0)
+          std::cout << i+1 << "   ";
+        else
+          std::cout << "----";   
+      }
+      std::cout << std::endl;
+      if(j == 0)
+        std::cout << "    ";
+    }
+    
+    //being printing out the guts of the adjacency matrix
+		for(int r = 0; r < vertexCount; r++) {
+      std::cout << r+1 << "|   ";
+      for(int c = 0; c < vertexCount; c++) {
+        if(graphMatrix[r][c] == 0)
+          if(r == c)
+            std::cout << std::setw(2) << graphMatrix[r][c] << "  ";
+          else
+            std::cout << std::setw(2) << "--" << "  ";
+        else
+          std::cout << std::setw(2) << graphMatrix[r][c] << "  ";
+      }
+      std::cout << std::endl;
+    }
+
+  }
 }
 
 void graphAlgorithms::topoSort()
 {
 	if(graphMatrix == NULL)
-		std::cout << "graphMatrix not initialized... nothing to be done\n";
-	else{
+	  std::cout << "topoSort: Error, no graph data.\n";
+  else{
 		bool visited[vertexCount];
-		topoNodes = new int[vertexCount];
 		for(int i = 0; i < vertexCount; i++)
 			visited[i] = false;
 		for(int i = 0; i < vertexCount; i++)
@@ -100,38 +140,43 @@ void graphAlgorithms::topoSort()
 
 void graphAlgorithms::dijkstra(int src)
 {
-	bool set[vertexCount];
-	dist = new int[vertexCount];
-	//initialize arrays
-	for(int i = 0; i < vertexCount; i++){
-		dist[i] = INT_MAX;
-		set[i] = false;
-	}
+  if(graphMatrix == NULL)
+    std::cout << "dijkstra: Error, no graph data.\n";
+  else if(src < 0 || src > vertexCount)
+    std::cout << "dijkstra: Error, invalid source.\n";
+  else{
+    bool set[vertexCount];
+    //initialize arrays
+    for(int i = 0; i < vertexCount; i++){
+      dist[i] = INT_MAX;
+      set[i] = false;
+    }
 
-	//distance from source vertex to itself is zero
-	dist[src] = 0;
+    //distance from source vertex to itself is zero
+    dist[src] = 0;
 
-	for(int cnt = 0; cnt < vertexCount-1; cnt++); {
+    for(int cnt = 0; cnt < vertexCount-1; cnt++) {
 
-		int main = INT_MAX;
-		int min_index;
+      int min = INT_MAX;
+      int min_index;
 
-		for(int v = 0; v < vertexCount; v++)
-			if(set[v] == false && dist[v] <= min) {
-				min = dist[v]
-				min_index = v;
-			}
+      for(int v = 0; v < vertexCount; v++)
+        if(set[v] == false && dist[v] <= min) {
+          min = dist[v];
+          min_index = v;
+        }
 
-		int u = min_index;
+      int u = min_index;
 
-		set[cnt] = true;
+      set[cnt] = true;
 
-		for(int v = 0; v < vertexCount; v++) {
-			if(!set[v] && graphMatrix[u][v] && dist[u] != INT_MAX
-								 && dist[u]+graph[u][v] < dist[v])
-				dist[v] = dist[u] + graph[u][v];
-		}
-	}
+      for(int v = 0; v < vertexCount; v++) {
+        if(!set[v] && graphMatrix[u][v] && dist[u] != INT_MAX
+                   && dist[u]+graphMatrix[u][v] < dist[v])
+          dist[v] = dist[u] + graphMatrix[u][v];
+      }
+    }
+  }
 }
 
 std::string graphAlgorithms::getTitle() const
@@ -160,10 +205,11 @@ void graphAlgorithms::destroyGraph()
 	if(topoNodes != NULL)
 		delete [] topoNodes;
 
-	if(graphMatrix != NULL)
-		for(int i = 0; i < sizeof(graphMatrix) / sizeof(graphMatrix[0]); i++)
+	if(graphMatrix != NULL) {
+		for(int i = 0; i < vertexCount; i++)
 			delete [] graphMatrix[i];
 		delete [] graphMatrix;
+	}
 }
 
 void graphAlgorithms::dfs(int v, bool visited[])
@@ -173,7 +219,7 @@ void graphAlgorithms::dfs(int v, bool visited[])
 	for(int i = 0; i < vertexCount; i++) {
 		if(graphMatrix[v][i] != 0) {
 			if(!visited[graphMatrix[v][i]])
-				djs(i, visited);
+				dfs(i, visited);
 		}
 	}
 
