@@ -3,6 +3,8 @@
 #include <string>
 #include <iomanip>
 #include <limits.h>
+#include <cstdlib>
+#include <cstdio>
 #include "graphAlgorithms.h"
 
 
@@ -129,13 +131,22 @@ void graphAlgorithms::topoSort()
 	if(graphMatrix == NULL)
 	  std::cout << "topoSort: Error, no graph data.\n";
   else{
+    //create boolean array for topo sort
 		bool visited[vertexCount];
 		for(int i = 0; i < vertexCount; i++)
 			visited[i] = false;
+
+    //call dfs on each node if still false
 		for(int i = 0; i < vertexCount; i++)
 			if(visited[i] == false)
 				dfs(i, visited);
-	}
+
+    //print out result of topological sort in reverse
+    std::cout << "Topological Sort:\n";
+	  for(int i = vertexCount-1; i >= 0; i--)
+      std::cout << topoNodes[i] << " ";
+    std::cout << std::endl << std::endl;
+  }
 }
 
 void graphAlgorithms::dijkstra(int src)
@@ -168,7 +179,7 @@ void graphAlgorithms::dijkstra(int src)
 
       int u = min_index;
 
-      set[cnt] = true;
+      set[u] = true;
 
       for(int v = 0; v < vertexCount; v++) {
         if(!set[v] && graphMatrix[u][v] && dist[u] != INT_MAX
@@ -176,7 +187,18 @@ void graphAlgorithms::dijkstra(int src)
           dist[v] = dist[u] + graphMatrix[u][v];
       }
     }
+    
+    std::cout << "Shortest Paths:\n";
+    std::cout << "From Node: 1 to:\n";
+    std::cout << std::right << std::setw(10) << "Vertex" << std::setw(10) << "Distance" << std::endl;
+    for(int i = 0; i < vertexCount; i++) { 
+      if(dist[i] < INT_MAX)
+        std::cout << std::setw(10) << i+1 << std::setw(10) << dist[i] << std::endl;
+      else
+        std::cout << std::setw(10) << i+1 << std::left << std::setw(7) << "" <<  "not reachable\n" << std::right;
+    }
   }
+
 }
 
 std::string graphAlgorithms::getTitle() const
@@ -217,12 +239,12 @@ void graphAlgorithms::dfs(int v, bool visited[])
 	visited[v] = true;
 
 	for(int i = 0; i < vertexCount; i++) {
-		if(graphMatrix[v][i] != 0) {
-			if(!visited[graphMatrix[v][i]])
+		if(graphMatrix[v][i] != 0 || i == v) {
+			if(visited[i] == false)
 				dfs(i, visited);
 		}
 	}
 
-	topoNodes[topoCount] = v;
+	topoNodes[topoCount] = v+1;
 	topoCount++;
 }
