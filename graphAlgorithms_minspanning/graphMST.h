@@ -26,7 +26,7 @@ class graphMST
     static const int minEdges=5;
     static const int minVertices=5;
 
-    void sort(int *[3], int);
+    void sort(int *[3], int, int);
 };
 
 #endif
