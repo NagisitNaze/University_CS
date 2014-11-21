@@ -161,9 +161,7 @@ int main(int argc, char *argv[])
 	if (myGraph5.readEdges(gFile5)) {
 		if (doPrint) {
 			myGraph5.printEdges();
-			std::cout << "hh\n";
 			myGraph5.kruskals();
-			std::cout << "hh\n";
 			myGraph5.printMST();
 		}
 	} else {

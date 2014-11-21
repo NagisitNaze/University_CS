@@ -80,7 +80,6 @@ int graphMST::getEdgeCount() const
 
 void graphMST::printMST() const
 {
-	std::cout << "printMST started\n";
 	if(mst == NULL)
 		std::cout << "printMST: Error, mst array not allocated\n";
 	else {
