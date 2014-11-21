@@ -2,6 +2,7 @@
 #define GRAPHMST_H_
 
 #include <string>
+#include "disjointSets.h"
 
 class graphMST
 {
@@ -26,7 +27,7 @@ class graphMST
     static const int minEdges=5;
     static const int minVertices=5;
 
-    void sort(int *[3], int, int);
+    void sort(int *[3], int);
 };
 
 #endif

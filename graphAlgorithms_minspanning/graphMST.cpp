@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <string>
 #include "graphMST.h"
 #include "disjointSets.h"
@@ -16,16 +17,18 @@ title("")
 graphMST::~graphMST()
 {
   if(edges != NULL) {
-     for(int i = 0; i < edgeCount; i++) {
-       delete [] edges[i];
-     }
+    for(int i = 0; i < edgeCount; i++) {
+      delete [] edges[i];
+  	}
+		delete [] edges;
   }
-
-  if(msg != NULL) {
-    for(int i = 0; i < vertexCount; i++) {
+  if(mst != NULL) {
+    for(int i = 0; i < vertexCount-1; i++) {
       delete [] mst[i];
     }
+		delete [] mst;
   }
+	edges = mst = NULL;
 }
 
 bool graphMST::readEdges(const std::string fileName)
@@ -47,8 +50,8 @@ bool graphMST::readEdges(const std::string fileName)
   }
 
   //create min spanning tree array
-  mst = new int*[vertexCount];
-  for(int i = 0; i < edgeCount; i++)
+  mst = new int*[vertexCount-1];
+  for(int i = 0; i < vertexCount-1; i++)
     mst[i] = new int[3];
 
   //create edge array
@@ -58,8 +61,9 @@ bool graphMST::readEdges(const std::string fileName)
 
   //loop through and place edges into edges array
   int cnt=0;
-  inFile >> home >> to >> weight;
+  inFile >> edges[cnt][0] >> edges[cnt][1] >> edges[cnt][2];
   while(inFile) {
+		cnt++;
     inFile >> edges[cnt][0] >> edges[cnt][1] >> edges[cnt][2];
   }
 }
@@ -76,10 +80,18 @@ int graphMST::getEdgeCount() const
 
 void graphMST::printMST() const
 {
-  std::cout << "Min spanning tree:\n";
-  for(int i = 0; i < vertexCount; i++) {
-    std::cout << mst[0] << "  " << mst[1] << "  " << mst[2] << std::endl;
-  }
+	std::cout << "printMST started\n";
+	if(mst == NULL)
+		std::cout << "printMST: Error, mst array not allocated\n";
+	else {
+		std::cout << "Minimum Spanning Tree:\n";
+    std::cout << std::left << "  " << std::setw(10) << "Vertex:" << std::setw(10) 
+							<< "Vertex:" << "Weight:\n";
+		for(int i = 0; i < vertexCount-1; i++) {
+      std::cout << std::right << std::setw(9) << mst[i][0] << std::setw(9) << mst[i][1] 
+								<< std::setw(9) << mst[i][2] << std::endl;
+		}
+	}
 }
 
 std::string graphMST::getTitle() const
@@ -89,56 +101,67 @@ std::string graphMST::getTitle() const
 
 void graphMST::printEdges() const
 {
-  std::cout << "Edges:\n";
-  for(int i = 0; i < edgeCount; i++) {
-    std::cout << edges[0] << "  " << edges[1] << "  " << edges[2] << std::endl;
-  }
+	if(edges == NULL) 
+		std::cout << "printEdges: Error, edges array not allocated\n";
+	else {
+		std::cout << "Graph Edges:\n";
+		std::cout << "Vertices: " << vertexCount << std::endl;
+		std::cout << "Edges: " << edgeCount << std::endl;
+    std::cout << std::left << "  " << std::setw(10) << "Vertex:" << std::setw(10) 
+							<< "Vertex:" << "Weight:\n";
+    for(int i = 0; i < edgeCount; i++) {
+      std::cout << std::right << std::setw(9) << edges[i][0] << std::setw(9) << edges[i][1] 
+								<< std::setw(9) << edges[i][2] << std::endl;
+    }
+  	std::cout << std::endl;
+	}
 }
 
 void graphMST::kruskals()
 {
-  disjointSets mst_union(vertexCount);
+  sort(edges, edgeCount);
 
-  for(int i = 0; i < edgeCount-1; i++) {
-    int u = edges[0];
-    int v = edges[1];
-    if(mst_union.setFind(u) != mst_union.setFind(v)){
-      mst[i][0] = u;
-      mst[i][1] = v;
-      mst[i][2] = edges[3];
-      mst_union.setUnion(u, v);
+	disjointSets *mst_union = new disjointSets(vertexCount);
+
+  int j = 0;
+  for(int i = 0; i < edgeCount; i++) {
+    int u = edges[i][0];
+    int v = edges[i][1];
+    int s1 = mst_union->setFind(u);
+    int s2 = mst_union->setFind(v);
+    if(s1 != s2){
+			mst[j][0] = u;
+      mst[j][1] = v;
+      mst[j][2] = edges[i][2];
+      mst_union->setUnion(s1, s2);
+      j++;
     }
   }
 }
 
-void graphMST::sort(int *arr[3], int left, int right)
+void graphMST::sort(int *arr[3],int n)
 {
-  int i = left, j = right;
-  int tmp, tmp1, tmp2;
-  int pivot = arr[(left + right) / 2][2];
+	//selection sort
+  int pos_min, tmp1, tmp2, tmp3;
 
-  // partition
-  while( i <= j) {
-    while( arr[i][2] < pivot)
-      ++i;
-    while( arr[j][2] > pivot)
-      --j;
-    if(i <= j) {
-      tmp = arr[i][0];
-      tmp1 = arr[i][1];
-      tmp2 = arr[i][2];
-      arr[i][0] = arr[j][0];
-      arr[i][1] = arr[j][1];
-      arr[i][2] = arr[j][2];
-      arr[j][0] = tmp;
-      arr[j][1] = tmp1;
-      arr[j][2] = tmp2;
-      i++; j--;
+  for(int i = 0; i < n-1; i++) {
+    pos_min = i;
+
+    for(int j=i+1; j < n; j++) {
+      if(arr[j][2] < arr[pos_min][2])
+        pos_min = j;
+    }
+
+    if(pos_min != i) {
+      tmp1 = arr[i][0];
+      tmp2 = arr[i][1];
+      tmp3 = arr[i][2];
+      arr[i][0] = arr[pos_min][0];
+      arr[i][1] = arr[pos_min][1];
+      arr[i][2] = arr[pos_min][2];
+      arr[pos_min][0] = tmp1;
+      arr[pos_min][1] = tmp2;
+      arr[pos_min][2] = tmp3;
     }
   }
-
-  if(left < j)
-    quickSort(arr, left, j);
-  if(i < right)
-    quickSort(arr, i, right);
 }

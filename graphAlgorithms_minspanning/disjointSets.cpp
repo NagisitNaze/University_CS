@@ -18,11 +18,13 @@ disjointSets::disjointSets(int param):
 
 disjointSets::~disjointSets()
 {
+	std::cout << "called\n";
 	//free memory
   if(links != NULL)
     delete [] links;
   if(ranks != NULL)
     delete [] ranks;
+	std::cout << "passed\n";
 }
 
 int disjointSets::entries() const
