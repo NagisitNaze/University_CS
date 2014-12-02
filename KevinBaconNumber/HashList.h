@@ -5,7 +5,7 @@
 
 class HashList {
   public:
-    HashList();
+    HashList(int tblsize=503);
     ~HashList();
 
     //const member functions
@@ -14,14 +14,17 @@ class HashList {
     int getTableSize() const;
 
     //mutable functions
-    bool find(const std::string);
+    int find(const std::string);
     bool insert(const std::string);
     bool remove(const std::string);
   private:
     int hash(const std::string) const;
     void rehash();
 
+    static const float d_loadfactor = 0.65;
     std::string *d_hashtbl;
+    int d_tblcount;
+    int d_tblsize;
 };
 
 #endif
