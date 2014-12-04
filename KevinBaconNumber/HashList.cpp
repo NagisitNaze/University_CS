@@ -11,7 +11,7 @@ d_tblcount(0)
         tblsize = 200;
     d_tblsize = tblsize;
     //create hash table
-    d_hashtbl = new std::string[tblsize];
+    d_hashtbl = new LinkedList[tblsize];
 }
 
 HashList::~HashList()
@@ -38,13 +38,13 @@ int HashList::find(const std::string key)
 {
     int hloc = hash(key);
     for(int i = 0; i < d_tblsize; i++) {
-        if(d_hashtbl[hloc] == key)
+        if(d_hashtbl[hloc].head->data == key)
             return hloc;
         hloc++;
         if(hloc >= d_tblsize)
             hloc = 0;
     }
-    return false;
+    return -1;
 }
 
 bool HashList::insert(const std::string key)
@@ -54,8 +54,8 @@ bool HashList::insert(const std::string key)
     
     int hloc = hash(key);
 
-    if(d_hashtbl[hloc] == "") {
-        d_hashtbl[hloc] = key;
+    if(d_hashtbl[hloc].head == NULL) {
+        d_hashtbl[hloc].insertTail(key);
         d_tblcount++;
         return true;
     } else {
@@ -66,8 +66,8 @@ bool HashList::insert(const std::string key)
             if(hloc >= d_tblsize)
                 hloc = 0;
 
-            if(d_hashtbl[hloc] == "") {
-                d_hashtbl[hloc] = key;
+            if(d_hashtbl[hloc].head == NULL) {
+                d_hashtbl[hloc].insertTail(key);
                 return true;
             }
         }
@@ -79,8 +79,8 @@ bool HashList::remove(const std::string key)
 {
     int hloc = hash(key);
     for(int i = 0; i < d_tblsize; i++) {
-        if(d_hashtbl[hloc] == key) {
-            d_hashtbl[hloc] = "";
+        if(d_hashtbl[hloc].head->data == key) {
+            d_hashtbl[hloc].removeHead();
             d_tblcount--;
             return true;
         }
@@ -103,20 +103,29 @@ int HashList::hash(const std::string key) const
 
 void HashList::rehash()
 {
-    std::string oldentries[d_tblcount];
+    LinkedList oldentries[d_tblcount];
     for(int j = 0, i = 0; i < d_tblsize; i++) {
-        if(d_hashtbl[i] != "") {
-            oldentries[j] = d_hashtbl[i];
+        if(d_hashtbl[i].head != NULL) {
+            oldentries[j].insertTail((d_hashtbl[i].head)->data);
             j++;
         }
     }
 
     delete [] d_hashtbl;
     d_tblsize *= 2;
-    d_hashtbl = new std::string[d_tblsize];
+    d_hashtbl = new LinkedList[d_tblsize];
     d_tblcount = 0;
 
     for(int i = 0; i < sizeof(oldentries) / sizeof(oldentries[0]); i++) {
-        insert(oldentries[i]);
+        insert((oldentries[i].head)->data);
     }
+}
+
+void HashList::reinitList()
+{
+    //reset hash table
+    delete [] d_hashtbl;
+    d_tblsize = 503;
+    d_tblcount = 0;
+    d_hashtbl = new LinkedList[d_tblsize];
 }

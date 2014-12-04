@@ -2,6 +2,7 @@
 #define HASHLIST_H_
 
 #include <string>
+#include "LinkedList.h"
 
 class HashList {
   public:
@@ -17,12 +18,14 @@ class HashList {
     int find(const std::string);
     bool insert(const std::string);
     bool remove(const std::string);
+    
+    void reinitList();
   private:
     int hash(const std::string) const;
     void rehash();
 
     static const float d_loadfactor = 0.65;
-    std::string *d_hashtbl;
+    LinkedList *d_hashtbl;
     int d_tblcount;
     int d_tblsize;
 };
