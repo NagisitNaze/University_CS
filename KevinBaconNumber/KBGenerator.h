@@ -4,10 +4,10 @@
 #include "HashList.h"
 #include <string>
 
-class HashedAdjacencyList {
+class KBGenerator {
     public:
-       HashedAdjacencyList();
-        ~HashedAdjacencyList();
+       KBGenerator();
+        ~KBGenerator();
     
         void addEdge(std::string,std::string);
         void addActorVertex(std::string);

@@ -1,20 +1,21 @@
 #include <iostream>
+#include <fstream>
 #include <string>
-#include "HashAdjList.h"
+#include "KBGenerator.h"
 
-HashedAdjacencyList::HashedAdjacencyList():
+KBGenerator::KBGenerator():
 d_vertcount(0)
 {
     d_actors = NULL;
     d_movies = NULL;
 }
 
-HashedAdjacencyList::~HashedAdjacencyList()
+KBGenerator::~KBGenerator()
 {
 
 }
 
-void HashedAdjacencyList::addEdge(std::string from, std::string to)
+void KBGenerator::addEdge(std::string from, std::string to)
 {
     if((from <= d_vertcount && to <= d_vertcount) && 
         (from > 0 && to > 0)) {
@@ -32,22 +33,24 @@ void HashedAdjacencyList::addEdge(std::string from, std::string to)
     }    
 }
 
-void HashedAdjacencyList::addActorVertex(std::string key)
+void KBGenerator::addActorVertex(std::string key)
 {
     d_actors.insert(key);
 }
 
-void HashedAdjacencyList::addMovieVertex(std::string key)
+void KBGenerator::addMovieVertex(std::string key)
 {
     d_movies.insert(key);
 }
 
-bool HashedAdjacencyList::readDataFile(const std::string fileName)
+bool KBGenerator::readDataFile(const std::string fileName)
 {
-
+    std::ifstream inFile(fileName.c_str());
+    if(!inFile.is_open())
+        return false;
 }
 
-int HashedAdjacencyList::getVertexCount()
+int KBGenerator::getVertexCount()
 {
     return d_vertcount;
 }
