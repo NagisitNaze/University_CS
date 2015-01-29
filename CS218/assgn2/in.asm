@@ -1,6 +1,6 @@
-;   Name
-;   Assignmnet Number
-;   Section
+;   Grant Mercer
+;   Assignmnet 2
+;   1002
 
 ; -----
 ;  Short description of program goes here...
@@ -26,8 +26,6 @@ SYS_exit        equ 60          ; call code for terminate
 ;  Declare variables.
 
 ;   Place data declarations here...
-
-NULL        equ 0
 
 bVar1       db  30
 bVar2       db  19
@@ -69,6 +67,29 @@ _start:
 ; -----
 ;   YOUR CODE GOES HERE...
 
+mov al, byte[bVar1]
+add al, byte[bVar2]
+mov byte[bAns1], al
+
+mov al, byte[bVar1]
+sub al, byte[bVar2]
+mov byte[bAns2], al
+
+mov ax, word[wVar1]
+add ax, word[wVar2]
+mov word[wAns1], ax
+
+mov ax, word[wVar1]
+sub ax, word[wVar2]
+mov word[wAns2], ax
+
+mov eax, dword[dVar1]
+add eax, dword[dVar2]
+mov dword[dAns1], eax
+
+mov eax, dword[dVar1]
+sub eax, dword[dVar2]
+mov dword[dAns2], eax
 
 
 
