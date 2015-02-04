@@ -71,9 +71,10 @@ global _start
 _start:
 
 ; get midpoint (with respect that we might not know length)
+mov ebx, 2
 mov eax, dword[length]
 cdq
-idiv 2
+idiv ebx
 dec eax
 mov ebx, dword[lst+eax*4]
 mov dword[lstMid], ebx
@@ -87,25 +88,73 @@ calcLoop:
     cmp ebx, dword[lstMin]
     jl isLess
     jmp nLess
-isLess:
+    isLess:
         mov dword[lstMin], ebx
-nLess:
+    nLess:
     ; Check Max
     mov ebx, dword[lst+rsi*4]
     cmp ebx, dword[lstMax]
     jg isMore
     jmp nMore
-isMore:
+    isMore:
         mov dword[lstMax], ebx
-nMore:
+    nMore:
+    ; Check Negative
+    mov ebx, dword[lst+rsi*4]
+    cmp ebx, 0
+    jl isNeg
+    jmp nNeg
+    isNeg:
+        ; Increment Negative Count
+        mov ebx, dword[negCnt]
+        inc ebx
+        mov dword[negCnt], ebx
+        ; Add Sum
+        mov ebx, dword[negSum]
+        add ebx, dword[lst+rsi*4]
+        mov dword[negSum], ebx
+    nNeg:
+    mov dword[lstSum], eax
+    mov ebx, dword[lst+rsi*4]
+    cdq
+    mov edx, 3
+    idiv edx
+    mov eax, dword[lstSum]
+    cmp edx, 0
+    je divThree
+    jmp nDivThree
+    divThree:    
+        ; Increment DivThree Count
+        mov ebx, dword[threeCnt]
+        inc ebx
+        mov dword[threeCnt], ebx
+        ; Add Sum
+        mov ebx, dword[threeSum]
+        add ebx, dword[lst+rsi*4]
+        mov dword[threeSum], ebx
+    nDivThree:
     ; Add to sum
     add eax, dword[lst+rsi*4]
     ; Increment loop
     inc rsi
     loop calcLoop
-
-; move eax into sum
 mov dword[lstSum], eax
+; Get average
+cdq
+idiv dword[length]
+mov dword[lstAve], eax
+
+; Get negative average
+mov eax, dword[negAve]
+cdq
+idiv dword[length]
+mov dword[negAve], eax
+
+; Get three divisible average
+mov eax, dword[threeSum]
+cdq
+idiv dword[length]
+mov dword[threeAve], eax
 
 ; find average
 mov eax, dword[lstSum]
