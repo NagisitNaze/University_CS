@@ -75,9 +75,15 @@ mov ebx, 2
 mov eax, dword[length]
 cdq
 idiv ebx
-dec eax
 mov ebx, dword[lst+eax*4]
-mov dword[lstMid], ebx
+dec eax
+add ebx, dword[lst+eax*4]
+mov eax, ebx
+mov ebx, 2
+cdq
+idiv ebx
+mov dword[lstMid], eax
+
 
 mov ecx, dword[length]
 mov rsi, 0
@@ -115,10 +121,10 @@ calcLoop:
         mov dword[negSum], ebx
     nNeg:
     mov dword[lstSum], eax
-    mov ebx, dword[lst+rsi*4]
+    mov ebx, 3
+    mov eax, dword[lst+rsi*4]
     cdq
-    mov edx, 3
-    idiv edx
+    idiv ebx
     mov eax, dword[lstSum]
     cmp edx, 0
     je divThree
@@ -137,7 +143,11 @@ calcLoop:
     add eax, dword[lst+rsi*4]
     ; Increment loop
     inc rsi
-    loop calcLoop
+    dec rcx
+    cmp rcx, 0
+    je calcLoopDone
+    jmp calcLoop
+    calcLoopDone:
 mov dword[lstSum], eax
 ; Get average
 cdq
@@ -145,15 +155,15 @@ idiv dword[length]
 mov dword[lstAve], eax
 
 ; Get negative average
-mov eax, dword[negAve]
+mov eax, dword[negSum]
 cdq
-idiv dword[length]
+idiv dword[negCnt]
 mov dword[negAve], eax
 
 ; Get three divisible average
 mov eax, dword[threeSum]
 cdq
-idiv dword[length]
+idiv dword[threeCnt]
 mov dword[threeAve], eax
 
 ; find average
