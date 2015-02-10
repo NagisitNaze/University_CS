@@ -59,7 +59,6 @@ sMid        dd  0
 sMax        dd  0
 sSum        dd  0
 sAve        dd  0
-sTmp        dd  0
 ; -----
 ; Additional variables (if any)
 
@@ -80,18 +79,83 @@ global _start
 _start:
 
 mov ecx, dword[length]
-mov rsi, 0
+mov rsi, 0  ; Counter
+mov r8, 0  ; Area Sum
+mov r9, 0  ; Perimeter Sum
+mov r10, 0 ; Semi-Perimeter Sum
+; Set our Min to max integer signed value
+mov eax, 0x7FFFFFFF
+mov dword[aMin], eax
+mov dword[pMin], eax
+mov dword[sMin], eax
 calcLoop:
     ; Calculate Area of
     mov ebx, 2
     mov eax, 0
-    mov ax, word[qDiags+rsi*2]
+    mov ax, word[pDiags+rsi*2]
     mul dword[qDiags+rsi*4]
     div ebx
-    mov dword[sTmp], eax    
-    ; Calculate Perimeter
-    ; Caclulate Semi-Perimeter    
+    mov dword[areas+rsi*4], eax    
+    ; Add Area Sum
+    add r8d, dword[areas+rsi*4]
+    ; Check Min Area
+    cmp eax, dword[aMin]
+    jb AreaLess
+    jmp AreaNotLess
+AreaLess:
+    mov dword[aMin], eax
+AreaNotLess:
+    ; Check Max Area
+    cmp eax, dword[aMax]
+    ja AreaMore
+    jmp AreaNotMore
+AreaMore:
+    mov dword[aMax], eax
+AreaNotMore:
     
+    ; Calculate Perimeter
+    mov ebx, 4
+    mov eax, 0
+    mov ax, word[aSides+rsi*2]
+    mul ebx
+    mov dword[perims+rsi*4], eax
+    ; Add Perimeter Sum
+    add r9d, dword[perims+rsi*4]
+    ; Check Min Perimeter
+    cmp eax, dword[pMin]
+    jb PerimeterLess
+    jmp PerimeterNotLess
+PerimeterLess:
+    mov dword[pMin], eax
+PerimeterNotLess:
+    ; Check Max Perimeter
+    cmp eax, dword[pMax]
+    ja PerimeterMore
+    jmp PerimeterNotMore
+PerimeterMore:
+    mov dword[pMax], eax
+PerimeterNotMore:
+    ; Caclulate Semi-Perimeter    
+    mov ebx, 2
+    mov eax, dword[perims+rsi*4]
+    div ebx
+    mov dword[sPerims+rsi*4], eax
+    ; Add Semi-Perimeter Sum
+    add r10d, dword[sPerims+rsi*4]
+    ; Check Min Semi-Perimeter
+    cmp eax, dword[sMin]
+    jb sPerimeterLess
+    jmp sPerimeterNotLess
+sPerimeterLess:
+    mov dword[sMin], eax
+sPerimeterNotLess:   
+    ; Check Max Semi-Perimeter
+    cmp eax, dword[sMax]
+    ja sPerimeterMore
+    jmp sPerimeterNotMore
+sPerimeterMore:
+    mov dword[sMax], eax
+sPerimeterNotMore:
     inc rsi
     dec rcx
     cmp rcx, 0
@@ -99,8 +163,67 @@ calcLoop:
     jmp calcLoop
 calcLoopDone:
 
-; program finished
+; Move Area Sum and Area Average
+mov edx, 0
+mov dword[aSum], r8d
+mov eax, r8d
+div dword[length]
+mov dword[aAve], eax
 
+; Move Perimeter Sum and Perimeter Average
+mov edx, 0
+mov dword[pSum], r9d
+mov eax, r9d
+div dword[length]
+mov dword[pAve], eax
+
+; Move SemiPerimeter Sum and SemiPerimeter Average
+mov edx, 0
+mov dword[sSum], r10d
+mov eax, r10d
+div dword[length]
+mov dword[sAve], eax
+
+mov edx, 0
+; Find midpoint of areas
+mov ebx, 2
+mov eax, dword[length]
+div ebx
+mov ebx, dword[areas+eax*4]
+dec eax
+add ebx, dword[areas+eax*4]
+mov eax, ebx
+mov ebx, 2
+div ebx
+mov dword[aMid], eax
+
+mov edx, 0
+; Find midpoint of perimeter
+mov ebx, 2
+mov eax, dword[length]
+div ebx
+mov ebx, dword[perims+eax*4]
+dec eax
+add ebx, dword[perims+eax*4]
+mov eax, ebx
+mov ebx, 2
+div ebx
+mov dword[pMid], eax
+
+mov edx, 0
+; Find midpoint of sperimeter
+mov ebx, 2
+mov eax, dword[length]
+div ebx
+mov ebx, dword[sPerims+eax*4]
+dec eax
+add ebx, dword[sPerims+eax*4]
+mov eax, ebx
+mov ebx, 2
+div ebx
+mov dword[sMid], eax
+
+; program finished
 last:
     mov eax, SYS_exit       ; call for exit
     mov ebx, EXIT_SUCCESS   ; return 0
