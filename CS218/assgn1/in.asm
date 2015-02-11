@@ -149,11 +149,13 @@ _start:
 
 ;   res12 = num5 / num6
 ;   rem12 = modulus(num5/num6)
-    mov eax, dword [num5]
-    cdq
-    div dword [num6]
-    mov dword [res12], eax
-    mov dword [rem12], edx
+    mov rbx, 8
+    mov edx, 8
+    mov eax, 2
+    imul rbx
+    mov dword[res12], eax
+    mov dword[rem12], edx
+
 
 ; ----------
 ;  Quadword variables examples (signed data)
