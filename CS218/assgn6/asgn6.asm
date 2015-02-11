@@ -37,10 +37,13 @@
     push    rsi
     push    rdi
 
-
-;   YOUR CODE GOES HERE
-
-
+    mov rdi, %1
+    %%loop:
+        cmp byte[rdi], NULL
+        je %%loopdone
+        
+        inc rdi 
+    %%loopdone:
     pop rdi             ; restore original register contents
     pop rsi
     pop rcx
@@ -61,7 +64,9 @@
 ;   YOUR CODE GOES HERE
 
 
+%macro int2senary 2
 
+%endmacro
 
 
 ; --------------------------------------------------------------
@@ -141,34 +146,34 @@ NUMS_PER_LINE   equ 6
 STR_LENGTH  equ 9
 
 pDiags      db  "00000123", NULL, "00000213", NULL, "00011030", NULL
-            db  "00125214", NULL, "00002152", NULL, "00101035", NULL
-            db  "00000212", NULL, "00000343", NULL, "00000254", NULL
-            db  "00000154", NULL, "00000521", NULL, "00021453", NULL
-            db  "00000151", NULL, "00000523", NULL, "00011345", NULL
-            db  "00000143", NULL, "00003543", NULL, "00000425", NULL
-            db  "00000122", NULL, "00000235", NULL, "00001212", NULL
-            db  "00011323", NULL, "00000055", NULL, "00015214", NULL
-            db  "00021153", NULL, "00000004", NULL, "00011214", NULL
-            db  "00121251", NULL, "00123451", NULL, "00000321", NULL
-            db  "00000543", NULL, "00000032", NULL, "00000255", NULL
-            db  "00001005", NULL, "00002153", NULL, "00002143", NULL
-            db  "00000143", NULL, "00000103", NULL, "00000043", NULL
-            db  "00000012", NULL, "00003000", NULL, "00000212", NULL
+        db  "00125214", NULL, "00002152", NULL, "00101035", NULL
+        db  "00000212", NULL, "00000343", NULL, "00000254", NULL
+        db  "00000154", NULL, "00000521", NULL, "00021453", NULL
+        db  "00000151", NULL, "00000523", NULL, "00011345", NULL
+        db  "00000143", NULL, "00003543", NULL, "00000425", NULL
+        db  "00000122", NULL, "00000235", NULL, "00001212", NULL
+        db  "00011323", NULL, "00000055", NULL, "00015214", NULL
+        db  "00021153", NULL, "00000004", NULL, "00011214", NULL
+        db  "00121251", NULL, "00123451", NULL, "00000321", NULL
+        db  "00000543", NULL, "00000032", NULL, "00000255", NULL
+        db  "00001005", NULL, "00002153", NULL, "00002143", NULL
+        db  "00000143", NULL, "00000103", NULL, "00000043", NULL
+        db  "00000012", NULL, "00003000", NULL, "00000212", NULL
 
 qDiags      db  "00024134", NULL, "00003244", NULL, "00021435", NULL
-            db  "00002212", NULL, "00002235", NULL, "00001341", NULL
-            db  "00002345", NULL, "00001524", NULL, "00000451", NULL
-            db  "00001245", NULL, "00000333", NULL, "00002325", NULL
-            db  "00000513", NULL, "00000214", NULL, "00003123", NULL
-            db  "00000251", NULL, "00002415", NULL, "00001321", NULL
-            db  "00002134", NULL, "00000152", NULL, "00002121", NULL
-            db  "00001552", NULL, "00000231", NULL, "00004352", NULL
-            db  "00005432", NULL, "00000151", NULL, "00004451", NULL
-            db  "00001132", NULL, "00000511", NULL, "00011512", NULL
-            db  "00004344", NULL, "00034332", NULL, "00001245", NULL
-            db  "00002415", NULL, "00001143", NULL, "00001251", NULL
-            db  "00001003", NULL, "00000234", NULL, "00001043", NULL
-            db  "00000212", NULL, "00000125", NULL, "00000543", NULL
+        db  "00002212", NULL, "00002235", NULL, "00001341", NULL
+        db  "00002345", NULL, "00001524", NULL, "00000451", NULL
+        db  "00001245", NULL, "00000333", NULL, "00002325", NULL
+        db  "00000513", NULL, "00000214", NULL, "00003123", NULL
+        db  "00000251", NULL, "00002415", NULL, "00001321", NULL
+        db  "00002134", NULL, "00000152", NULL, "00002121", NULL
+        db  "00001552", NULL, "00000231", NULL, "00004352", NULL
+        db  "00005432", NULL, "00000151", NULL, "00004451", NULL
+        db  "00001132", NULL, "00000511", NULL, "00011512", NULL
+        db  "00004344", NULL, "00034332", NULL, "00001245", NULL
+        db  "00002415", NULL, "00001143", NULL, "00001251", NULL
+        db  "00001003", NULL, "00000234", NULL, "00001043", NULL
+        db  "00000212", NULL, "00000125", NULL, "00000543", NULL
 
 length      dd  42
 
@@ -310,3 +315,5 @@ last:
     mov rax, SYS_exit
     mov rbx, EXIT_SUCCESS
     syscall
+
+
