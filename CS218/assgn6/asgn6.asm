@@ -36,14 +36,27 @@
     push    rcx
     push    rsi
     push    rdi
-
-    mov rdi, %1
+    push    rax
+    push    r8  
+ 
+    mov r8, %1
+    mov rsi, 0 
+    mov eax, 0      ; running sum
+    mov ecx, 6      ; constant 6 for running sum
     %%loop:
-        cmp byte[rdi], NULL
-        je %%loopdone
-        
-        inc rdi 
+        cmp byte[r8], NULL     ; compare character to NULL
+        je %%loopdone           ; if NULL end loop
+        mov sil, byte[r8]      ; move character to registry
+        sub sil, 0x30           ; convert to integer
+        mul ecx                 ; running sum *= 6
+        add eax, esi             ; running sum += integerDigit
+        inc r8                 ; increment rdi
+        jmp %%loop              ; loop up
     %%loopdone:
+    mov dword[%2], eax                 ; move answer to integer address
+    
+    pop r8
+    pop rax
     pop rdi             ; restore original register contents
     pop rsi
     pop rcx
@@ -65,7 +78,13 @@
 
 
 %macro int2senary 2
+    push rcx
+    push rsi
+    push rdi
 
+    pop rdi
+    pop rsi
+    pop rcx
 %endmacro
 
 
@@ -180,7 +199,6 @@ length      dd  42
 areasSum    dd  0
 areasAve    dd  0
 areasMax    dd  0
-
 ; -----
 ;  Misc. variables for main.
 
@@ -257,7 +275,6 @@ skipNewline:
 
 cvtPloop:
     senary2int  rsi, rdi, STR_LENGTH
-
     add rsi, STR_LENGTH
     add rdi, 4
 
@@ -282,19 +299,63 @@ cvtQloop:
 ; -----
 ;  Calculate the Rhombus areas
 ;  Also find areas sum, average, and max.
+mov rcx, 0
+mov ecx, dword[length] 
+mov rsi, 0
+mov ebx, 2
+mov r8, 0
+calcLoop:
+    mov eax, dword[intQdiags+rsi*4]
+    mul dword[intPdiags+rsi*4]
+    mov edx, 0
+    div ebx
+    mov dword[rhombusAreas+rsi*4], eax
+    ; Add Area sum
+    add r8d, eax
+    ; Check Max Area
+    cmp eax, dword[areasMax]
+    jbe AreaNotMore
+    mov dword[areasMax], eax
+AreaNotMore:
+    inc rsi
+    dec rcx
+    cmp rcx, 0
+    je calcLoopDone
+    jmp calcLoop
+calcLoopDone:
 
-
-;   YOUR CODE GOES HERE
-
-
-
+; Move Area Sum and find Area Average
+mov edx, 0
+mov dword[areasSum], r8d
+mov eax, r8d
+div dword[length]
+mov dword[areasAve], eax
 
 ; -----
 ;  Convert sum, average, and maximum to senary (in ASCII format)
 ;  for printing.
 
     printString sHdr
-    int2senary  areasSum, tmpString
+    ;int2senary  areasSum, tmpString
+    ;
+    mov eax, dword[areasSum]
+    mov rcx, 8
+    mov rsi, 6
+    mov r10, 0x30
+    mov r9, tmpString    
+    _loop:
+        mov edx, 0
+        div esi
+        add edx, r10d
+        mov byte[r9], dl
+        dec rcx
+        inc r9
+        cmp rcx, 0
+        je loopDone
+        jmp _loop
+    loopDone:
+    mov byte[r9], NULL
+    ;
     printString tmpString
 
     printString avHdr
