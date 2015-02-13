@@ -86,30 +86,29 @@
     push r9
     push r10
 
-    mov eax, dword[%1]
-    mov rsi, 6
-    mov r10, 0x30
-    mov rcx, 0
-    mov r9, %2
+    mov eax, dword[%1]  ; move int value into eax
+    mov rsi, 6          ; senary radix
+    mov r10, 0x30       ; constant for conversion to ascii
+    mov rcx, 0          ; string length
+    mov r9, %2          ; set string address to r9
     %%cnt:
-        mov edx, 0
-        div esi
-        inc rcx
+        mov edx, 0      ; extend positive sign bit  
+        div esi         ; divide by radix
+        inc rcx         ; increment length
         cmp eax, 0
         jne %%cnt
-    mov eax, dword[%1]
-    add r9, rcx
-    dec r9    
+    mov eax, dword[%1]  ; reset eax to value of integer
+    add r9, rcx         ; set string to last digit
+    mov byte[r9], NULL  ; set last as NULL
+    dec r9              ; decrement
     %%cloop:
-        mov edx, 0
-        div esi
-        add edx, r10d
-        mov byte[r9], dl
-        dec r9
+        mov edx, 0      ; extend positive sign bit
+        div esi         ; divide by radix
+        add edx, r10d   ; convert to ascii
+        mov byte[r9], dl    ; add converted ascii number to string
+        dec r9          ; move one down string
         cmp eax, 0
         jne %%cloop
-    mov byte[r9], NULL
-
     pop r10
     pop r9
     pop rdi
