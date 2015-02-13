@@ -50,7 +50,7 @@
     50                                 
     51                                 
     52                                 
-    53                                 %line 89+1 asgn6.asm
+    53                                 %line 121+1 asgn6.asm
     54                                 
     55                                 
     56                                 
@@ -63,7 +63,7 @@
     63                                 
     64                                 
     65                                 
-    66                                 %line 129+1 asgn6.asm
+    66                                 %line 161+1 asgn6.asm
     67                                 
     68                                 
     69                                 
@@ -245,7 +245,7 @@
    245                                 
    246                                 
    247 00000000 50                      push rax
-   248                                 %line 241+0 asgn6.asm
+   248                                 %line 273+0 asgn6.asm
    249 00000001 57                      push rdi
    250 00000002 56                      push rsi
    251 00000003 52                      push rdx
@@ -271,7 +271,7 @@
    271 00000039 5E                      pop rsi
    272 0000003A 5F                      pop rdi
    273 0000003B 58                      pop rax
-   274                                 %line 242+1 asgn6.asm
+   274                                 %line 274+1 asgn6.asm
    275                                 
    276                                 
    277                                 
@@ -285,7 +285,7 @@
    285                                 
    286                                 printLoop:
    287 00000057 50                      push rax
-   288                                 %line 253+0 asgn6.asm
+   288                                 %line 285+0 asgn6.asm
    289 00000058 57                      push rdi
    290 00000059 56                      push rsi
    291 0000005A 52                      push rdx
@@ -311,9 +311,9 @@
    311 00000088 5E                      pop rsi
    312 00000089 5F                      pop rdi
    313 0000008A 58                      pop rax
-   314                                 %line 254+1 asgn6.asm
+   314                                 %line 286+1 asgn6.asm
    315 0000008B 50                      push rax
-   316                                 %line 254+0 asgn6.asm
+   316                                 %line 286+0 asgn6.asm
    317 0000008C 57                      push rdi
    318 0000008D 56                      push rsi
    319 0000008E 52                      push rdx
@@ -339,13 +339,13 @@
    339 000000C4 5E                      pop rsi
    340 000000C5 5F                      pop rdi
    341 000000C6 58                      pop rax
-   342                                 %line 255+1 asgn6.asm
+   342                                 %line 287+1 asgn6.asm
    343                                 
    344 000000C7 FF0425[00000000]        inc dword [numCount]
    345 000000CE 833C25[00000000]06      cmp dword [numCount], NUMS_PER_LINE
    346 000000D6 7C45                    jl skipNewline
    347 000000D8 50                      push rax
-   348                                 %line 259+0 asgn6.asm
+   348                                 %line 291+0 asgn6.asm
    349 000000D9 57                      push rdi
    350 000000DA 56                      push rsi
    351 000000DB 52                      push rdx
@@ -371,7 +371,7 @@
    371 00000111 5E                      pop rsi
    372 00000112 5F                      pop rdi
    373 00000113 58                      pop rax
-   374                                 %line 260+1 asgn6.asm
+   374                                 %line 292+1 asgn6.asm
    375 00000114 C70425[00000000]00-     mov dword [numCount], 0
    376 00000114 000000             
    377                                 skipNewline:
@@ -391,7 +391,7 @@
    391                                 
    392                                 cvtPloop:
    393 00000143 51                      push rcx
-   394                                 %line 277+0 asgn6.asm
+   394                                 %line 309+0 asgn6.asm
    395 00000144 56                      push rsi
    396 00000145 57                      push rdi
    397 00000146 50                      push rax
@@ -418,7 +418,7 @@
    418 00000178 5F                      pop rdi
    419 00000179 5E                      pop rsi
    420 0000017A 59                      pop rcx
-   421                                 %line 278+1 asgn6.asm
+   421                                 %line 310+1 asgn6.asm
    422 0000017B 4883C609                add rsi, STR_LENGTH
    423 0000017F 4883C704                add rdi, 4
    424                                 
@@ -432,7 +432,7 @@
    432                                 
    433                                 cvtQloop:
    434 0000019F 51                      push rcx
-   435                                 %line 290+0 asgn6.asm
+   435                                 %line 322+0 asgn6.asm
    436 000001A0 56                      push rsi
    437 000001A1 57                      push rdi
    438 000001A2 50                      push rax
@@ -459,7 +459,7 @@
    459 000001D4 5F                      pop rdi
    460 000001D5 5E                      pop rsi
    461 000001D6 59                      pop rcx
-   462                                 %line 291+1 asgn6.asm
+   462                                 %line 323+1 asgn6.asm
    463                                 
    464 000001D7 4883C609                add rsi, STR_LENGTH
    465 000001DB 4883C704                add rdi, 4
@@ -508,7 +508,7 @@
    508                                 
    509                                 
    510 00000262 50                      push rax
-   511                                 %line 338+0 asgn6.asm
+   511                                 %line 370+0 asgn6.asm
    512 00000263 57                      push rdi
    513 00000264 56                      push rsi
    514 00000265 52                      push rdx
@@ -534,251 +534,336 @@
    534 0000029B 5E                      pop rsi
    535 0000029C 5F                      pop rdi
    536 0000029D 58                      pop rax
-   537                                 %line 339+1 asgn6.asm
-   538                                 
-   539                                 
-   540 0000029E 8B0425[00000000]        mov eax, dword[areasSum]
-   541 000002A5 48C7C108000000          mov rcx, 8
-   542 000002AC 48C7C606000000          mov rsi, 6
-   543 000002B3 49C7C230000000          mov r10, 0x30
-   544 000002BA 49C7C1[00000000]        mov r9, tmpString
-   545                                  _loop:
-   546 000002C1 BA00000000              mov edx, 0
-   547 000002C6 F7F6                    div esi
-   548 000002C8 4401D2                  add edx, r10d
-   549 000002CB 418811                  mov byte[r9], dl
-   550 000002CE 48FFC9                  dec rcx
-   551 000002D1 49FFC1                  inc r9
-   552 000002D4 4883F900                cmp rcx, 0
-   553 000002D8 7400                    je loopDone
-   554 000002DA EBE3                    jmp _loop
-   555                                  loopDone:
-   556 000002DC 41C60100                mov byte[r9], NULL
-   557                                 
-   558 000002E0 50                      push rax
-   559                                 %line 359+0 asgn6.asm
-   560 000002E1 57                      push rdi
-   561 000002E2 56                      push rsi
-   562 000002E3 52                      push rdx
-   563 000002E4 51                      push rcx
-   564                                 
-   565 000002E5 48C7C200000000          mov rdx, 0
-   566 000002EC 48C7C7[00000000]        mov rdi, tmpString
-   567                                 ..@11.countLoop:
-   568 000002F3 803F00                  cmp byte [rdi], NULL
-   569 000002F6 7406                    je ..@11.countLoopDone
-   570 000002F8 48FFC7                  inc rdi
-   571 000002FB 48FFC2                  inc rdx
-   572 000002FE EBF1                    jmp ..@11.countLoop
-   573                                 ..@11.countLoopDone:
-   574                                 
-   575 00000300 48C7C001000000          mov rax, SYS_write
-   576 00000307 48C7C701000000          mov rdi, STDOUT
-   577 0000030E 48C7C6[00000000]        mov rsi, tmpString
-   578 00000315 0F05                    syscall
-   579                                 
-   580 00000317 59                      pop rcx
-   581 00000318 5A                      pop rdx
-   582 00000319 5E                      pop rsi
-   583 0000031A 5F                      pop rdi
-   584 0000031B 58                      pop rax
-   585                                 %line 360+1 asgn6.asm
-   586                                 
-   587 0000031C 50                      push rax
-   588                                 %line 361+0 asgn6.asm
-   589 0000031D 57                      push rdi
-   590 0000031E 56                      push rsi
-   591 0000031F 52                      push rdx
-   592 00000320 51                      push rcx
-   593                                 
-   594 00000321 48C7C200000000          mov rdx, 0
-   595 00000328 48C7C7[00000000]        mov rdi, avHdr
-   596                                 ..@12.countLoop:
-   597 0000032F 803F00                  cmp byte [rdi], NULL
-   598 00000332 7406                    je ..@12.countLoopDone
-   599 00000334 48FFC7                  inc rdi
-   600 00000337 48FFC2                  inc rdx
-   601 0000033A EBF1                    jmp ..@12.countLoop
-   602                                 ..@12.countLoopDone:
-   603                                 
-   604 0000033C 48C7C001000000          mov rax, SYS_write
-   605 00000343 48C7C701000000          mov rdi, STDOUT
-   606 0000034A 48C7C6[00000000]        mov rsi, avHdr
-   607 00000351 0F05                    syscall
-   608                                 
-   609 00000353 59                      pop rcx
-   610 00000354 5A                      pop rdx
-   611 00000355 5E                      pop rsi
-   612 00000356 5F                      pop rdi
-   613 00000357 58                      pop rax
-   614                                 %line 362+1 asgn6.asm
-   615 00000358 51                      push rcx
-   616                                 %line 362+0 asgn6.asm
-   617 00000359 56                      push rsi
-   618 0000035A 57                      push rdi
-   619                                 
-   620 0000035B 5F                      pop rdi
-   621 0000035C 5E                      pop rsi
-   622 0000035D 59                      pop rcx
-   623                                 %line 363+1 asgn6.asm
-   624 0000035E 50                      push rax
-   625                                 %line 363+0 asgn6.asm
-   626 0000035F 57                      push rdi
-   627 00000360 56                      push rsi
-   628 00000361 52                      push rdx
-   629 00000362 51                      push rcx
-   630                                 
-   631 00000363 48C7C200000000          mov rdx, 0
-   632 0000036A 48C7C7[00000000]        mov rdi, tmpString
-   633                                 ..@14.countLoop:
-   634 00000371 803F00                  cmp byte [rdi], NULL
-   635 00000374 7406                    je ..@14.countLoopDone
-   636 00000376 48FFC7                  inc rdi
-   637 00000379 48FFC2                  inc rdx
-   638 0000037C EBF1                    jmp ..@14.countLoop
-   639                                 ..@14.countLoopDone:
-   640                                 
-   641 0000037E 48C7C001000000          mov rax, SYS_write
-   642 00000385 48C7C701000000          mov rdi, STDOUT
-   643 0000038C 48C7C6[00000000]        mov rsi, tmpString
-   644 00000393 0F05                    syscall
-   645                                 
-   646 00000395 59                      pop rcx
-   647 00000396 5A                      pop rdx
-   648 00000397 5E                      pop rsi
-   649 00000398 5F                      pop rdi
-   650 00000399 58                      pop rax
-   651                                 %line 364+1 asgn6.asm
-   652                                 
-   653 0000039A 50                      push rax
-   654                                 %line 365+0 asgn6.asm
-   655 0000039B 57                      push rdi
-   656 0000039C 56                      push rsi
-   657 0000039D 52                      push rdx
-   658 0000039E 51                      push rcx
-   659                                 
-   660 0000039F 48C7C200000000          mov rdx, 0
-   661 000003A6 48C7C7[00000000]        mov rdi, maxHdr
-   662                                 ..@15.countLoop:
-   663 000003AD 803F00                  cmp byte [rdi], NULL
-   664 000003B0 7406                    je ..@15.countLoopDone
-   665 000003B2 48FFC7                  inc rdi
-   666 000003B5 48FFC2                  inc rdx
-   667 000003B8 EBF1                    jmp ..@15.countLoop
-   668                                 ..@15.countLoopDone:
-   669                                 
-   670 000003BA 48C7C001000000          mov rax, SYS_write
-   671 000003C1 48C7C701000000          mov rdi, STDOUT
-   672 000003C8 48C7C6[00000000]        mov rsi, maxHdr
-   673 000003CF 0F05                    syscall
-   674                                 
-   675 000003D1 59                      pop rcx
-   676 000003D2 5A                      pop rdx
-   677 000003D3 5E                      pop rsi
-   678 000003D4 5F                      pop rdi
-   679 000003D5 58                      pop rax
-   680                                 %line 366+1 asgn6.asm
-   681 000003D6 51                      push rcx
-   682                                 %line 366+0 asgn6.asm
-   683 000003D7 56                      push rsi
-   684 000003D8 57                      push rdi
-   685                                 
-   686 000003D9 5F                      pop rdi
-   687 000003DA 5E                      pop rsi
-   688 000003DB 59                      pop rcx
-   689                                 %line 367+1 asgn6.asm
-   690 000003DC 50                      push rax
-   691                                 %line 367+0 asgn6.asm
-   692 000003DD 57                      push rdi
-   693 000003DE 56                      push rsi
-   694 000003DF 52                      push rdx
-   695 000003E0 51                      push rcx
-   696                                 
-   697 000003E1 48C7C200000000          mov rdx, 0
-   698 000003E8 48C7C7[00000000]        mov rdi, tmpString
-   699                                 ..@17.countLoop:
-   700 000003EF 803F00                  cmp byte [rdi], NULL
-   701 000003F2 7406                    je ..@17.countLoopDone
-   702 000003F4 48FFC7                  inc rdi
-   703 000003F7 48FFC2                  inc rdx
-   704 000003FA EBF1                    jmp ..@17.countLoop
-   705                                 ..@17.countLoopDone:
-   706                                 
-   707 000003FC 48C7C001000000          mov rax, SYS_write
-   708 00000403 48C7C701000000          mov rdi, STDOUT
-   709 0000040A 48C7C6[00000000]        mov rsi, tmpString
-   710 00000411 0F05                    syscall
-   711                                 
-   712 00000413 59                      pop rcx
-   713 00000414 5A                      pop rdx
-   714 00000415 5E                      pop rsi
-   715 00000416 5F                      pop rdi
-   716 00000417 58                      pop rax
-   717                                 %line 368+1 asgn6.asm
-   718                                 
-   719 00000418 50                      push rax
-   720                                 %line 369+0 asgn6.asm
-   721 00000419 57                      push rdi
-   722 0000041A 56                      push rsi
-   723 0000041B 52                      push rdx
-   724 0000041C 51                      push rcx
-   725                                 
-   726 0000041D 48C7C200000000          mov rdx, 0
-   727 00000424 48C7C7[00000000]        mov rdi, newLine
-   728                                 ..@18.countLoop:
-   729 0000042B 803F00                  cmp byte [rdi], NULL
-   730 0000042E 7406                    je ..@18.countLoopDone
-   731 00000430 48FFC7                  inc rdi
-   732 00000433 48FFC2                  inc rdx
-   733 00000436 EBF1                    jmp ..@18.countLoop
-   734                                 ..@18.countLoopDone:
-   735                                 
-   736 00000438 48C7C001000000          mov rax, SYS_write
-   737 0000043F 48C7C701000000          mov rdi, STDOUT
-   738 00000446 48C7C6[00000000]        mov rsi, newLine
-   739 0000044D 0F05                    syscall
-   740                                 
-   741 0000044F 59                      pop rcx
-   742 00000450 5A                      pop rdx
-   743 00000451 5E                      pop rsi
-   744 00000452 5F                      pop rdi
-   745 00000453 58                      pop rax
-   746                                 %line 370+1 asgn6.asm
-   747 00000454 50                      push rax
-   748                                 %line 370+0 asgn6.asm
-   749 00000455 57                      push rdi
-   750 00000456 56                      push rsi
-   751 00000457 52                      push rdx
-   752 00000458 51                      push rcx
-   753                                 
-   754 00000459 48C7C200000000          mov rdx, 0
-   755 00000460 48C7C7[00000000]        mov rdi, newLine
-   756                                 ..@19.countLoop:
-   757 00000467 803F00                  cmp byte [rdi], NULL
-   758 0000046A 7406                    je ..@19.countLoopDone
-   759 0000046C 48FFC7                  inc rdi
-   760 0000046F 48FFC2                  inc rdx
-   761 00000472 EBF1                    jmp ..@19.countLoop
-   762                                 ..@19.countLoopDone:
-   763                                 
-   764 00000474 48C7C001000000          mov rax, SYS_write
-   765 0000047B 48C7C701000000          mov rdi, STDOUT
-   766 00000482 48C7C6[00000000]        mov rsi, newLine
-   767 00000489 0F05                    syscall
-   768                                 
-   769 0000048B 59                      pop rcx
-   770 0000048C 5A                      pop rdx
-   771 0000048D 5E                      pop rsi
-   772 0000048E 5F                      pop rdi
-   773 0000048F 58                      pop rax
-   774                                 %line 371+1 asgn6.asm
-   775                                 
-   776                                 
-   777                                 
-   778                                 
-   779                                 last:
-   780 00000490 48C7C03C000000          mov rax, SYS_exit
-   781 00000497 48C7C300000000          mov rbx, EXIT_SUCCESS
-   782 0000049E 0F05                    syscall
-   783                                 
-   784                                 
+   537                                 %line 371+1 asgn6.asm
+   538 0000029E 52                      push rdx
+   539                                 %line 371+0 asgn6.asm
+   540 0000029F 50                      push rax
+   541 000002A0 51                      push rcx
+   542 000002A1 56                      push rsi
+   543 000002A2 57                      push rdi
+   544 000002A3 4151                    push r9
+   545 000002A5 4152                    push r10
+   546                                 
+   547 000002A7 8B0425[00000000]        mov eax, dword[areasSum]
+   548 000002AE 48C7C606000000          mov rsi, 6
+   549 000002B5 49C7C230000000          mov r10, 0x30
+   550 000002BC 48C7C100000000          mov rcx, 0
+   551 000002C3 49C7C1[00000000]        mov r9, tmpString
+   552                                  ..@11.cnt:
+   553 000002CA BA00000000              mov edx, 0
+   554 000002CF F7F6                    div esi
+   555 000002D1 48FFC1                  inc rcx
+   556 000002D4 83F800                  cmp eax, 0
+   557 000002D7 75EF                    jne ..@11.cnt
+   558 000002D9 8B0425[00000000]        mov eax, dword[areasSum]
+   559 000002E0 4901C9                  add r9, rcx
+   560 000002E3 49FFC9                  dec r9
+   561                                  ..@11.cloop:
+   562 000002E6 BA00000000              mov edx, 0
+   563 000002EB F7F6                    div esi
+   564 000002ED 4401D2                  add edx, r10d
+   565 000002F0 418811                  mov byte[r9], dl
+   566 000002F3 49FFC9                  dec r9
+   567 000002F6 83F800                  cmp eax, 0
+   568 000002F9 75E9                    jne ..@11.cloop
+   569 000002FB 41C60100                mov byte[r9], NULL
+   570                                 
+   571 000002FF 415A                    pop r10
+   572 00000301 4159                    pop r9
+   573 00000303 5F                      pop rdi
+   574 00000304 5E                      pop rsi
+   575 00000305 59                      pop rcx
+   576 00000306 58                      pop rax
+   577 00000307 5A                      pop rdx
+   578                                 %line 372+1 asgn6.asm
+   579 00000308 50                      push rax
+   580                                 %line 372+0 asgn6.asm
+   581 00000309 57                      push rdi
+   582 0000030A 56                      push rsi
+   583 0000030B 52                      push rdx
+   584 0000030C 51                      push rcx
+   585                                 
+   586 0000030D 48C7C200000000          mov rdx, 0
+   587 00000314 48C7C7[00000000]        mov rdi, tmpString
+   588                                 ..@12.countLoop:
+   589 0000031B 803F00                  cmp byte [rdi], NULL
+   590 0000031E 7406                    je ..@12.countLoopDone
+   591 00000320 48FFC7                  inc rdi
+   592 00000323 48FFC2                  inc rdx
+   593 00000326 EBF1                    jmp ..@12.countLoop
+   594                                 ..@12.countLoopDone:
+   595                                 
+   596 00000328 48C7C001000000          mov rax, SYS_write
+   597 0000032F 48C7C701000000          mov rdi, STDOUT
+   598 00000336 48C7C6[00000000]        mov rsi, tmpString
+   599 0000033D 0F05                    syscall
+   600                                 
+   601 0000033F 59                      pop rcx
+   602 00000340 5A                      pop rdx
+   603 00000341 5E                      pop rsi
+   604 00000342 5F                      pop rdi
+   605 00000343 58                      pop rax
+   606                                 %line 373+1 asgn6.asm
+   607                                 
+   608 00000344 50                      push rax
+   609                                 %line 374+0 asgn6.asm
+   610 00000345 57                      push rdi
+   611 00000346 56                      push rsi
+   612 00000347 52                      push rdx
+   613 00000348 51                      push rcx
+   614                                 
+   615 00000349 48C7C200000000          mov rdx, 0
+   616 00000350 48C7C7[00000000]        mov rdi, avHdr
+   617                                 ..@13.countLoop:
+   618 00000357 803F00                  cmp byte [rdi], NULL
+   619 0000035A 7406                    je ..@13.countLoopDone
+   620 0000035C 48FFC7                  inc rdi
+   621 0000035F 48FFC2                  inc rdx
+   622 00000362 EBF1                    jmp ..@13.countLoop
+   623                                 ..@13.countLoopDone:
+   624                                 
+   625 00000364 48C7C001000000          mov rax, SYS_write
+   626 0000036B 48C7C701000000          mov rdi, STDOUT
+   627 00000372 48C7C6[00000000]        mov rsi, avHdr
+   628 00000379 0F05                    syscall
+   629                                 
+   630 0000037B 59                      pop rcx
+   631 0000037C 5A                      pop rdx
+   632 0000037D 5E                      pop rsi
+   633 0000037E 5F                      pop rdi
+   634 0000037F 58                      pop rax
+   635                                 %line 375+1 asgn6.asm
+   636 00000380 52                      push rdx
+   637                                 %line 375+0 asgn6.asm
+   638 00000381 50                      push rax
+   639 00000382 51                      push rcx
+   640 00000383 56                      push rsi
+   641 00000384 57                      push rdi
+   642 00000385 4151                    push r9
+   643 00000387 4152                    push r10
+   644                                 
+   645 00000389 8B0425[00000000]        mov eax, dword[areasAve]
+   646 00000390 48C7C606000000          mov rsi, 6
+   647 00000397 49C7C230000000          mov r10, 0x30
+   648 0000039E 48C7C100000000          mov rcx, 0
+   649 000003A5 49C7C1[00000000]        mov r9, tmpString
+   650                                  ..@14.cnt:
+   651 000003AC BA00000000              mov edx, 0
+   652 000003B1 F7F6                    div esi
+   653 000003B3 48FFC1                  inc rcx
+   654 000003B6 83F800                  cmp eax, 0
+   655 000003B9 75EF                    jne ..@14.cnt
+   656 000003BB 8B0425[00000000]        mov eax, dword[areasAve]
+   657 000003C2 4901C9                  add r9, rcx
+   658 000003C5 49FFC9                  dec r9
+   659                                  ..@14.cloop:
+   660 000003C8 BA00000000              mov edx, 0
+   661 000003CD F7F6                    div esi
+   662 000003CF 4401D2                  add edx, r10d
+   663 000003D2 418811                  mov byte[r9], dl
+   664 000003D5 49FFC9                  dec r9
+   665 000003D8 83F800                  cmp eax, 0
+   666 000003DB 75E9                    jne ..@14.cloop
+   667 000003DD 41C60100                mov byte[r9], NULL
+   668                                 
+   669 000003E1 415A                    pop r10
+   670 000003E3 4159                    pop r9
+   671 000003E5 5F                      pop rdi
+   672 000003E6 5E                      pop rsi
+   673 000003E7 59                      pop rcx
+   674 000003E8 58                      pop rax
+   675 000003E9 5A                      pop rdx
+   676                                 %line 376+1 asgn6.asm
+   677 000003EA 50                      push rax
+   678                                 %line 376+0 asgn6.asm
+   679 000003EB 57                      push rdi
+   680 000003EC 56                      push rsi
+   681 000003ED 52                      push rdx
+   682 000003EE 51                      push rcx
+   683                                 
+   684 000003EF 48C7C200000000          mov rdx, 0
+   685 000003F6 48C7C7[00000000]        mov rdi, tmpString
+   686                                 ..@15.countLoop:
+   687 000003FD 803F00                  cmp byte [rdi], NULL
+   688 00000400 7406                    je ..@15.countLoopDone
+   689 00000402 48FFC7                  inc rdi
+   690 00000405 48FFC2                  inc rdx
+   691 00000408 EBF1                    jmp ..@15.countLoop
+   692                                 ..@15.countLoopDone:
+   693                                 
+   694 0000040A 48C7C001000000          mov rax, SYS_write
+   695 00000411 48C7C701000000          mov rdi, STDOUT
+   696 00000418 48C7C6[00000000]        mov rsi, tmpString
+   697 0000041F 0F05                    syscall
+   698                                 
+   699 00000421 59                      pop rcx
+   700 00000422 5A                      pop rdx
+   701 00000423 5E                      pop rsi
+   702 00000424 5F                      pop rdi
+   703 00000425 58                      pop rax
+   704                                 %line 377+1 asgn6.asm
+   705                                 
+   706 00000426 50                      push rax
+   707                                 %line 378+0 asgn6.asm
+   708 00000427 57                      push rdi
+   709 00000428 56                      push rsi
+   710 00000429 52                      push rdx
+   711 0000042A 51                      push rcx
+   712                                 
+   713 0000042B 48C7C200000000          mov rdx, 0
+   714 00000432 48C7C7[00000000]        mov rdi, maxHdr
+   715                                 ..@16.countLoop:
+   716 00000439 803F00                  cmp byte [rdi], NULL
+   717 0000043C 7406                    je ..@16.countLoopDone
+   718 0000043E 48FFC7                  inc rdi
+   719 00000441 48FFC2                  inc rdx
+   720 00000444 EBF1                    jmp ..@16.countLoop
+   721                                 ..@16.countLoopDone:
+   722                                 
+   723 00000446 48C7C001000000          mov rax, SYS_write
+   724 0000044D 48C7C701000000          mov rdi, STDOUT
+   725 00000454 48C7C6[00000000]        mov rsi, maxHdr
+   726 0000045B 0F05                    syscall
+   727                                 
+   728 0000045D 59                      pop rcx
+   729 0000045E 5A                      pop rdx
+   730 0000045F 5E                      pop rsi
+   731 00000460 5F                      pop rdi
+   732 00000461 58                      pop rax
+   733                                 %line 379+1 asgn6.asm
+   734 00000462 52                      push rdx
+   735                                 %line 379+0 asgn6.asm
+   736 00000463 50                      push rax
+   737 00000464 51                      push rcx
+   738 00000465 56                      push rsi
+   739 00000466 57                      push rdi
+   740 00000467 4151                    push r9
+   741 00000469 4152                    push r10
+   742                                 
+   743 0000046B 8B0425[00000000]        mov eax, dword[areasMax]
+   744 00000472 48C7C606000000          mov rsi, 6
+   745 00000479 49C7C230000000          mov r10, 0x30
+   746 00000480 48C7C100000000          mov rcx, 0
+   747 00000487 49C7C1[00000000]        mov r9, tmpString
+   748                                  ..@17.cnt:
+   749 0000048E BA00000000              mov edx, 0
+   750 00000493 F7F6                    div esi
+   751 00000495 48FFC1                  inc rcx
+   752 00000498 83F800                  cmp eax, 0
+   753 0000049B 75EF                    jne ..@17.cnt
+   754 0000049D 8B0425[00000000]        mov eax, dword[areasMax]
+   755 000004A4 4901C9                  add r9, rcx
+   756 000004A7 49FFC9                  dec r9
+   757                                  ..@17.cloop:
+   758 000004AA BA00000000              mov edx, 0
+   759 000004AF F7F6                    div esi
+   760 000004B1 4401D2                  add edx, r10d
+   761 000004B4 418811                  mov byte[r9], dl
+   762 000004B7 49FFC9                  dec r9
+   763 000004BA 83F800                  cmp eax, 0
+   764 000004BD 75E9                    jne ..@17.cloop
+   765 000004BF 41C60100                mov byte[r9], NULL
+   766                                 
+   767 000004C3 415A                    pop r10
+   768 000004C5 4159                    pop r9
+   769 000004C7 5F                      pop rdi
+   770 000004C8 5E                      pop rsi
+   771 000004C9 59                      pop rcx
+   772 000004CA 58                      pop rax
+   773 000004CB 5A                      pop rdx
+   774                                 %line 380+1 asgn6.asm
+   775 000004CC 50                      push rax
+   776                                 %line 380+0 asgn6.asm
+   777 000004CD 57                      push rdi
+   778 000004CE 56                      push rsi
+   779 000004CF 52                      push rdx
+   780 000004D0 51                      push rcx
+   781                                 
+   782 000004D1 48C7C200000000          mov rdx, 0
+   783 000004D8 48C7C7[00000000]        mov rdi, tmpString
+   784                                 ..@18.countLoop:
+   785 000004DF 803F00                  cmp byte [rdi], NULL
+   786 000004E2 7406                    je ..@18.countLoopDone
+   787 000004E4 48FFC7                  inc rdi
+   788 000004E7 48FFC2                  inc rdx
+   789 000004EA EBF1                    jmp ..@18.countLoop
+   790                                 ..@18.countLoopDone:
+   791                                 
+   792 000004EC 48C7C001000000          mov rax, SYS_write
+   793 000004F3 48C7C701000000          mov rdi, STDOUT
+   794 000004FA 48C7C6[00000000]        mov rsi, tmpString
+   795 00000501 0F05                    syscall
+   796                                 
+   797 00000503 59                      pop rcx
+   798 00000504 5A                      pop rdx
+   799 00000505 5E                      pop rsi
+   800 00000506 5F                      pop rdi
+   801 00000507 58                      pop rax
+   802                                 %line 381+1 asgn6.asm
+   803                                 
+   804 00000508 50                      push rax
+   805                                 %line 382+0 asgn6.asm
+   806 00000509 57                      push rdi
+   807 0000050A 56                      push rsi
+   808 0000050B 52                      push rdx
+   809 0000050C 51                      push rcx
+   810                                 
+   811 0000050D 48C7C200000000          mov rdx, 0
+   812 00000514 48C7C7[00000000]        mov rdi, newLine
+   813                                 ..@19.countLoop:
+   814 0000051B 803F00                  cmp byte [rdi], NULL
+   815 0000051E 7406                    je ..@19.countLoopDone
+   816 00000520 48FFC7                  inc rdi
+   817 00000523 48FFC2                  inc rdx
+   818 00000526 EBF1                    jmp ..@19.countLoop
+   819                                 ..@19.countLoopDone:
+   820                                 
+   821 00000528 48C7C001000000          mov rax, SYS_write
+   822 0000052F 48C7C701000000          mov rdi, STDOUT
+   823 00000536 48C7C6[00000000]        mov rsi, newLine
+   824 0000053D 0F05                    syscall
+   825                                 
+   826 0000053F 59                      pop rcx
+   827 00000540 5A                      pop rdx
+   828 00000541 5E                      pop rsi
+   829 00000542 5F                      pop rdi
+   830 00000543 58                      pop rax
+   831                                 %line 383+1 asgn6.asm
+   832 00000544 50                      push rax
+   833                                 %line 383+0 asgn6.asm
+   834 00000545 57                      push rdi
+   835 00000546 56                      push rsi
+   836 00000547 52                      push rdx
+   837 00000548 51                      push rcx
+   838                                 
+   839 00000549 48C7C200000000          mov rdx, 0
+   840 00000550 48C7C7[00000000]        mov rdi, newLine
+   841                                 ..@20.countLoop:
+   842 00000557 803F00                  cmp byte [rdi], NULL
+   843 0000055A 7406                    je ..@20.countLoopDone
+   844 0000055C 48FFC7                  inc rdi
+   845 0000055F 48FFC2                  inc rdx
+   846 00000562 EBF1                    jmp ..@20.countLoop
+   847                                 ..@20.countLoopDone:
+   848                                 
+   849 00000564 48C7C001000000          mov rax, SYS_write
+   850 0000056B 48C7C701000000          mov rdi, STDOUT
+   851 00000572 48C7C6[00000000]        mov rsi, newLine
+   852 00000579 0F05                    syscall
+   853                                 
+   854 0000057B 59                      pop rcx
+   855 0000057C 5A                      pop rdx
+   856 0000057D 5E                      pop rsi
+   857 0000057E 5F                      pop rdi
+   858 0000057F 58                      pop rax
+   859                                 %line 384+1 asgn6.asm
+   860                                 
+   861                                 
+   862                                 
+   863                                 
+   864                                 last:
+   865 00000580 48C7C03C000000          mov rax, SYS_exit
+   866 00000587 48C7C300000000          mov rbx, EXIT_SUCCESS
+   867 0000058E 0F05                    syscall
+   868                                 
+   869                                 

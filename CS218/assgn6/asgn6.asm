@@ -78,13 +78,45 @@
 
 
 %macro int2senary 2
+    push rdx
+    push rax
     push rcx
     push rsi
     push rdi
+    push r9
+    push r10
 
+    mov eax, dword[%1]
+    mov rsi, 6
+    mov r10, 0x30
+    mov rcx, 0
+    mov r9, %2
+    %%cnt:
+        mov edx, 0
+        div esi
+        inc rcx
+        cmp eax, 0
+        jne %%cnt
+    mov eax, dword[%1]
+    add r9, rcx
+    dec r9    
+    %%cloop:
+        mov edx, 0
+        div esi
+        add edx, r10d
+        mov byte[r9], dl
+        dec r9
+        cmp eax, 0
+        jne %%cloop
+    mov byte[r9], NULL
+
+    pop r10
+    pop r9
     pop rdi
     pop rsi
     pop rcx
+    pop rax
+    pop rdx
 %endmacro
 
 
@@ -336,26 +368,7 @@ mov dword[areasAve], eax
 ;  for printing.
 
     printString sHdr
-    ;int2senary  areasSum, tmpString
-    ;
-    mov eax, dword[areasSum]
-    mov rcx, 8
-    mov rsi, 6
-    mov r10, 0x30
-    mov r9, tmpString    
-    _loop:
-        mov edx, 0
-        div esi
-        add edx, r10d
-        mov byte[r9], dl
-        dec rcx
-        inc r9
-        cmp rcx, 0
-        je loopDone
-        jmp _loop
-    loopDone:
-    mov byte[r9], NULL
-    ;
+    int2senary  areasSum, tmpString
     printString tmpString
 
     printString avHdr
