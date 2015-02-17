@@ -268,7 +268,7 @@ _start:
             mov esi, dword[j]          ; move j to esi
             mov r9d, dword[tmp]        ; move tmp to r9d
             mov dword[lst+esi*4], r9d  ; lst[j] = tmp
-            inc ecx                     ; i++
+            inc ecx                    ; i++
             jmp forLoop1
         exitForLoop1: 
         mov eax, dword[h]           ; move h to eax
@@ -277,6 +277,38 @@ _start:
         mov dword[h], eax           ; h = h / 3
         jmp whileLoop2
     exitWhileLoop2
+
+    mov rax, 0
+    mov rcx, 0
+    mov ecx, dword[len]
+    mov rsi, 0 
+    sumLoop:
+        add eax, dword[lst+rsi*4]   ; add to running sum
+        inc rsi                     ; increment index
+        loop sumLoop
+    mov dword[sum], eax             ; move sum to dsum
+    cdq                             ; extend sign bit
+    idiv dword[len]                 ; sum / len
+    mov dword[avg], eax             ; avg = sum / len
+    mov eax, dword[len]             ; len
+    dec eax                         ; len--
+    mov eax, dword[lst+eax*4]       ; lst[len--]
+    mov dword[max], eax             ; max = lst[len--]
+    mov eax, dword[lst]             ; lst[0]
+    mov dword[min], eax             ; min = lst[0]
+    mov eax, dword[len]             ; len
+    mov edx, 0                      ; extend sign bit
+    idiv dword[dTwo]                ; len / 2
+    dec eax                         ; len / 2 - 1
+    mov edx, eax                    ; len / 2 - 1
+    dec edx                         ; len / 2 - 2
+    mov eax, dword[lst+eax*4]       ; lst[len/2-1]
+    add eax, dword[lst+edx*4]       ; lst[len/2-1] + lst[len/2-2]
+    cdq                             ; extend sign bit
+    idiv dword[dTwo]                ; (lst[len/2-1]+lst[len/2-2]) / 2
+    mov dword[med], eax
+        
+        
 ; ******************************
 ;  Display results to screen in hex.
 
