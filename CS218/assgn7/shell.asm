@@ -239,45 +239,42 @@ _start:
     exitWhileLoop1:
         
     whileLoop2:                     ; while( h > 0)
-        mov ecx, dword[h] 
-        cmp ecx, 0
-        jle exitWhileLoop2          ; h <= 0 ? exit 
-        dec ecx
+        mov ecx, dword[h]           ; move h to ecx
+        cmp ecx, 0                  ; compare h to 0    
+        jle exitWhileLoop2          ; h > 0 ? exit 
+        dec ecx                     ; h - 1
         mov dword[i], ecx           ; i = h - 1
         forLoop1:                   ; for( i = h - 1; i < length; i++)
-            cmp ecx, dword[len]     
-            jge exitForLoop1        ; i >= length ? exit
-            mov eax, dword[lst+ecx*4] ; lst[i]
-            mov dword[tmp], eax     ; tmp = lst[i]
-            mov dword[j], ecx       ; j = i
-            mov edi, dword[j]
-            forLoop2:               ; for( j = i; j >= h && lst[j-h] > tmp; j = j-h)
-                mov edi, dword[j]
-                cmp edi, dword[h]
+            cmp ecx, dword[len]         ; compare h - 1 to len
+            jge exitForLoop1            ; i >= length ? exit
+            mov eax, dword[lst+ecx*4]   ; lst[i]
+            mov dword[tmp], eax         ; tmp = lst[i]
+            mov dword[j], ecx           ; j = i
+            forLoop2:                   ; for( j = i; j >= h && lst[j-h] > tmp; j = j-h)
+                mov edi, dword[j]           ; move j to edi
+                cmp edi, dword[h]           ; compare j to h
                 jl exitForLoop2             ; j < h ? exit
-                mov esi, edi                ; j
+                mov esi, edi                ; move j to esi
                 sub esi, dword[h]           ; j - h
                 mov esi, dword[lst+esi*4]   ; lst[j - h]
-                cmp esi, dword[tmp]
+                cmp esi, dword[tmp]         ; compare lst[j-h] to tmp
                 jle exitForLoop2            ; lst[j-h]j <= tmp ? exit
-                mov r9d, dword[j]
+                mov r9d, dword[j]           ; move j to r9d
                 mov dword[lst+r9d*4], esi   ; lst[j] = lst[j - h]
-                sub r9d, dword[h]
+                sub r9d, dword[h]           ; j - h
                 mov dword[j], r9d           ; j = j - h
                 jmp forLoop2
             exitForLoop2:
-            mov esi, dword[j]
-            mov r9d, dword[tmp]            ; lst[j] = tmp
-            mov dword[lst+esi*4], r9d
-            inc ecx                 ; i++
+            mov esi, dword[j]          ; move j to esi
+            mov r9d, dword[tmp]        ; move tmp to r9d
+            mov dword[lst+esi*4], r9d  ; lst[j] = tmp
+            inc ecx                     ; i++
             jmp forLoop1
         exitForLoop1: 
-        mov ecx, dword[h]
-        mov eax, ecx
-        cdq
-        idiv dword[dThree]
-        mov ecx, eax                ; h = h / 3
-        mov dword[h], ecx 
+        mov eax, dword[h]           ; move h to eax
+        cdq                         ; extend sign bit
+        idiv dword[dThree]          ; h / 3
+        mov dword[h], eax           ; h = h / 3
         jmp whileLoop2
     exitWhileLoop2
 ; ******************************
