@@ -92,9 +92,61 @@ section .text
 global  shellSort
 shellSort:
 
+    mov rax, 1
+    mov dword[h], eax
+    whileLoop1:
+        mov eax, dword[dThree]
+        mul dword[h]
+        inc eax
+        cmp eax, esi
+        jge exitWhileLoop1
+        mov dword[h], eax
+        jmp whileLoop1
+    exitWhileLoop1
 
-;   YOUR CODE GOES HERE
-
+    whileLoop2:
+        mov rcx, 0
+        mov ecx, dword[h]
+        cmp rcx, 0
+        jle exitWhileLoop2
+        dec rcx
+        mov dword[i], ecx
+        forLoop1:
+            cmp ecx, esi
+            jge exitForLoop1
+            mov eax, dword[rdi+rcx*4]
+            mov dword[tmp], eax
+            mov dword[j], ecx
+            forLoop2:
+                mov r8, 0
+                mov r8d, dword[j]
+                cmp r8d, dword[h]
+                jl exitForLoop2
+                mov r9, 0
+                mov r9d, r8d
+                sub r9d, dword[h]
+                mov r9d, dword[rdi+r9*4]
+                cmp r9d, dword[tmp]
+                jle exitForLoop2
+                mov r10, 0
+                mov r10d, dword[j]
+                mov dword[rdi+r10*4], r9d
+                sub r10d, dword[h]
+                mov dword[j], r10d
+                jmp forLoop2
+            exitForLoop2:
+            mov r9d, dword[j]
+            mov r10d,  dword[tmp]
+            mov dword[rdi+r9*4], r10d
+            inc ecx
+            jmp forLoop1
+        exitForLoop1:
+        mov eax, dword[h]
+        cdq
+        idiv dword[dThree]
+        mov dword[h], eax
+        jmp whileLoop2
+    exitWhileLoop2
 
     ret
 
