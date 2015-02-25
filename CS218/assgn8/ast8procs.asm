@@ -31,12 +31,12 @@ FALSE       equ 0
 ; -----
 ;  Local variables for shellSort() function (if any).
 
-h       dd  0
-i       dd  0
-j       dd  0
-tmp     dd  0
+h           dd  0
+i           dd  0
+j           dd  0
+tmp         dd  0
 dThree      dd  3
-
+dTwo        dd  2
 ; -----
 ;  Local variables for basicStats() function (if any).
 
@@ -127,7 +127,7 @@ shellSort:
                 sub r9d, dword[h]
                 mov r9d, dword[rdi+r9*4]
                 cmp r9d, dword[tmp]
-                jle exitForLoop2
+                jge exitForLoop2
                 mov r10, 0
                 mov r10d, dword[j]
                 mov dword[rdi+r10*4], r9d
@@ -182,12 +182,54 @@ shellSort:
 
 global basicStats
 basicStats:
+    push rbp 
+    mov rbp, rsp
+    push rbx
+    push r12
 
-
-;   YOUR CODE GOES HERE
-
-
-
+    mov rbx, qword[rbp+16]
+        
+    mov dword[r9], 0        ; sum = 0
+    mov r10, 0
+    mov r12, 0
+    sumLoop:
+        mov r12d, dword[rdi+r10*4]  ; list[i]
+        add dword[r9], r12d         ; sum += list[i]
+        inc r10                     ; i++
+        cmp r10d, esi               ; i == len ? quit
+        jne sumLoop
+    mov rax, 0
+    mov eax, esi                ; length
+    dec eax                     ; length--
+    mov eax, dword[rdi+rax*4]   ; lst[length--]
+    mov dword[rdx], eax          ; max = lst[length--]
+    mov rax, 0
+    mov eax, dword[rdi+rax*4]   ; lst[0]
+    mov dword[r8], eax         ; min = lst[0]
+    mov rax, 0
+    mov eax, dword[r9]          ; move sum
+    cdq                         ; extend sign bit
+    idiv esi                    ; sum / length
+    mov dword[rbx], eax         ; ave = sum / length
+    mov rax, 0
+    mov r12, 0
+    mov eax, esi                ; length
+    mov edx, 0
+    div dword[dTwo]            ; length / 2
+    cmp edx, 0                  ; even ? odd ?
+    jne aveOdd
+        mov r12d, dword[rdi+rax*4]  ; lst[len/2]
+        dec eax
+        add r12d, dword[rdi+rax*4]  ; lst[(len/2)-1]
+        cdq
+        idiv dword[dTwo]
+        mov dword[rcx], eax
+    aveOdd:
+        mov r12d, dword[rdi+rax*4]
+        mov dword[rcx], r12d
+    pop r12
+    pop rbx
+    pop rbp
     ret
 
 ; --------------------------------------------------------
