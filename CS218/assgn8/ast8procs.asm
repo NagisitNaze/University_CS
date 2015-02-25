@@ -187,7 +187,7 @@ basicStats:
     push rbx
     push r12
 
-    mov rbx, qword[rbp+16]
+    mov rbx, qword[rbp+16]      ; get var on stack
         
     mov eax, esi                ; length
     dec eax                     ; length--
@@ -197,10 +197,10 @@ basicStats:
     mov eax, dword[rdi+rax*4]   ; lst[0]
     mov dword[r8], eax          ; min = lst[0]
     mov rax, 0
-    call lstSum
-    mov dword[r9], eax
-    call lstAve
-    mov dword[rbx], eax         ; move sum
+    call lstSum                 ; sum = eax
+    mov dword[r9], eax          ; move sum into address
+    call lstAve                 ; average = eax
+    mov dword[rbx], eax         ; move average
     mov rax, 0
     mov r12, 0
     mov eax, esi                ; length
@@ -239,14 +239,12 @@ basicStats:
 
 global  lstSum
 lstSum:
-    mov r10, 0
-    mov r11, 0
-    mov rax, 0
+    mov r11, 0  ; i
+    mov rax, 0  ; running sum
     sumLoop:
-        mov r10d, dword[rdi+r11*4]
-        add eax, r10d
-        inc r11
-        cmp r11d, esi
+        add eax, dword[rdi+r11*4]   ; sum += lst[i]
+        inc r11                     ; i ++ 
+        cmp r11d, esi               ; i < length ?
         jne sumLoop
     ret
 
@@ -268,10 +266,9 @@ lstSum:
 
 global  lstAve
 lstAve:
-    mov r9d, esi
-    call lstSum
-    cdq
-    idiv esi
+    call lstSum     ; sum = eax
+    cdq             ; extend sign bit
+    idiv esi        ; sum / length
     ret
 
 ; --------------------------------------------------------
@@ -296,11 +293,55 @@ lstAve:
 
 global linearRegression
 linearRegression:
+    push rbp
+    mov rbp, rsp
+    push rbx
+    push r14        ; length of lists
+   
+    mov rbx, qword[rbp+16]  ; grab address from stack 
+    mov r14, rdx            ; move length from rdx to r14
+    mov r10, 0              ; counter
+    mov qword[qSum], r10    ; set qSum to 0
+    mov dword[dSum], r10d   ; set dSum to 0
+    forLoopb1:              ; for( i = 0 ; i < len ; i++ )
+        cmp r10d, r14d              ; for loop condition
+        je forLoopExitb1            ; break if condition no longer met
+        mov rax, 0                  ; prepare registers for arith
+        mov r11, 0
+        mov rdx, 0
+        mov eax, dword[rdi+r10*4]   ; x[i]
+        sub eax, ecx                ; x[i] - xAve
+        mov r11d, dword[rsi+r10*4]  ; y[i]
+        sub r11d, r8d               ; y[i] - yAve
+        imul r11d         
+        add dword[qSum], eax        ; (x[i] - xAve)(y[i] - yAve)
+        adc dword[qSum+4], edx      ; add carry bit
 
+        mov rax, 0                  ; prepare registers for arith
+        mov rdx, 0
+        mov eax, dword[rdi+r10*4]   ; x[i]
+        sub eax, ecx                ; x[i] - xAve
+        imul eax                    ; (x[i] - xAve) ^ 2
+        add dword[dSum], eax        ; place in dSum
 
-;   YOUR CODE GOES HERE
+        inc r10                     ; i++
+        jmp forLoopb1               ; loop
+    forLoopExitb1:
+    mov rax, qword[qSum]            ; dividend
+    mov r11d, dword[dSum]           ; divisor
+    cqo                             ; extend sign bit
+    idiv r11                        ; dividend / divisor
+    mov dword[rbx], eax             ; b1 = ^
+    mov r10, 0                      ; clear r10
+    mov r10d, r8d                   ; yAve
+    mov rdx, 0                      ; clear rdx
+    imul ecx                        ; b1 * xAve
+    sub r10d, eax                   ; yAve - b1 * xAve
+    mov dword[r9], r10d             ; b0 = ^
 
-
+    pop r14                 ; pop used registers back off
+    pop rbx
+    pop rbp
     ret
 
 ; ********************************************************************************
