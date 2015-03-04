@@ -99,11 +99,39 @@ section .text
 ;   number read (via reference)
 ;   status code (as above)
 
+global readSenaryNum
+readSenaryNum:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 55
+    push rbx
+    push r12
+    push r14
+    mov r14, rdi
 
+    mov dword[rbp-55], 0    ; runningSum = 0
+    lea rbx, byte[rbp-50]   ; rbx points to head of buffer
+    getNxtChar:
+        mov rax, SYS_read       ; read a character
+        mov rdi, STDIN          ; input in
+        lea rsi, byte[rbp-51]   ; rsi is char
+        mov rdx, 1              ; 1 char read
+        syscall                 ; call
+        mov al, byte[rbp-51]    ; move char into al
+        cmp al, LF              ; if al is linefeed done
+        je exit             
+        mov byte[rbx], al       ; else add to buffer
+        inc rbx                 ; inc rbx
+        jmp getNxtChar          ; loop
+    exit:
+    mov byte[rbx], NULL         ; add NULL terminiating character
 
-;   YOUR CODE GOES HERE
-
-
+    pop r14
+    pop r12
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
 
 ; --------------------------------------------------------
 ;  Shell sort procedure.
@@ -139,65 +167,79 @@ section .text
 ;  Returns:
 ;   sorted list (list passed by reference)
 
+;  Local Variables
+;   h =     rbp - 4
+;   i =     rbp - 8
+;   j =     rbp - 12
+;   tmp =   rbp - 16
+
 global  shellSort
 shellSort:
-
+    push rbp
+    mov rbp, rsp
+    sub rsp, 16
+    push rbx
+     
     mov rax, 1
-    mov dword[h], eax
+    mov dword[rbp-4], eax
     whileLoop1:
-        mov eax, dword[dThree]
-        mul dword[h]
+        mov eax, 3
+        mul dword[rbp-4]
         inc eax
         cmp eax, esi
         jge exitWhileLoop1
-        mov dword[h], eax
+        mov dword[rbp-4], eax
         jmp whileLoop1
     exitWhileLoop1
 
     whileLoop2:
         mov rcx, 0
-        mov ecx, dword[h]
+        mov ecx, dword[rbp-4]
         cmp rcx, 0
         jle exitWhileLoop2
         dec rcx
-        mov dword[i], ecx
+        mov dword[rbp-8], ecx
         forLoop1:
             cmp ecx, esi
             jge exitForLoop1
             mov eax, dword[rdi+rcx*4]
-            mov dword[tmp], eax
-            mov dword[j], ecx
+            mov dword[rbp-16], eax
+            mov dword[rbp-12], ecx
             forLoop2:
                 mov r8, 0
-                mov r8d, dword[j]
-                cmp r8d, dword[h]
+                mov r8d, dword[rbp-12]
+                cmp r8d, dword[rbp-4]
                 jl exitForLoop2
                 mov r9, 0
                 mov r9d, r8d
-                sub r9d, dword[h]
+                sub r9d, dword[rbp-4]
                 mov r9d, dword[rdi+r9*4]
-                cmp r9d, dword[tmp]
+                cmp r9d, dword[rbp-16]
                 jge exitForLoop2
                 mov r10, 0
-                mov r10d, dword[j]
+                mov r10d, dword[rbp-12]
                 mov dword[rdi+r10*4], r9d
-                sub r10d, dword[h]
-                mov dword[j], r10d
+                sub r10d, dword[rbp-4]
+                mov dword[rbp-12], r10d
                 jmp forLoop2
             exitForLoop2:
-            mov r9d, dword[j]
-            mov r10d,  dword[tmp]
-            mov dword[rdi, r9*4], r10d
+            mov r9d, dword[rbp-12]
+            mov r10d,  dword[rbp-16]
+            mov dword[rdi+r9*4], r10d
             inc ecx
             jmp forLoop1
         exitForLoop1
-        mov eax, dword[h]
+        mov eax, dword[rbp-4]
         cdq
-        idiv dword[dThree]
-        mov dword[h], eax
+        mov rbx, 3
+        idiv rbx
+        mov dword[rbp-4], eax
         jmp whileLoop2
     exitWhileLoop2
 
+    pop rbx
+    mov rsp, rbp
+    pop rbp
     ret
 
 
@@ -237,9 +279,10 @@ basicStats:
     mov rbp, rsp
     push rbx
     push r12
-
+    push r13
     mov rbx, qword[rbp+16]      ; get var on stack
 
+    mov r13, 2                  ; dTwo
     mov eax, esi                ; length
     dec eax                     ; length--
     mov eax, dword[rdi+rax*4]   ; lst[length--]
@@ -256,18 +299,20 @@ basicStats:
     mov r12, 0
     mov eax, esi                ; length
     mov edx, 0
-    div dword[dTwo]             ; length / 2
+    
+    div r13d                    ; length / 2
     cmp edx, 0                  ; even ? odd ?
     jne aveOdd
         mov r12d, dword[rdi+rax*4]  ; lst[len/2]
         dec eax
         add r12d, dword[rdi+rax*4]  ; lst[(len/2)-1]
         cdq
-        idiv dword[dTwo]
+        idiv r13d
         mov dword[rcx], eax
     aveOdd:
         mov r12d, dword[rdi+rax*4]
         mov dword[rcx], r12d
+    pop r13
     pop r12
     pop rbx
     pop rbp
@@ -341,18 +386,19 @@ lstAve:
 ;   b0 and b1 via reference
 
 
-bal linearRegression
+global linearRegression
 linearRegression:
     push rbp
     mov rbp, rsp
+    sub rsp, 12
     push rbx
     push r14        ; length of lists
 
     mov rbx, qword[rbp+16]  ; grab address from stack 
     mov r14, rdx            ; move length from rdx to r14
     mov r10, 0              ; counter
-    mov qword[qSum], r10    ; set qSum to 0
-    mov dword[dSum], r10d   ; set dSum to 0
+    mov qword[rbp-12], r10  ; set qSum to 0
+    mov dword[rbp-4], r10d  ; set dSum to 0
     forLoopb1:              ; for( i = 0 ; i < len ; i++ )
         cmp r10d, r14d              ; for loop condition
         je forLoopExitb1            ; break if condition no longer met
@@ -364,21 +410,21 @@ linearRegression:
         mov r11d, dword[rsi+r10*4]  ; y[i]
         sub r11d, r8d               ; y[i] - yAve
         imul r11d
-        add dword[qSum], eax        ; (x[i] - xAve)(y[i] - yAve)
-        adc dword[qSum+4], edx      ; add carry bit
+        add dword[rbp-12], eax     ; (x[i] - xAve)(y[i] - yAve)
+        adc dword[rbp-8], edx      ; add carry bit
 
         mov rax, 0                  ; prepare registers for arith
         mov rdx, 0
         mov eax, dword[rdi+r10*4]   ; x[i]
         sub eax, ecx                ; x[i] - xAve
         imul eax                    ; (x[i] - xAve) ^ 2
-        add dword[dSum], eax        ; place in dSum
+        add dword[rbp-4], eax       ; place in dSum
 
         inc r10                     ; i++
         jmp forLoopb1               ; loop
     forLoopExitb1:
-    mov rax, qword[qSum]            ; dividend
-    mov r11d, dword[dSum]           ; divisor
+    mov rax, qword[rbp-12]          ; dividend
+    mov r11d, dword[rbp-4]          ; divisor
     cqo                             ; extend sign bit
     idiv r11                        ; dividend / divisor
     mov dword[rbx], eax             ; b1 = ^

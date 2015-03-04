@@ -27,6 +27,6 @@ Sorted Y List:
    Y Average =           951
 
 Linear Regression Values 
- b0 =  71
- b1 =  22
+ b0 =  -489
+ b1 =  36
 

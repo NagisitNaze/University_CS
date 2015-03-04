@@ -52,6 +52,6 @@ Sorted Y List:
    Y Average =            27
 
 Linear Regression Values 
- b0 =  27
- b1 =  0
+ b0 =  -1
+ b1 =  1
 
