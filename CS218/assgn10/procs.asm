@@ -432,9 +432,8 @@ drawCircles:
 ;   x = (1-s)*cos(t+pi*s)+s*cos(2*t)
 ;   y = (1-s)*sin(t+pi*s)-s*sin(2*t)
 
-    mov r12, 0
     movsd xmm1, qword[fltOne]
-    divsd xmm1, qword[s]
+    divsd xmm1, qword[speed]
     cvtsd2si rax, xmm1
     mov r13, rax
 
@@ -446,49 +445,42 @@ drawCircles:
     mov r15, rax
 
     movsd xmm0, qword[fltZero]
-    movsd qword[s], xmm0
-    outerForLoop
-        cmp r12, r13
-        jg endOuterForLoop
-        movsd xmm0, qword[fltZero]
-        movsd qword[t], xmm0
-        innerForLoop:
-            cmp r14, r15
-            jge endInnerForLoop         ; if not end inner for loop
-            
-            movsd xmm0, qword[pi]       ; move pi into reg
-            mulsd xmm0, qword[speed]        ; pi * s
-            addsd xmm0, qword[t]        ; (pi * s) + t
-            call cos                    ; cos(pi * s + t)
+    movsd qword[t], xmm0
+    innerForLoop:
+        cmp r14, r15
+        jge endInnerForLoop         ; if not end inner for loop
+        
+        movsd xmm0, qword[pi]       ; move pi into reg
+        mulsd xmm0, qword[s]        ; pi * s
+        addsd xmm0, qword[t]        ; (pi * s) + t
+        call cos                    ; cos(pi * s + t)
 
-            movsd xmm1, qword[fltOne]   ; move 1.0 into reg
-            subsd xmm1, qword[speed]        ; 1.0 - s
+        movsd xmm1, qword[fltOne]   ; move 1.0 into reg
+        subsd xmm1, qword[s]        ; 1.0 - s
 
-            mulsd xmm0, xmm1            ; (1.0 - s) * cos(t + pi * s)
-            movsd qword[tmp1], xmm0     ; mov value above into tmp
+        mulsd xmm0, xmm1            ; (1.0 - s) * cos(t + pi * s)
+        movsd qword[tmp1], xmm0     ; mov value above into tmp
 
-            movsd xmm0, qword[t]        ; move t into reg
-            mulsd xmm0, qword[fltTwo]   ; t * 2.0
-            call cos                    ; cos(t * 2.0)
-            mulsd xmm0, qword[speed]        ; cos(t * 2.0) * s
-            addsd xmm0, qword[tmp1]     ; (1.0 - s) * cos(t + pi * s) + s * cos(t * 2.0)
-            movsd qword[x], xmm0        ; set y equal to above
+        movsd xmm0, qword[t]        ; move t into reg
+        mulsd xmm0, qword[fltTwo]   ; t * 2.0
+        call cos                    ; cos(t * 2.0)
+        mulsd xmm0, qword[s]        ; cos(t * 2.0) * s
+        addsd xmm0, qword[tmp1]     ; (1.0 - s) * cos(t + pi * s) + s * cos(t * 2.0)
+        movsd qword[x], xmm0        ; set y equal to above
 
-            movsd xmm0, qword[t]        ; move t into reg
-            mulsd xmm0, qword[fltTwo]   ; t * 2.0
-            call cos                    ; cos(t * 2.0)
-            mulsd xmm0, qword[speed]        ; s * cos(t * 2.0)
-            movsd xmm1, qword[tmp1]     ; move previous sum into reg
-            subsd xmm1, xmm0            ; (1.0 - s) * cos(t + pi * s) - s * cos(t * 2.0)
-            movsd qword[y], xmm1        ; set x equal to above
+        movsd xmm0, qword[t]        ; move t into reg
+        mulsd xmm0, qword[fltTwo]   ; t * 2.0
+        call cos                    ; cos(t * 2.0)
+        mulsd xmm0, qword[s]        ; s * cos(t * 2.0)
+        movsd xmm1, qword[tmp1]     ; move previous sum into reg
+        subsd xmm1, xmm0            ; (1.0 - s) * cos(t + pi * s) - s * cos(t * 2.0)
+        movsd qword[y], xmm1        ; set x equal to above
 
-            movsd xmm0, qword[x]
-            movsd xmm1, qword[y]
-            call glVertex2d
-            inc r14
-        endInnerForLoop:
-        inc r12
-    endOuterForLoop:
+        movsd xmm0, qword[x]
+        movsd xmm1, qword[y]
+        call glVertex2d
+        inc r14
+    endInnerForLoop:
 
 ; -----
 ;  End drawing operations and flush unwritten operations.
@@ -502,8 +494,16 @@ drawCircles:
 ; -----
 ;  Update speed for next call.
 
-
-
+    movsd xmm0, qword[s]        ; move s into reg
+    addsd xmm0, qword[speed]    ; s + speed
+    movsd qword[s], xmm0        ; s = s + speed
+    inc r12
+    cmp r12, r13
+    jle cont
+        mov r12, 0
+        movsd xmm0, qword[fltZero]
+        movsd qword[s], xmm0
+    cont:
 
 ; -----
 ;  Restore registers and return to main.
