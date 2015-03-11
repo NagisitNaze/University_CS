@@ -159,6 +159,7 @@ errDCBKsame db  "Error, draw color and background color can "
 red         dd  0           ; 0-255
 green       dd  0           ; 0-255
 blue        dd  0           ; 0-255
+cnt         dd  0
 
 pi          dq  3.14159265358979    ; constant
 fltZero     dq  0.0
@@ -380,7 +381,6 @@ drawCircles:
 ; -----
 ;  Save registers
 
-    push rbx
     push r10
     push r12
     push r13
@@ -419,69 +419,84 @@ drawCircles:
 ; -----
 ;  Set speed based on user entered drawSpeed
 ;   speed = drawSpeed / 10000
-    
-    mov rax, 0
-    mov eax, dword[drawSpeed]
-    cvtsi2sd xmm0, rax
-    movsd xmm1, qword[scale]
-    divsd xmm0, xmm1
-    movsd qword[speed], xmm0
+        
+    mov rax, 0                  ; 0
+    mov eax, dword[drawSpeed]   ; drawSpeed
+    cvtsi2sd xmm0, rax          ; float(drawSpeed)
+    movsd xmm1, qword[scale]    ; scale
+    divsd xmm0, xmm1            ; float(drawSpeed) / scale
+    movsd qword[speed], xmm0    ; speed = ^
 
 ; -----
 ;  Plot (x,y) based on provided equations
 ;   x = (1-s)*cos(t+pi*s)+s*cos(2*t)
 ;   y = (1-s)*sin(t+pi*s)-s*sin(2*t)
 
-    movsd xmm1, qword[fltOne]
-    divsd xmm1, qword[speed]
-    cvtsd2si rax, xmm1
-    mov r13, rax
+    movsd xmm1, qword[fltOne]   ; 1.0
+    divsd xmm1, qword[speed]    ; 1.0 / speed
+    cvtsd2si rax, xmm1          ; int(1.0 / speed)
+    mov r13, rax                ; r13 = int(1.0 / speed)
 
-    mov r14, 0
-    movsd xmm0, qword[fltTwo]
-    mulsd xmm0, qword[pi]
-    divsd xmm0, qword[tStep]
-    cvtsd2si rax, xmm0
-    mov r15, rax
+    mov r14, 0                  ; j = 0
+    movsd xmm0, qword[fltTwo]   ; 2.0
+    mulsd xmm0, qword[pi]       ; 2.0 * pi
+    divsd xmm0, qword[tStep]    ; (2.0 * pi) / tStep
+    cvtsd2si rax, xmm0          ; int( 2.0 * pi / tStep )
+    mov r15, rax                ; r15 = ^
 
     movsd xmm0, qword[fltZero]
     movsd qword[t], xmm0
     innerForLoop:
-        cmp r14, r15
-        jge endInnerForLoop         ; if not end inner for loop
+        cmp r14, r15                ; compare j and max
+        jge endInnerForLoop         ; j >= max ? if true end
         
-        movsd xmm0, qword[pi]       ; move pi into reg
-        mulsd xmm0, qword[s]        ; pi * s
-        addsd xmm0, qword[t]        ; (pi * s) + t
-        call cos                    ; cos(pi * s + t)
+        movsd xmm0, qword[pi]       ; pi
+        mulsd xmm0, qword[speed]    ; pi * speed
+        addsd xmm0, qword[t]        ; pi * speed + t
+        movsd qword[tmp1], xmm0     ; tmp1 = pi * speed + t
+        call cos                    ; cos(pi * speed + t)
 
-        movsd xmm1, qword[fltOne]   ; move 1.0 into reg
-        subsd xmm1, qword[s]        ; 1.0 - s
+        movsd xmm1, qword[fltOne]   ; 1.0
+        subsd xmm1, qword[speed]    ; 1.0 - speed
 
-        mulsd xmm0, xmm1            ; (1.0 - s) * cos(t + pi * s)
-        movsd qword[tmp1], xmm0     ; mov value above into tmp
+        mulsd xmm0, xmm1            ; cos(pi * speed + t) * (1.0 - speed)
+        movsd qword[tmp2], xmm0     ; tmp2 = cos(pi * speed + t) * (1.0 - speed)
 
-        movsd xmm0, qword[t]        ; move t into reg
+        movsd xmm0, qword[t]        ; t
         mulsd xmm0, qword[fltTwo]   ; t * 2.0
         call cos                    ; cos(t * 2.0)
         mulsd xmm0, qword[s]        ; cos(t * 2.0) * s
-        addsd xmm0, qword[tmp1]     ; (1.0 - s) * cos(t + pi * s) + s * cos(t * 2.0)
-        movsd qword[x], xmm0        ; set y equal to above
+        addsd xmm0, qword[tmp2]     ; cos(t * 2.0) * s + cos(pi * speed + t) * (1.0 - speed)
+        movsd qword[x], xmm0        ; x = ^
 
-        movsd xmm0, qword[t]        ; move t into reg
+        movsd xmm0, qword[tmp1]     ; pi * speed + t
+        call sin                    ; sin(pi * speed + t)
+
+        movsd xmm1, qword[fltOne]   ; 1.0
+        subsd xmm1, qword[speed]    ; 1.0 - speed
+
+        mulsd xmm0, xmm1            ; sin(pi * speed + t) * (1.0 - speed)
+        movsd qword[tmp2], xmm0     ; tmp2 = sin(pi * speed + t) * (1.0 - speed)
+
+        movsd xmm0, qword[t]        ; t
         mulsd xmm0, qword[fltTwo]   ; t * 2.0
-        call cos                    ; cos(t * 2.0)
-        mulsd xmm0, qword[s]        ; s * cos(t * 2.0)
-        movsd xmm1, qword[tmp1]     ; move previous sum into reg
-        subsd xmm1, xmm0            ; (1.0 - s) * cos(t + pi * s) - s * cos(t * 2.0)
-        movsd qword[y], xmm1        ; set x equal to above
+        call sin                    ; sin(t * 2.0)
+        mulsd xmm0, qword[s]        ; s * sin(t * 2.0)
+        movsd xmm1, qword[tmp2]     ; sin(pi * speed + t) * (1.0 - speed)
+        subsd xmm1, xmm0            ; sin(pi * speed + t) * (1.0 - speed) - s * sin(t * 2.0)
+        movsd qword[y], xmm1        ; y = ^
 
         movsd xmm0, qword[x]
         movsd xmm1, qword[y]
         call glVertex2d
-        inc r14
-    endInnerForLoop:
 
+        movsd xmm0, qword[t]        ; t
+        addsd xmm0, qword[tStep]    ; t + tStep
+        movsd qword[t], xmm0        ; t = t + tStep
+        inc r14                     ; j++
+        jmp innerForLoop            ; loop
+    endInnerForLoop:
+    
 ; -----
 ;  End drawing operations and flush unwritten operations.
 ;  Set-up for next call.
@@ -493,16 +508,19 @@ drawCircles:
 
 ; -----
 ;  Update speed for next call.
-
+    
     movsd xmm0, qword[s]        ; move s into reg
     addsd xmm0, qword[speed]    ; s + speed
     movsd qword[s], xmm0        ; s = s + speed
-    inc r12
-    cmp r12, r13
-    jle cont
-        mov r12, 0
-        movsd xmm0, qword[fltZero]
-        movsd qword[s], xmm0
+    mov eax, dword[cnt]         ; count
+    inc eax                     ; count++
+    mov dword[cnt], eax         ; set internal count back
+    cmp eax, r13d               ; count == max ?
+    jl cont                     ; if not, continue
+        mov eax, 0                  ; 0
+        mov dword[cnt], eax         ; count = 0
+        movsd xmm0, qword[fltZero]  ; 0.0
+        movsd qword[s], xmm0        ; s = 0.0
     cont:
 
 ; -----
@@ -512,7 +530,6 @@ drawCircles:
     pop r13
     pop r12
     pop r10
-    pop rbx
     ret
 
 
