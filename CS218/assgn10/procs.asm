@@ -451,13 +451,13 @@ drawCircles:
         jge endInnerForLoop         ; j >= max ? if true end
         
         movsd xmm0, qword[pi]       ; pi
-        mulsd xmm0, qword[speed]    ; pi * speed
+        mulsd xmm0, qword[s]    ; pi * speed
         addsd xmm0, qword[t]        ; pi * speed + t
         movsd qword[tmp1], xmm0     ; tmp1 = pi * speed + t
         call cos                    ; cos(pi * speed + t)
 
         movsd xmm1, qword[fltOne]   ; 1.0
-        subsd xmm1, qword[speed]    ; 1.0 - speed
+        subsd xmm1, qword[s]    ; 1.0 - speed
 
         mulsd xmm0, xmm1            ; cos(pi * speed + t) * (1.0 - speed)
         movsd qword[tmp2], xmm0     ; tmp2 = cos(pi * speed + t) * (1.0 - speed)
@@ -473,7 +473,7 @@ drawCircles:
         call sin                    ; sin(pi * speed + t)
 
         movsd xmm1, qword[fltOne]   ; 1.0
-        subsd xmm1, qword[speed]    ; 1.0 - speed
+        subsd xmm1, qword[s]    ; 1.0 - speed
 
         mulsd xmm0, xmm1            ; sin(pi * speed + t) * (1.0 - speed)
         movsd qword[tmp2], xmm0     ; tmp2 = sin(pi * speed + t) * (1.0 - speed)
@@ -508,7 +508,7 @@ drawCircles:
 
 ; -----
 ;  Update speed for next call.
-    
+
     movsd xmm0, qword[s]        ; move s into reg
     addsd xmm0, qword[speed]    ; s + speed
     movsd qword[s], xmm0        ; s = s + speed
