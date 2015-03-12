@@ -292,6 +292,7 @@ getParams:
     jmp dn              
     compltArgs:             ; at this point argument count checking has passed
     mov rbx, qword[rsi+8]   ; rbx = argv[1] ( speed specifier )
+    
     cmp dword[rbx], 0x0070732D
     je noErrorSpeedSpec
         mov rdi, errSPsp    ; print bad speed specifier
@@ -302,12 +303,18 @@ getParams:
     mov rbx, qword[rsi+16]  ; rbx = argv[2] ( speed value )
     senary2int rbx, rdx     ; convert string to integer and store in argument address
     cmp dword[rdx], -1      ; check if conversion failed
-    jne goodSpeed   
+    jne goodSpeed
+    speedError:   
         mov rdi, errSPvalue ; print bad color value 
         call printString    ; call print function
         mov rax, FALSE
     jmp dn
     goodSpeed:
+    cmp dword[rdx], SP_MIN  ; check if speed is less than allowed min
+    jl speedError           ; send error if yes
+    cmp dword[rdx], SP_MAX  ; check if speed is more than allowed max
+    jg speedError
+    
     mov rbx, qword[rsi+24]  ; rbx = argv[3] ( color specifier )
     cmp dword[rbx], 0x0063642D
     je noErrorColorSpec
@@ -320,10 +327,17 @@ getParams:
     senary2int rbx, rcx     ; convert string to integer and store in argument address
     cmp dword[rcx], -1      ; check if conversion failed
     jne goodColor
+    colorError:
         mov rdi, errDCvalue ; print bad color value
         call printString    ; call print function
+        mov rax, FALSE
     jmp dn 
     goodColor:
+    cmp dword[rcx], DC_MIN  ; check if color is less than allowed min
+    jl colorError           ; send error if yes
+    cmp dword[rcx], DC_MAX  ; check if color is more than allowed max
+    jg colorError           ; send error if yes
+
     mov rbx, qword[rsi+40]  ; rbx = argv[5] ( background color specifier )
     cmp dword[rbx], 0x006B622D
     je noErrorBkColorSpec
@@ -331,16 +345,22 @@ getParams:
         call printString    ; call print function
         mov rax, FALSE
     jmp dn
-    noErrorBkColorSpec:
+    noErrorBkColorSpec:    
     mov rbx, qword[rsi+48]  ; rbx = argv[6] ( background color value )
     senary2int rbx, r8      ; convert string to integer and store in argument address
     cmp dword[r8], -1       ; check if conversion failed
     jne goodBkColor
+    bkColorError:
         mov rdi, errBKvalue ; print bad bk value
         call printString    ; call print function
         mov rax, FALSE
     jmp dn
     goodBkColor:
+    cmp dword[r8], BK_MIN   ; check if background color is less than min
+    jl bkColorError         ; send error if yes
+    cmp dword[r8], BK_MAX   ; check if background color is more than max
+    jg bkColorError         ; send error if yes
+
     mov rbx, 0
     mov ebx, dword[r8]
     cmp ebx, dword[rcx]
@@ -396,10 +416,13 @@ drawCircles:
 ; -----
 ;  set draw colors, red, green and blue.
 
-    mov rax, 125            ; TMP
-    mov dword[red], eax     ; TMP
-    mov dword[green], eax   ; TMP
-    mov dword[blue], eax    ; TMP
+    mov eax, dword[drawColor]
+    mov byte[blue], al
+    ror eax, 8
+    mov byte[green], al
+    ror eax, 8
+    mov byte[red], al
+    ror eax, 16
 
 ; ----
 ;  Set openGL drawing color.

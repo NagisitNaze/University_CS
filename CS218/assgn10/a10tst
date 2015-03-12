@@ -1,4 +1,3 @@
-# ---------------------------------------------------------
 # Initial checks.
 #   Ensure executable file exists.
 
@@ -96,8 +95,7 @@ pause $2
 #
 echo "------------------------------------"
 echo "Error testing -> wrong or bad specifiers"
-echo "     $1 should show error message for incorrect speed,"
-echo "     $1  draw color, and background color specifiers"
+echo "     $1 should show error message for incorrect speed."
 echo
 echo
 #
@@ -107,6 +105,23 @@ echo
 #
 echo ${bolded}$1 -ps 15 -dc 1354104520 -bk 0${normal}
 ./$1 -ps 15 -dc 1354104520 -bk 0
+echo
+#
+echo ${bolded}$1 - 15 -dc 1354104520 -bk 0${normal}
+./$1 - 15 -dc 1354104520 -bk 0
+echo
+#
+echo ${bolded}$1 -spp 15 -dc 1354104520 -bk 0${normal}
+./$1 -spp 15 -dc 1354104520 -bk 0
+echo
+#
+pause $2
+# ----------------------
+#
+echo "------------------------------------"
+echo "Error testing -> wrong or bad specifiers"
+echo "     $1 should show error message for draw color."
+echo
 echo
 #
 echo ${bolded}$1 -sp 15 dc 1354104520 -bk 0${normal}
@@ -121,10 +136,16 @@ echo ${bolded}$1 -sp 15 - 1354104520 -bk 0${normal}
 ./$1 -sp 15 - 1354104520 -bk 0
 echo
 #
-pause $2
+echo ${bolded}$1 -sp 15 -dcc 1354104520 -bk 0${normal}
+./$1 -sp 15 -dcc 1354104520 -bk 0
 echo
+#
+pause $2
+# ----------------------
+#
+echo "------------------------------------"
 echo "Error testing -> wrong or bad specifiers"
-echo "     $1 continued."
+echo "     $1 should show error message for background color."
 echo
 echo
 #
@@ -138,6 +159,10 @@ echo
 #
 echo ${bolded}$1 -sp 15 -dc 1354104520 kb- 0${normal}
 ./$1 -sp 15 -dc 1354104520 kb- 0
+echo
+#
+echo ${bolded}$1 -sp 15 -dc 1354104520 -bkk 0${normal}
+./$1 -sp 15 -dc 1354104520 -bkk 0
 echo
 #
 pause $2
