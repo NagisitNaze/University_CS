@@ -41,7 +41,7 @@
             jmp %%dn
         %%isAlpha1:
         cmp sil, 0x36
-        jle %%isAlpha2
+        jl %%isAlpha2
             mov dword[r11], -1
             jmp %%dn
         %%isAlpha2:
