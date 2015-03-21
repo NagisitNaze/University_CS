@@ -1,0 +1,382 @@
+     1                                 %line 1+1 procs.asm
+     2                                 
+     3                                 
+     4                                 
+     5                                 
+     6                                 
+     7                                 
+     8                                 
+     9                                 
+    10                                 
+    11                                 
+    12                                 
+    13                                 
+    14                                 
+    15                                 
+    16                                 
+    17                                 
+    18                                 
+    19                                 
+    20                                 
+    21                                 
+    22                                 
+    23                                 
+    24                                 
+    25                                 
+    26                                 
+    27                                 
+    28                                 
+    29                                 
+    30                                 
+    31                                 
+    32                                 
+    33                                 
+    34                                 
+    35                                 
+    36                                 [section .data]
+    37                                 
+    38                                 
+    39                                 
+    40                                 
+    41                                 LF equ 10
+    42                                 NULL equ 0
+    43                                 SPACE equ 0x20
+    44                                 
+    45                                 TRUE equ 1
+    46                                 FALSE equ 0
+    47                                 
+    48                                 SUCCESS equ 0
+    49                                 NOSUCCESS equ 1
+    50                                 
+    51                                 STDIN equ 0
+    52                                 STDOUT equ 1
+    53                                 STDERR equ 2
+    54                                 
+    55                                 SYS_read equ 0
+    56                                 SYS_write equ 1
+    57                                 SYS_open equ 2
+    58                                 SYS_close equ 3
+    59                                 SYS_fork equ 57
+    60                                 SYS_exit equ 60
+    61                                 SYS_creat equ 85
+    62                                 SYS_time equ 201
+    63                                 
+    64                                 O_CREAT equ 0x40
+    65                                 O_TRUNC equ 0x200
+    66                                 O_APPEND equ 0x400
+    67                                 
+    68                                 O_RDONLY equ 000000
+    69                                 O_WRONLY equ 000001
+    70                                 O_RDWR equ 000002
+    71                                 
+    72                                 S_IRUSR equ 00400
+    73                                 S_IWUSR equ 00200
+    74                                 S_IXUSR equ 00100
+    75                                 
+    76                                 
+    77                                 
+    78                                 
+    79 00000000 55736167653A202E2F-    usageMsg db "Usage: ./wc -w <searchWord> <-mc|-ic> -f <inputFile>"
+    80 00000000 7763202D77203C7365-
+    81 00000000 61726368576F72643E-
+    82 00000000 203C2D6D637C2D6963-
+    83 00000000 3E202D66203C696E70-
+    84 00000000 757446696C653E     
+    85 00000034 0A00                    db LF, NULL
+    86                                 
+    87 00000036 4572726F722C20696E-    errbadCLQ db "Error, invalid command line arguments."
+    88 00000036 76616C696420636F6D-
+    89 00000036 6D616E64206C696E65-
+    90 00000036 20617267756D656E74-
+    91 00000036 732E               
+    92 0000005C 0A00                    db LF, NULL
+    93                                 
+    94 0000005E 4572726F722C20696E-    errWordSpec db "Error, invalid search word specifier."
+    95 0000005E 76616C696420736561-
+    96 0000005E 72636820776F726420-
+    97 0000005E 737065636966696572-
+    98 0000005E 2E                 
+    99 00000083 0A00                    db LF, NULL
+   100                                 
+   101 00000085 4572726F722C207365-    errWordLength db "Error, search word length must be < 80 "
+   102 00000085 6172636820776F7264-
+   103 00000085 206C656E677468206D-
+   104 00000085 757374206265203C20-
+   105 00000085 383020             
+   106 000000AC 636861726163746572-     db "characters."
+   107 000000AC 732E               
+   108 000000B7 0A00                    db LF, NULL
+   109                                 
+   110 000000B9 4572726F722C20696E-    errFileSpec db "Error, invalid input file specifier."
+   111 000000B9 76616C696420696E70-
+   112 000000B9 75742066696C652073-
+   113 000000B9 70656369666965722E 
+   114 000000DD 0A00                    db LF, NULL
+   115                                 
+   116 000000DF 4572726F722C20696E-    errCaseSpec db "Error, invalid match case specifier."
+   117 000000DF 76616C6964206D6174-
+   118 000000DF 636820636173652073-
+   119 000000DF 70656369666965722E 
+   120 00000103 0A00                    db LF, NULL
+   121                                 
+   122 00000105 4572726F722C206361-    errOpenIn db "Error, can not open input file."
+   123 00000105 6E206E6F74206F7065-
+   124 00000105 6E20696E7075742066-
+   125 00000105 696C652E           
+   126 00000124 0A00                    db LF, NULL
+   127                                 
+   128                                 
+   129                                 
+   130                                 
+   131                                 MAXWORDLENGTH equ 80
+   132                                 BUFFSIZE equ 250000
+   133                                 
+   134                                 
+   135 00000126 90D0030000000000       bfMax dq BUFFSIZE
+   136 0000012E 90D0030000000000       curr dq BUFFSIZE
+   137                                 
+   138 00000136 00                     wasEOF db FALSE
+   139                                 
+   140 00000137 4572726F7220726561-    errFileRead db "Error reading input file."
+   141 00000137 64696E6720696E7075-
+   142 00000137 742066696C652E     
+   143 00000150 0A00                    db LF, NULL
+   144                                 
+   145                                 
+   146                                 
+   147                                 
+   148 00000152 466F756E64202700       resultStart db "Found '", NULL
+   149 0000015A 272000                 resultSpace db "' ", NULL
+   150 0000015D 2074696D65732E0A00     resultEnd db " times.", LF, NULL
+   151                                 
+   152                                 
+   153                                 
+   154                                 [section .bss]
+   155                                 
+   156 00000000 <gap>                  buff resb BUFFSIZE+1
+   157 0003D091 <gap>                  tmpString resb MAXWORDLENGTH+1
+   158                                 
+   159                                 
+   160                                 
+   161                                 
+   162                                 [section .text]
+   163                                 
+   164                                 
+   165                                 
+   166                                 
+   167                                 
+   168                                 
+   169                                 
+   170                                 
+   171                                 
+   172                                 
+   173                                 
+   174                                 
+   175                                 
+   176                                 
+   177                                 
+   178                                 
+   179                                 
+   180                                 
+   181                                 [global checkParameters]
+   182                                 checkParameters:
+   183 00000000 53                      push rbx
+   184                                 
+   185 00000001 4883FF01                cmp rdi, 1
+   186 00000005 7516                    jne noUsage
+   187 00000007 48C7C7[00000000]        mov rdi, usageMsg
+   188 0000000E E81A010000              call printString
+   189 00000013 48C7C000000000          mov rax, FALSE
+   190 0000001A E909010000              jmp dn
+   191                                  noUsage:
+   192 0000001F 4883FF06                cmp rdi, 6
+   193 00000023 7416                    je goodArgCount
+   194 00000025 48C7C7[00000000]        mov rdi, errbadCLQ
+   195 0000002C E8FC000000              call printString
+   196 00000031 48C7C000000000          mov rax, FALSE
+   197 00000038 E9EB000000              jmp dn
+   198                                  goodArgCount:
+   199 0000003D 488B5E08                mov rbx, qword[rsi+8]
+   200 00000041 66813B2D77              cmp word[rbx], 0x772D
+   201 00000046 7416                    je noErrorWordSpec
+   202 00000048 48C7C7[00000000]        mov rdi, errWordSpec
+   203 0000004F E8D9000000              call printString
+   204 00000054 48C7C000000000          mov rax, FALSE
+   205 0000005B E9C8000000              jmp dn
+   206                                  noErrorWordSpec:
+   207 00000060 488B5E10                mov rbx, qword[rsi+16]
+   208 00000064 4D31DB                  xor r11, r11
+   209 00000067 4D31D2                  xor r10, r10
+   210                                  length:
+   211 0000006A 468A1C13                mov r11b, byte[rbx+r10]
+   212 0000006E 4180FB00                cmp r11b, NULL
+   213 00000072 7403                    je endLength
+   214 00000074 49FFC2                  inc r10
+   215 00000077 EBEF                    jmp length
+   216                                  endLength:
+   217 00000079 4983FA50                cmp r10, MAXWORDLENGTH
+   218 0000007D 7C16                    jl goodLength
+   219 0000007F 48C7C7[00000000]        mov rdi, errWordLength
+   220 00000086 E8A2000000              call printString
+   221 0000008B 48C7C000000000          mov rax, FALSE
+   222 00000092 E991000000              jmp dn
+   223                                  goodLength:
+   224 00000097 48891A                  mov qword[rdx], rbx
+   225 0000009A 488B5E18                mov rbx, qword[rsi+24]
+   226 0000009E 813B2D6D6300            cmp dword[rbx], 0x00636D2D
+   227 000000A4 7506                    jne checkTwo
+   228 000000A6 C70101000000            mov dword[rcx], TRUE
+   229 000000AC EB21                    jmp caseGood
+   230                                  checkTwo:
+   231 000000AE 813B2D696300            cmp dword[rbx], 0x0063692D
+   232 000000B4 7419                    je caseGood
+   233 000000B6 48C7C7[00000000]        mov rdi, errCaseSpec
+   234 000000BD E86B000000              call printString
+   235 000000C2 48C7C000000000          mov rax, FALSE
+   236 000000C9 EB60                    jmp dn
+   237 000000CB C70100000000            mov dword[rcx], FALSE
+   238                                  caseGood:
+   239 000000D1 488B5E20                mov rbx, qword[rsi+32]
+   240 000000D5 66813B2D66              cmp word[rbx], 0x662D
+   241 000000DA 7413                    je goodFileSpec
+   242 000000DC 48C7C7[00000000]        mov rdi, errFileSpec
+   243 000000E3 E845000000              call printString
+   244 000000E8 48C7C000000000          mov rax, FALSE
+   245 000000EF EB3A                    jmp dn
+   246                                  goodFileSpec:
+   247 000000F1 488B5E28                mov rbx, qword[rsi+40]
+   248 000000F5 48C7C002000000          mov rax, SYS_open
+   249 000000FC 4889DF                  mov rdi, rbx
+   250 000000FF 48C7C600000000          mov rsi, O_RDONLY
+   251 00000106 0F05                    syscall
+   252 00000108 4883F800                cmp rax, 0
+   253 0000010C 7D13                    jge noError
+   254 0000010E 48C7C7[00000000]        mov rdi, errOpenIn
+   255 00000115 E813000000              call printString
+   256 0000011A 48C7C000000000          mov rax, FALSE
+   257 00000121 EB08                    jmp dn
+   258                                  noError:
+   259 00000123 498900                  mov qword[r8], rax
+   260 00000126 48C7C001000000          mov rax, TRUE
+   261                                  dn:
+   262 0000012D 5B                      pop rbx
+   263 0000012E C3                      ret
+   264                                 
+   265                                 
+   266                                 
+   267                                 
+   268                                 
+   269                                 
+   270                                 
+   271                                 
+   272                                 
+   273                                 
+   274                                 
+   275                                 
+   276                                 
+   277                                 
+   278                                 
+   279                                 
+   280                                 
+   281                                 
+   282                                 
+   283                                 
+   284                                 
+   285                                 
+   286                                 
+   287                                 
+   288                                 
+   289                                 [global getWord]
+   290                                 getWord:
+   291                                 
+   292 0000012F C3                      ret
+   293                                 
+   294                                 
+   295                                 
+   296                                 
+   297                                 
+   298                                 
+   299                                 
+   300                                 
+   301                                 
+   302                                 
+   303                                 
+   304                                 
+   305                                 
+   306                                 
+   307                                 
+   308                                 [global checkWord]
+   309                                 checkWord:
+   310                                 
+   311 00000130 C3                      ret
+   312                                 
+   313                                 
+   314                                 
+   315                                 
+   316                                 
+   317                                 
+   318                                 
+   319                                 
+   320                                 
+   321                                 
+   322                                 
+   323                                 
+   324                                 
+   325                                 
+   326                                 
+   327                                 [global displayResults]
+   328                                 displayResults:
+   329                                 
+   330 00000131 C3                      ret
+   331                                 
+   332                                 
+   333                                 
+   334                                 
+   335                                 
+   336                                 
+   337                                 
+   338                                 
+   339                                 
+   340                                 
+   341                                 
+   342                                 
+   343                                 
+   344                                 
+   345                                 
+   346                                 
+   347                                 
+   348                                 
+   349                                 [global printString]
+   350                                 printString:
+   351                                 
+   352                                 
+   353                                 
+   354                                 
+   355 00000132 48C7C200000000          mov rdx, 0
+   356                                 strCountLoop:
+   357 00000139 803C1700                cmp byte [rdi+rdx], NULL
+   358 0000013D 7403                    je strCountLoopDone
+   359 0000013F 48FFC2                  inc rdx
+   360 00000142 EBF3                    jmp strCountLoop
+   361                                 strCountLoopDone:
+   362 00000144 4883FA00                cmp rdx, 0
+   363 00000148 7411                    je printStringDone
+   364                                 
+   365                                 
+   366                                 
+   367                                 
+   368 0000014A 48C7C001000000          mov rax, SYS_write
+   369 00000151 4889FE                  mov rsi, rdi
+   370 00000154 48C7C701000000          mov rdi, STDOUT
+   371                                 
+   372 0000015B 0F05                    syscall
+   373                                 
+   374                                 
+   375                                 
+   376                                 
+   377                                 printStringDone:
+   378 0000015D C3                      ret
+   379                                 
+   380                                 
+   381                                 
+   382                                 
