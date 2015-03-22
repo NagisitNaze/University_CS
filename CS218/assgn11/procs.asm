@@ -41,9 +41,9 @@ section .data
 ; -----
 ;  Define standard constants.
 
-LF      equ 10          ; line feed
+LF      equ 10              ; line feed
 NULL        equ 0           ; end of string
-SPACE       equ 0x20            ; space
+SPACE       equ 0x20        ; space
 
 TRUE        equ 1
 FALSE       equ 0
@@ -194,7 +194,7 @@ checkParameters:
     xor r10, r10                ; set r10 to zero
     length:                 
         mov r11b, byte[rbx+r10]
-        cmp r11b, NULL            ; end loop if NULL reached
+        cmp r11b, NULL          ; end loop if NULL reached
         je endLength
         mov byte[rdx], r11b
         inc rdx
@@ -212,7 +212,7 @@ checkParameters:
     mov rbx, qword[rsi+24]      ; rbx = argv[3] ( search specifier )
     cmp dword[rbx], 0x00636D2D  ; check search specifier (mc)
     jne checkTwo
-        mov byte[r12], TRUE    ; set match case specifier to true
+        mov byte[r12], TRUE     ; set match case specifier to true
     jmp caseGood                ; skip next check
     checkTwo:
     cmp dword[rbx], 0x0063692D  ; check search specifier (ic)    
@@ -221,7 +221,7 @@ checkParameters:
         call printString        ; call print function
         mov rax, FALSE          ; return false
     jmp dn
-    mov byte[r12], FALSE       ; set match case sepcifier to false
+    mov byte[r12], FALSE        ; set match case sepcifier to false
     caseGood:
     mov rbx, qword[rsi+32]      ; rbx = argv[4] ( file specifier )
     cmp byte[rbx], 0x2D
@@ -249,7 +249,7 @@ checkParameters:
         mov rax, FALSE          ; return false
     jmp dn
     noError:
-    mov dword[r13], eax          ; save descriptor
+    mov dword[r13], eax         ; save descriptor
     mov rax, TRUE               ; function ran successfully
     dn:
     pop r13
@@ -521,10 +521,10 @@ strCountLoopDone:
 ; -----
 ;  Call OS to output string.
 
-    mov rax, SYS_write          ; system code for write()
+    mov rax, SYS_write      ; system code for write()
     mov rsi, rdi            ; address of characters to write
     mov rdi, STDOUT         ; file descriptor for standard in
-                        ; rdx=count to write, set above
+                            ; rdx=count to write, set above
     syscall                 ; system call
 
 ; -----
