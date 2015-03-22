@@ -272,7 +272,7 @@ tst7=$(./$1 -w Shareware -ic -f a11f6.txt)
 echo $tst7
 echo
 #
-if [ "$tst7" = "Found 'shareware' 5131 times." ]; then
+if [ "$tst7" = "Found 'Shareware' 5131 times." ]; then
 	echo "Test #7 - Successful"
 else
 	echo "Test #7 - Fail"

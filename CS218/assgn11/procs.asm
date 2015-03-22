@@ -286,9 +286,12 @@ getWord:
     push rbx   
     push r12
     push r13 
+    push r14
     
     mov rbx, rdi                    ; move first param into rbx    
+    mov r14, rsi
 
+    reBuffer:
     mov r10, qword[bfMax]
     cmp qword[curr], r10            ; check if we still have data in buffer
     jb underBuffSize                ; if not read below
@@ -298,7 +301,7 @@ getWord:
         jmp _dn
         notEOF:
         mov rax, SYS_read           ; set read option
-        mov rdi, rsi                ; set file descriptor
+        mov rdi, r14                ; set file descriptor
         mov rsi, buff               ; set buffer to file buffer
         mov rdx, BUFFSIZE           ; set buffer size
         syscall                     ; read
@@ -320,48 +323,44 @@ getWord:
         mov qword[curr], r10        ; move value into variable
     underBuffSize:                  ; now attempt to read
 
-    xor r9, r9
-    xor r11, r11
-    xor r12, r12
-    mov r12, buff
-    mov r13, qword[wordIndex]
-    mov r9, qword[curr]
-
-    mov r11b, byte[r12+r9]
-    cmp r11b, 0x20
-    jne wordCont
-        xor r13, r13
-    cmp r11b, 0x10
-    jne wordCont
-        xor r13, r13
-    wordCont:
+    xor r9, r9                      ; clear r9 register 
+    xor r11, r11                    ; clear r11 register
+    xor r12, r12                    ; clear r12 register
+    mov r12, buff                   ; move buffer address into r12
+    mov r9, qword[curr]             ; move value of curr into r9
 
     getNextWord:
         mov r11b, byte[r12+r9]      ; get character from buffer
-        cmp r11b, 0x20
+        cmp r11b, 0x20              ; ensure character is not a space
         jbe endNextWord
-        mov byte[rbx+r13], r11b     ; move a byte from the buffer into string
-        inc r13                     ; increment rbx
+        mov byte[rbx], r11b         ; move a byte from the buffer into string
+        inc rbx                     ; increment rbx
         inc r9                      ; inc curr
     jmp getNextWord
-    endNextWord:    
+    endNextWord:
 
-    mov byte[rbx+r13], NULL
+    cmp r11b, 0x00                  ; if what casued the loop above to break was EOF
+    jne noReBuffer
+        mov qword[curr], r9         ; put value back into curr
+        jmp reBuffer                ; refill buffer
+    noReBuffer:   
+
+    ;mov byte[rbx+r13], NULL
     ignoreSpaces:
-        mov r11b, byte[r12+r9]
-        cmp r11b, 0x20
-        ja endIgnoreSpaces
-        cmp r11b, 0x00
+        mov r11b, byte[r12+r9]      ; move character into buffer again
+        cmp r11b, 0x20              ; check if below or equal to a space
+        ja endIgnoreSpaces  
+        cmp r11b, 0x00              ; also ensure we don't skip EOF
         je endIgnoreSpaces
-        xor r13, r13
-        inc r9
+        inc r9                      ; increment curr
     jmp ignoreSpaces
     endIgnoreSpaces:
 
+    mov byte[rbx], NULL             ; move null into end of rbx
     mov qword[curr], r9             ; move curr back into variable
-    mov qword[wordIndex], r13       ; move index back into var
     mov rax, TRUE                   ; return true
     _dn:
+    pop r14
     pop r13
     pop r12
     pop rbx
