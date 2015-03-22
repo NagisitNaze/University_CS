@@ -190,9 +190,12 @@ checkParameters:
         mov r11b, byte[rbx+r10]
         cmp r11b, NULL            ; end loop if NULL reached
         je endLength
+        mov byte[rdx], r11b
+        inc rdx
         inc r10                 ; find length
         jmp length
     endLength:
+    mov byte[rdx], NULL
     cmp r10, MAXWORDLENGTH      ; compare length to max word length
     jb goodLength
         mov rdi, errWordLength  ; move error word length into rdi
@@ -200,8 +203,6 @@ checkParameters:
         mov rax, FALSE          ; return false
     jmp dn
     goodLength:
-    mov rbx, qword[rbx]
-    mov qword[rdx], rbx
     mov rbx, qword[rsi+24]      ; rbx = argv[3] ( search specifier )
     cmp dword[rbx], 0x00636D2D  ; check search specifier (mc)
     jne checkTwo

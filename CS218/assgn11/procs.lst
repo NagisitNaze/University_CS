@@ -194,24 +194,24 @@
    194 0000000B 4883FF01                cmp rdi, 1
    195 0000000F 7516                    jne noUsage
    196 00000011 48C7C7[00000000]        mov rdi, usageMsg
-   197 00000018 E812030000              call printString
+   197 00000018 E815030000              call printString
    198 0000001D 48C7C000000000          mov rax, FALSE
-   199 00000024 E90B010000              jmp dn
+   199 00000024 E90E010000              jmp dn
    200                                  noUsage:
    201 00000029 4883FF06                cmp rdi, 6
    202 0000002D 7416                    je goodArgCount
    203 0000002F 48C7C7[00000000]        mov rdi, errbadCLQ
-   204 00000036 E8F4020000              call printString
+   204 00000036 E8F7020000              call printString
    205 0000003B 48C7C000000000          mov rax, FALSE
-   206 00000042 E9ED000000              jmp dn
+   206 00000042 E9F0000000              jmp dn
    207                                  goodArgCount:
    208 00000047 488B5E08                mov rbx, qword[rsi+8]
    209 0000004B 66813B2D77              cmp word[rbx], 0x772D
    210 00000050 7416                    je noErrorWordSpec
    211 00000052 48C7C7[00000000]        mov rdi, errWordSpec
-   212 00000059 E8D1020000              call printString
+   212 00000059 E8D4020000              call printString
    213 0000005E 48C7C000000000          mov rax, FALSE
-   214 00000065 E9CA000000              jmp dn
+   214 00000065 E9CD000000              jmp dn
    215                                  noErrorWordSpec:
    216 0000006A 488B5E10                mov rbx, qword[rsi+16]
    217 0000006E 4D31DB                  xor r11, r11
@@ -219,61 +219,61 @@
    219                                  length:
    220 00000074 468A1C13                mov r11b, byte[rbx+r10]
    221 00000078 4180FB00                cmp r11b, NULL
-   222 0000007C 7403                    je endLength
-   223 0000007E 49FFC2                  inc r10
-   224 00000081 EBEF                    jmp length
-   225                                  endLength:
-   226 00000083 4983FA50                cmp r10, MAXWORDLENGTH
-   227 00000087 7216                    jb goodLength
-   228 00000089 48C7C7[00000000]        mov rdi, errWordLength
-   229 00000090 E89A020000              call printString
-   230 00000095 48C7C000000000          mov rax, FALSE
-   231 0000009C E993000000              jmp dn
-   232                                  goodLength:
-   233 000000A1 488B1B                  mov rbx, qword[rbx]
-   234 000000A4 48891A                  mov qword[rdx], rbx
-   235 000000A7 488B5E18                mov rbx, qword[rsi+24]
-   236 000000AB 813B2D6D6300            cmp dword[rbx], 0x00636D2D
-   237 000000B1 7505                    jne checkTwo
-   238 000000B3 41C6042401              mov byte[r12], TRUE
-   239 000000B8 EB20                    jmp caseGood
-   240                                  checkTwo:
-   241 000000BA 813B2D696300            cmp dword[rbx], 0x0063692D
-   242 000000C0 7418                    je caseGood
-   243 000000C2 48C7C7[00000000]        mov rdi, errCaseSpec
-   244 000000C9 E861020000              call printString
-   245 000000CE 48C7C000000000          mov rax, FALSE
-   246 000000D5 EB60                    jmp dn
-   247 000000D7 41C6042400              mov byte[r12], FALSE
-   248                                  caseGood:
-   249 000000DC 488B5E20                mov rbx, qword[rsi+32]
-   250 000000E0 66813B2D66              cmp word[rbx], 0x662D
-   251 000000E5 7413                    je goodFileSpec
-   252 000000E7 48C7C7[00000000]        mov rdi, errFileSpec
-   253 000000EE E83C020000              call printString
-   254 000000F3 48C7C000000000          mov rax, FALSE
-   255 000000FA EB3B                    jmp dn
-   256                                  goodFileSpec:
-   257 000000FC 488B5E28                mov rbx, qword[rsi+40]
-   258 00000100 48C7C002000000          mov rax, SYS_open
-   259 00000107 4889DF                  mov rdi, rbx
-   260 0000010A 48C7C600000000          mov rsi, O_RDONLY
-   261 00000111 0F05                    syscall
-   262 00000113 4883F800                cmp rax, 0
-   263 00000117 7D13                    jge noError
-   264 00000119 48C7C7[00000000]        mov rdi, errOpenIn
-   265 00000120 E80A020000              call printString
-   266 00000125 48C7C000000000          mov rax, FALSE
-   267 0000012C EB09                    jmp dn
-   268                                  noError:
-   269 0000012E 41894500                mov dword[r13], eax
-   270 00000132 48C7C001000000          mov rax, TRUE
-   271                                  dn:
-   272 00000139 415D                    pop r13
-   273 0000013B 415C                    pop r12
-   274 0000013D 5B                      pop rbx
-   275 0000013E C3                      ret
-   276                                 
+   222 0000007C 7409                    je endLength
+   223 0000007E 44881A                  mov byte[rdx], r11b
+   224 00000081 48FFC2                  inc rdx
+   225 00000084 49FFC2                  inc r10
+   226 00000087 EBE9                    jmp length
+   227                                  endLength:
+   228 00000089 C60200                  mov byte[rdx], NULL
+   229 0000008C 4983FA50                cmp r10, MAXWORDLENGTH
+   230 00000090 7216                    jb goodLength
+   231 00000092 48C7C7[00000000]        mov rdi, errWordLength
+   232 00000099 E894020000              call printString
+   233 0000009E 48C7C000000000          mov rax, FALSE
+   234 000000A5 E98D000000              jmp dn
+   235                                  goodLength:
+   236 000000AA 488B5E18                mov rbx, qword[rsi+24]
+   237 000000AE 813B2D6D6300            cmp dword[rbx], 0x00636D2D
+   238 000000B4 7505                    jne checkTwo
+   239 000000B6 41C6042401              mov byte[r12], TRUE
+   240 000000BB EB20                    jmp caseGood
+   241                                  checkTwo:
+   242 000000BD 813B2D696300            cmp dword[rbx], 0x0063692D
+   243 000000C3 7418                    je caseGood
+   244 000000C5 48C7C7[00000000]        mov rdi, errCaseSpec
+   245 000000CC E861020000              call printString
+   246 000000D1 48C7C000000000          mov rax, FALSE
+   247 000000D8 EB60                    jmp dn
+   248 000000DA 41C6042400              mov byte[r12], FALSE
+   249                                  caseGood:
+   250 000000DF 488B5E20                mov rbx, qword[rsi+32]
+   251 000000E3 66813B2D66              cmp word[rbx], 0x662D
+   252 000000E8 7413                    je goodFileSpec
+   253 000000EA 48C7C7[00000000]        mov rdi, errFileSpec
+   254 000000F1 E83C020000              call printString
+   255 000000F6 48C7C000000000          mov rax, FALSE
+   256 000000FD EB3B                    jmp dn
+   257                                  goodFileSpec:
+   258 000000FF 488B5E28                mov rbx, qword[rsi+40]
+   259 00000103 48C7C002000000          mov rax, SYS_open
+   260 0000010A 4889DF                  mov rdi, rbx
+   261 0000010D 48C7C600000000          mov rsi, O_RDONLY
+   262 00000114 0F05                    syscall
+   263 00000116 4883F800                cmp rax, 0
+   264 0000011A 7D13                    jge noError
+   265 0000011C 48C7C7[00000000]        mov rdi, errOpenIn
+   266 00000123 E80A020000              call printString
+   267 00000128 48C7C000000000          mov rax, FALSE
+   268 0000012F EB09                    jmp dn
+   269                                  noError:
+   270 00000131 41894500                mov dword[r13], eax
+   271 00000135 48C7C001000000          mov rax, TRUE
+   272                                  dn:
+   273 0000013C 415D                    pop r13
+   274 0000013E 415C                    pop r12
+   275 00000140 5B                      pop rbx
+   276 00000141 C3                      ret
    277                                 
    278                                 
    279                                 
@@ -298,92 +298,92 @@
    298                                 
    299                                 
    300                                 
-   301                                 [global getWord]
-   302                                 getWord:
-   303 0000013F 53                      push rbx
-   304 00000140 4154                    push r12
-   305 00000142 4155                    push r13
-   306                                 
-   307 00000144 4889FB                  mov rbx, rdi
-   308                                 
-   309 00000147 4C8B1425[00000000]      mov r10, qword[bfMax]
-   310 0000014F 4C391425[00000000]      cmp qword[curr], r10
-   311 00000157 726F                    jb underBuffSize
-   312 00000159 803C25[00000000]01      cmp byte[wasEOF], TRUE
-   313 00000161 750A                    jne notEOF
-   314 00000163 48C7C000000000          mov rax, FALSE
-   315 0000016A E9D6000000              jmp _dn
-   316                                  notEOF:
-   317 0000016F 48C7C000000000          mov rax, SYS_read
-   318 00000176 4889F7                  mov rdi, rsi
-   319 00000179 48C7C6[00000000]        mov rsi, buff
-   320 00000180 48C7C290D00300          mov rdx, BUFFSIZE
-   321 00000187 0F05                    syscall
-   322                                 
-   323 00000189 4883F800                cmp rax, 0
-   324 0000018D 7D16                    jge readFine
-   325 0000018F 48C7C0[00000000]        mov rax, errFileRead
-   326 00000196 E894010000              call printString
-   327 0000019B 48C7C000000000          mov rax, FALSE
-   328 000001A2 E99E000000              jmp _dn
-   329                                  readFine:
-   330                                 
-   331 000001A7 483D90D00300            cmp rax, BUFFSIZE
-   332 000001AD 740E                    je notEof
-   333 000001AF C60425[00000000]01      mov byte[wasEOF], TRUE
-   334 000001B7 48890425[00000000]      mov qword[bfMax], rax
-   335                                  notEof
-   336 000001BF 4D31D2                  xor r10, r10
-   337 000001C2 4C891425[00000000]      mov qword[curr], r10
-   338                                  underBuffSize:
-   339                                 
-   340 000001CA 4D31C9                  xor r9, r9
-   341 000001CD 4D31DB                  xor r11, r11
-   342 000001D0 4D31E4                  xor r12, r12
-   343 000001D3 49C7C4[00000000]        mov r12, buff
-   344 000001DA 4C8B2C25[00000000]      mov r13, qword[wordIndex]
-   345 000001E2 4C8B0C25[00000000]      mov r9, qword[curr]
-   346                                 
-   347 000001EA 478A1C0C                mov r11b, byte[r12+r9]
-   348 000001EE 4180FB20                cmp r11b, 0x20
-   349 000001F2 750A                    jne wordCont
-   350 000001F4 4D31ED                  xor r13, r13
-   351 000001F7 4180FB10                cmp r11b, 0x10
-   352 000001FB 7501                    jne wordCont
-   353 000001FD 4D31ED                  xor r13, r13
-   354                                  wordCont:
-   355                                 
-   356                                  getNextWord:
-   357 00000200 478A1C0C                mov r11b, byte[r12+r9]
-   358 00000204 4180FB20                cmp r11b, 0x20
-   359 00000208 760A                    jbe endNextWord
-   360 0000020A 46881C2B                mov byte[rbx+r13], r11b
-   361 0000020E 49FFC5                  inc r13
-   362 00000211 49FFC1                  inc r9
-   363 00000214 EBE8                    jmp getNextWord
-   364                                  endNextWord:
-   365                                 
-   366 00000216 42C6042B00              mov byte[rbx+r13], NULL
-   367                                  ignoreSpaces:
-   368 0000021B 478A1C0C                mov r11b, byte[r12+r9]
-   369 0000021F 4180FB20                cmp r11b, 0x20
-   370 00000223 770C                    ja endIgnoreSpaces
-   371 00000225 4180FB00                cmp r11b, 0x00
-   372 00000229 7406                    je endIgnoreSpaces
-   373 0000022B 4D31ED                  xor r13, r13
-   374 0000022E 49FFC1                  inc r9
-   375 00000231 EBE6                    jmp ignoreSpaces
-   376                                  endIgnoreSpaces:
-   377                                 
-   378 00000233 4C890C25[00000000]      mov qword[curr], r9
-   379 0000023B 4C892C25[00000000]      mov qword[wordIndex], r13
-   380 00000243 48C7C001000000          mov rax, TRUE
-   381                                  _dn:
-   382 0000024A 415D                    pop r13
-   383 0000024C 415C                    pop r12
-   384 0000024E 5B                      pop rbx
-   385 0000024F C3                      ret
-   386                                 
+   301                                 
+   302                                 [global getWord]
+   303                                 getWord:
+   304 00000142 53                      push rbx
+   305 00000143 4154                    push r12
+   306 00000145 4155                    push r13
+   307                                 
+   308 00000147 4889FB                  mov rbx, rdi
+   309                                 
+   310 0000014A 4C8B1425[00000000]      mov r10, qword[bfMax]
+   311 00000152 4C391425[00000000]      cmp qword[curr], r10
+   312 0000015A 726F                    jb underBuffSize
+   313 0000015C 803C25[00000000]01      cmp byte[wasEOF], TRUE
+   314 00000164 750A                    jne notEOF
+   315 00000166 48C7C000000000          mov rax, FALSE
+   316 0000016D E9D6000000              jmp _dn
+   317                                  notEOF:
+   318 00000172 48C7C000000000          mov rax, SYS_read
+   319 00000179 4889F7                  mov rdi, rsi
+   320 0000017C 48C7C6[00000000]        mov rsi, buff
+   321 00000183 48C7C290D00300          mov rdx, BUFFSIZE
+   322 0000018A 0F05                    syscall
+   323                                 
+   324 0000018C 4883F800                cmp rax, 0
+   325 00000190 7D16                    jge readFine
+   326 00000192 48C7C0[00000000]        mov rax, errFileRead
+   327 00000199 E894010000              call printString
+   328 0000019E 48C7C000000000          mov rax, FALSE
+   329 000001A5 E99E000000              jmp _dn
+   330                                  readFine:
+   331                                 
+   332 000001AA 483D90D00300            cmp rax, BUFFSIZE
+   333 000001B0 740E                    je notEof
+   334 000001B2 C60425[00000000]01      mov byte[wasEOF], TRUE
+   335 000001BA 48890425[00000000]      mov qword[bfMax], rax
+   336                                  notEof
+   337 000001C2 4D31D2                  xor r10, r10
+   338 000001C5 4C891425[00000000]      mov qword[curr], r10
+   339                                  underBuffSize:
+   340                                 
+   341 000001CD 4D31C9                  xor r9, r9
+   342 000001D0 4D31DB                  xor r11, r11
+   343 000001D3 4D31E4                  xor r12, r12
+   344 000001D6 49C7C4[00000000]        mov r12, buff
+   345 000001DD 4C8B2C25[00000000]      mov r13, qword[wordIndex]
+   346 000001E5 4C8B0C25[00000000]      mov r9, qword[curr]
+   347                                 
+   348 000001ED 478A1C0C                mov r11b, byte[r12+r9]
+   349 000001F1 4180FB20                cmp r11b, 0x20
+   350 000001F5 750A                    jne wordCont
+   351 000001F7 4D31ED                  xor r13, r13
+   352 000001FA 4180FB10                cmp r11b, 0x10
+   353 000001FE 7501                    jne wordCont
+   354 00000200 4D31ED                  xor r13, r13
+   355                                  wordCont:
+   356                                 
+   357                                  getNextWord:
+   358 00000203 478A1C0C                mov r11b, byte[r12+r9]
+   359 00000207 4180FB20                cmp r11b, 0x20
+   360 0000020B 760A                    jbe endNextWord
+   361 0000020D 46881C2B                mov byte[rbx+r13], r11b
+   362 00000211 49FFC5                  inc r13
+   363 00000214 49FFC1                  inc r9
+   364 00000217 EBE8                    jmp getNextWord
+   365                                  endNextWord:
+   366                                 
+   367 00000219 42C6042B00              mov byte[rbx+r13], NULL
+   368                                  ignoreSpaces:
+   369 0000021E 478A1C0C                mov r11b, byte[r12+r9]
+   370 00000222 4180FB20                cmp r11b, 0x20
+   371 00000226 770C                    ja endIgnoreSpaces
+   372 00000228 4180FB00                cmp r11b, 0x00
+   373 0000022C 7406                    je endIgnoreSpaces
+   374 0000022E 4D31ED                  xor r13, r13
+   375 00000231 49FFC1                  inc r9
+   376 00000234 EBE6                    jmp ignoreSpaces
+   377                                  endIgnoreSpaces:
+   378                                 
+   379 00000236 4C890C25[00000000]      mov qword[curr], r9
+   380 0000023E 4C892C25[00000000]      mov qword[wordIndex], r13
+   381 00000246 48C7C001000000          mov rax, TRUE
+   382                                  _dn:
+   383 0000024D 415D                    pop r13
+   384 0000024F 415C                    pop r12
+   385 00000251 5B                      pop rbx
+   386 00000252 C3                      ret
    387                                 
    388                                 
    389                                 
@@ -398,46 +398,46 @@
    398                                 
    399                                 
    400                                 
-   401                                 [global checkWord]
-   402                                 checkWord:
-   403 00000250 53                      push rbx
-   404                                 
-   405 00000251 4D31DB                  xor r11, r11
-   406 00000254 4D31E4                  xor r12, r12
-   407                                  wordLoop:
-   408 00000257 448A1F                  mov r11b, byte[rdi]
-   409 0000025A 448A26                  mov r12b, byte[rsi]
-   410 0000025D 4883FA01                cmp rdx, TRUE
-   411 00000261 741E                    je contCompare
-   412 00000263 4180FB41                cmp r11b, 0x41
-   413 00000267 7208                    jb skipSearchWrd
-   414 00000269 4180FB5A                cmp r11b, 0x5A
-   415 0000026D 7702                    ja skipSearchWrd
-   416 0000026F 4180C320                add r11b, 0x20
-   417                                  skipSearchWrd:
-   418 00000273 4180FC41                cmp r12b, 0x41
-   419 00000277 7208                    jb skipCurrentWrd
-   420 00000279 4180FC5A                cmp r12b, 0x5A
-   421 0000027D 7702                    ja skipCurrentWrd
-   422 0000027F 4180C420                add r12b, 0x20
-   423                                  skipCurrentWrd:
-   424                                  contCompare:
-   425 00000283 4538E3                  cmp r11b, r12b
-   426 00000286 7512                    jne endWordLoop
-   427 00000288 4180FB00                cmp r11b, NULL
-   428 0000028C 7406                    je endWordLoopInc
-   429 0000028E 48FFC7                  inc rdi
-   430 00000291 48FFC6                  inc rsi
-   431 00000294 EBBF                    jmp wordLoop
-   432                                  endWordLoopInc:
-   433 00000296 8B19                    mov ebx, dword[rcx]
-   434 00000298 FFC3                    inc ebx
-   435 0000029A 8919                    mov dword[rcx], ebx
-   436                                  endWordLoop:
-   437                                 
-   438 0000029C 5B                      pop rbx
-   439 0000029D C3                      ret
-   440                                 
+   401                                 
+   402                                 [global checkWord]
+   403                                 checkWord:
+   404 00000253 53                      push rbx
+   405                                 
+   406 00000254 4D31DB                  xor r11, r11
+   407 00000257 4D31E4                  xor r12, r12
+   408                                  wordLoop:
+   409 0000025A 448A1F                  mov r11b, byte[rdi]
+   410 0000025D 448A26                  mov r12b, byte[rsi]
+   411 00000260 4883FA01                cmp rdx, TRUE
+   412 00000264 741E                    je contCompare
+   413 00000266 4180FB41                cmp r11b, 0x41
+   414 0000026A 7208                    jb skipSearchWrd
+   415 0000026C 4180FB5A                cmp r11b, 0x5A
+   416 00000270 7702                    ja skipSearchWrd
+   417 00000272 4180C320                add r11b, 0x20
+   418                                  skipSearchWrd:
+   419 00000276 4180FC41                cmp r12b, 0x41
+   420 0000027A 7208                    jb skipCurrentWrd
+   421 0000027C 4180FC5A                cmp r12b, 0x5A
+   422 00000280 7702                    ja skipCurrentWrd
+   423 00000282 4180C420                add r12b, 0x20
+   424                                  skipCurrentWrd:
+   425                                  contCompare:
+   426 00000286 4538E3                  cmp r11b, r12b
+   427 00000289 7512                    jne endWordLoop
+   428 0000028B 4180FB00                cmp r11b, NULL
+   429 0000028F 7406                    je endWordLoopInc
+   430 00000291 48FFC7                  inc rdi
+   431 00000294 48FFC6                  inc rsi
+   432 00000297 EBBF                    jmp wordLoop
+   433                                  endWordLoopInc:
+   434 00000299 8B19                    mov ebx, dword[rcx]
+   435 0000029B FFC3                    inc ebx
+   436 0000029D 8919                    mov dword[rcx], ebx
+   437                                  endWordLoop:
+   438                                 
+   439 0000029F 5B                      pop rbx
+   440 000002A0 C3                      ret
    441                                 
    442                                 
    443                                 
@@ -452,56 +452,56 @@
    452                                 
    453                                 
    454                                 
-   455                                 [global displayResults]
-   456                                 displayResults:
-   457 0000029E 53                      push rbx
-   458 0000029F 4154                    push r12
-   459                                 
-   460 000002A1 4989F4                  mov r12, rsi
-   461 000002A4 4889FB                  mov rbx, rdi
-   462                                 
-   463 000002A7 48C7C7[00000000]        mov rdi, resultStart
-   464 000002AE E87C000000              call printString
-   465 000002B3 4889DF                  mov rdi, rbx
-   466 000002B6 E874000000              call printString
-   467 000002BB 48C7C7[00000000]        mov rdi, resultSpace
-   468 000002C2 E868000000              call printString
-   469                                 
-   470 000002C7 4489E0                  mov eax, r12d
-   471 000002CA 48C7C606000000          mov rsi, 6
-   472 000002D1 49C7C230000000          mov r10, 0x30
-   473 000002D8 48C7C100000000          mov rcx, 0
-   474 000002DF 49C7C1[00000000]        mov r9, tmpString
-   475                                  int2senaryloop1:
-   476 000002E6 BA00000000              mov edx, 0
-   477 000002EB F7F6                    div esi
-   478 000002ED 48FFC1                  inc rcx
-   479 000002F0 83F800                  cmp eax, 0
-   480 000002F3 75EF                    jne int2senaryloop1
-   481 000002F5 4489E0                  mov eax, r12d
-   482 000002F8 4901C9                  add r9, rcx
-   483 000002FB 41C60100                mov byte[r9], NULL
-   484 000002FF 49FFC9                  dec r9
-   485                                  int2senaryloop2:
-   486 00000302 BA00000000              mov edx, 0
-   487 00000307 F7F6                    div esi
-   488 00000309 4401D2                  add edx, r10d
-   489 0000030C 418811                  mov byte[r9], dl
-   490 0000030F 49FFC9                  dec r9
-   491 00000312 83F800                  cmp eax, 0
-   492 00000315 75E9                    jne int2senaryloop2
-   493                                 
-   494 00000317 4831FF                  xor rdi, rdi
-   495 0000031A BF[00000000]            mov edi, tmpString
-   496 0000031F E80B000000              call printString
-   497                                 
-   498 00000324 48C7C7[00000000]        mov rdi, resultEnd
-   499 0000032B E8FFFFFFFF              call printString
-   500                                 
-   501 00000330 415C                    pop r12
-   502 00000332 5B                      pop rbx
-   503 00000333 C3                      ret
-   504                                 
+   455                                 
+   456                                 [global displayResults]
+   457                                 displayResults:
+   458 000002A1 53                      push rbx
+   459 000002A2 4154                    push r12
+   460                                 
+   461 000002A4 4989F4                  mov r12, rsi
+   462 000002A7 4889FB                  mov rbx, rdi
+   463                                 
+   464 000002AA 48C7C7[00000000]        mov rdi, resultStart
+   465 000002B1 E87C000000              call printString
+   466 000002B6 4889DF                  mov rdi, rbx
+   467 000002B9 E874000000              call printString
+   468 000002BE 48C7C7[00000000]        mov rdi, resultSpace
+   469 000002C5 E868000000              call printString
+   470                                 
+   471 000002CA 4489E0                  mov eax, r12d
+   472 000002CD 48C7C606000000          mov rsi, 6
+   473 000002D4 49C7C230000000          mov r10, 0x30
+   474 000002DB 48C7C100000000          mov rcx, 0
+   475 000002E2 49C7C1[00000000]        mov r9, tmpString
+   476                                  int2senaryloop1:
+   477 000002E9 BA00000000              mov edx, 0
+   478 000002EE F7F6                    div esi
+   479 000002F0 48FFC1                  inc rcx
+   480 000002F3 83F800                  cmp eax, 0
+   481 000002F6 75EF                    jne int2senaryloop1
+   482 000002F8 4489E0                  mov eax, r12d
+   483 000002FB 4901C9                  add r9, rcx
+   484 000002FE 41C60100                mov byte[r9], NULL
+   485 00000302 49FFC9                  dec r9
+   486                                  int2senaryloop2:
+   487 00000305 BA00000000              mov edx, 0
+   488 0000030A F7F6                    div esi
+   489 0000030C 4401D2                  add edx, r10d
+   490 0000030F 418811                  mov byte[r9], dl
+   491 00000312 49FFC9                  dec r9
+   492 00000315 83F800                  cmp eax, 0
+   493 00000318 75E9                    jne int2senaryloop2
+   494                                 
+   495 0000031A 4831FF                  xor rdi, rdi
+   496 0000031D BF[00000000]            mov edi, tmpString
+   497 00000322 E80B000000              call printString
+   498                                 
+   499 00000327 48C7C7[00000000]        mov rdi, resultEnd
+   500 0000032E E8FFFFFFFF              call printString
+   501                                 
+   502 00000333 415C                    pop r12
+   503 00000335 5B                      pop rbx
+   504 00000336 C3                      ret
    505                                 
    506                                 
    507                                 
@@ -519,37 +519,38 @@
    519                                 
    520                                 
    521                                 
-   522                                 [global printString]
-   523                                 printString:
-   524                                 
+   522                                 
+   523                                 [global printString]
+   524                                 printString:
    525                                 
    526                                 
    527                                 
-   528 00000334 48C7C200000000          mov rdx, 0
-   529                                 strCountLoop:
-   530 0000033B 803C1700                cmp byte [rdi+rdx], NULL
-   531 0000033F 7403                    je strCountLoopDone
-   532 00000341 48FFC2                  inc rdx
-   533 00000344 EBF3                    jmp strCountLoop
-   534                                 strCountLoopDone:
-   535 00000346 4883FA00                cmp rdx, 0
-   536 0000034A 7411                    je printStringDone
-   537                                 
+   528                                 
+   529 00000337 48C7C200000000          mov rdx, 0
+   530                                 strCountLoop:
+   531 0000033E 803C1700                cmp byte [rdi+rdx], NULL
+   532 00000342 7403                    je strCountLoopDone
+   533 00000344 48FFC2                  inc rdx
+   534 00000347 EBF3                    jmp strCountLoop
+   535                                 strCountLoopDone:
+   536 00000349 4883FA00                cmp rdx, 0
+   537 0000034D 7411                    je printStringDone
    538                                 
    539                                 
    540                                 
-   541 0000034C 48C7C001000000          mov rax, SYS_write
-   542 00000353 4889FE                  mov rsi, rdi
-   543 00000356 48C7C701000000          mov rdi, STDOUT
-   544                                 
-   545 0000035D 0F05                    syscall
-   546                                 
+   541                                 
+   542 0000034F 48C7C001000000          mov rax, SYS_write
+   543 00000356 4889FE                  mov rsi, rdi
+   544 00000359 48C7C701000000          mov rdi, STDOUT
+   545                                 
+   546 00000360 0F05                    syscall
    547                                 
    548                                 
    549                                 
-   550                                 printStringDone:
-   551 0000035F C3                      ret
-   552                                 
+   550                                 
+   551                                 printStringDone:
+   552 00000362 C3                      ret
    553                                 
    554                                 
    555                                 
+   556                                 
