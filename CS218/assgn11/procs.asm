@@ -110,6 +110,7 @@ BUFFSIZE    equ 250000
 
 bfMax       dq  BUFFSIZE
 curr        dq  BUFFSIZE
+wordIndex   dq  0
 
 wasEOF      db  FALSE
 
@@ -193,7 +194,7 @@ checkParameters:
         jmp length
     endLength:
     cmp r10, MAXWORDLENGTH      ; compare length to max word length
-    jl goodLength
+    jb goodLength
         mov rdi, errWordLength  ; move error word length into rdi
         call printString        ; call print function
         mov rax, FALSE          ; return false
@@ -270,9 +271,10 @@ checkParameters:
 global getWord
 getWord:
     push rbx   
-    push r12 
+    push r12
+    push r13 
     
-    mov rbx, rdi                    ; move first param into rbx
+    mov rbx, rdi                    ; move first param into rbx    
 
     mov r10, qword[bfMax]
     cmp qword[curr], r10            ; check if we still have data in buffer
@@ -309,21 +311,45 @@ getWord:
     xor r11, r11
     xor r12, r12
     mov r12, buff
+    mov r13, qword[wordIndex]
     mov r9, qword[curr]
+
+    mov r11b, byte[r12+r9]
+    cmp r11b, 0x20
+    jne wordCont
+        xor r13, r13
+    cmp r11b, 0x10
+    jne wordCont
+        xor r13, r13
+    wordCont:
+
     getNextWord:
         mov r11b, byte[r12+r9]      ; get character from buffer
         cmp r11b, 0x20
         jbe endNextWord
-        mov byte[rbx], r11b         ; move a byte from the buffer into string
-        inc rbx                     ; increment rbx
+        mov byte[rbx+r13], r11b     ; move a byte from the buffer into string
+        inc r13                     ; increment rbx
         inc r9                      ; inc curr
     jmp getNextWord
-    endNextWord:
-    inc r9 
-    mov byte[rbx], NULL             ; end string with null termination
+    endNextWord:    
+
+    mov byte[rbx+r13], NULL
+    ignoreSpaces:
+        mov r11b, byte[r12+r9]
+        cmp r11b, 0x20
+        ja endIgnoreSpaces
+        cmp r11b, 0x00
+        je endIgnoreSpaces
+        xor r13, r13
+        inc r9
+    jmp ignoreSpaces
+    endIgnoreSpaces:
+
     mov qword[curr], r9             ; move curr back into variable
+    mov qword[wordIndex], r13       ; move index back into var
     mov rax, TRUE                   ; return true
     _dn:
+    pop r13
     pop r12
     pop rbx
     ret
@@ -368,7 +394,7 @@ checkWord:
         contCompare:
         cmp r11b, r12b          ; check if bytes are equal
         jne endWordLoop         ; exit if not equal
-        cmp r11b, NULL          ; if one of them is NULL then we know to exit
+        cmp r11b, NULL          ; if searchword is NULL then we know to exit
         je endWordLoopInc
         inc rdi
         inc rsi
