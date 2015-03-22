@@ -176,8 +176,14 @@ checkParameters:
     jmp dn
     goodArgCount:
     mov rbx, qword[rsi+8]       ; rbx = argv[1] ( word specifier )
-    cmp word[rbx], 0x772D
-    je noErrorWordSpec      
+    cmp byte[rbx], 0x2D
+    jne errorWordSpec
+    cmp byte[rbx+1], 0x77
+    jne errorWordSpec
+    cmp byte[rbx+2], 0x00
+    jne errorWordSpec
+    jmp noErrorWordSpec
+    errorWordSpec:
         mov rdi, errWordSpec    ; move bad word specifier into rdi
         call printString        ; call print functino
         mov rax, FALSE          ; return false
@@ -218,8 +224,14 @@ checkParameters:
     mov byte[r12], FALSE       ; set match case sepcifier to false
     caseGood:
     mov rbx, qword[rsi+32]      ; rbx = argv[4] ( file specifier )
-    cmp word[rbx], 0x662D
-    je goodFileSpec
+    cmp byte[rbx], 0x2D
+    jne fileSpecError
+    cmp byte[rbx+1], 0x66
+    jne fileSpecError
+    cmp byte[rbx+2], 0x00
+    jne fileSpecError
+    jmp goodFileSpec
+    fileSpecError:
         mov rdi, errFileSpec    ; move error file specifier into rdi
         call printString        ; call printString
         mov rax, FALSE          ; return false
