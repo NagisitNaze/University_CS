@@ -32,6 +32,10 @@
 
 ;----------------------------------------------------------------------------
 
+; Arguments:
+;   %1 -> <interger>, value
+;   %2 -> <stirng>, string address
+
 section .data
 
 ; -----
@@ -151,7 +155,11 @@ section .text
 global checkParameters
 checkParameters:
     push rbx
+    push r12
+    push r13
 
+    mov r13, r8                 ; move r8 since r8 not preserved
+    mov r12, rcx                ; move rcx since rcx not preserved
     cmp rdi, 1                  ; if no args
     jne noUsage
         mov rdi, usageMsg       ; move usage message into rdi
@@ -191,11 +199,12 @@ checkParameters:
         mov rax, FALSE          ; return false
     jmp dn
     goodLength:
+    mov rbx, qword[rbx]
     mov qword[rdx], rbx
     mov rbx, qword[rsi+24]      ; rbx = argv[3] ( search specifier )
     cmp dword[rbx], 0x00636D2D  ; check search specifier (mc)
     jne checkTwo
-        mov dword[rcx], TRUE    ; set match case specifier to true
+        mov byte[r12], TRUE    ; set match case specifier to true
     jmp caseGood                ; skip next check
     checkTwo:
     cmp dword[rbx], 0x0063692D  ; check search specifier (ic)    
@@ -204,7 +213,7 @@ checkParameters:
         call printString        ; call print function
         mov rax, FALSE          ; return false
     jmp dn
-    mov dword[rcx], FALSE       ; set match case sepcifier to false
+    mov byte[r12], FALSE       ; set match case sepcifier to false
     caseGood:
     mov rbx, qword[rsi+32]      ; rbx = argv[4] ( file specifier )
     cmp word[rbx], 0x662D
@@ -226,9 +235,11 @@ checkParameters:
         mov rax, FALSE          ; return false
     jmp dn
     noError:
-    mov qword[r8], rax          ; save descriptor
+    mov dword[r13], eax          ; save descriptor
     mov rax, TRUE               ; function ran successfully
     dn:
+    pop r13
+    pop r12
     pop rbx
     ret
 
@@ -258,7 +269,63 @@ checkParameters:
 
 global getWord
 getWord:
+    push rbx   
+    push r12 
+    
+    mov rbx, rdi                    ; move first param into rbx
 
+    mov r10, qword[bfMax]
+    cmp qword[curr], r10            ; check if we still have data in buffer
+    jb underBuffSize                ; if not read below
+        cmp byte[wasEOF], TRUE      ; check if EOF has been reached
+        jne notEOF
+            mov rax, FALSE
+        jmp _dn
+        notEOF:
+        mov rax, SYS_read           ; set read option
+        mov rdi, rsi                ; set file descriptor
+        mov rsi, buff               ; set buffer to file buffer
+        mov rdx, BUFFSIZE           ; set buffer size
+        syscall                     ; read
+
+        cmp rax, 0                  ; check for errors in read
+        jge readFine
+            mov rax, errFileRead    ; put read file into rdi
+            call printString        ; call print function
+            mov rax, FALSE          ; return false
+        jmp _dn
+        readFine:
+        
+        cmp rax, BUFFSIZE           ; compare actual read - requested read
+        je notEof       
+            mov byte[wasEOF], TRUE  ; set eof
+            mov qword[bfMax], rax   ; set max to actual read
+        notEof 
+        xor r10, r10                ; set curr to zero
+        mov qword[curr], r10        ; move value into variable
+    underBuffSize:                  ; now attempt to read
+
+    xor r9, r9
+    xor r11, r11
+    xor r12, r12
+    mov r12, buff
+    mov r9, qword[curr]
+    getNextWord:
+        mov r11b, byte[r12+r9]      ; get character from buffer
+        cmp r11b, 0x20
+        jbe endNextWord
+        mov byte[rbx], r11b         ; move a byte from the buffer into string
+        inc rbx                     ; increment rbx
+        inc r9                      ; inc curr
+    jmp getNextWord
+    endNextWord:
+    inc r9 
+    mov byte[rbx], NULL             ; end string with null termination
+    mov qword[curr], r9             ; move curr back into variable
+    mov rax, TRUE                   ; return true
+    _dn:
+    pop r12
+    pop rbx
     ret
 
 ; -------------------------------------------------------
@@ -277,7 +344,42 @@ getWord:
 
 global checkWord
 checkWord:
+    push rbx
 
+    xor r11, r11                ; zero out r11
+    xor r12, r12                ; zero out r12
+    wordLoop:
+        mov r11b, byte[rdi]     ; move byte into r11b
+        mov r12b, byte[rsi]     ; move byet into r12b
+        cmp rdx, TRUE           ; check if match case flag is set
+        je contCompare
+            cmp r11b, 0x41      ; check if search word is upper case
+            jb skipSearchWrd   
+                cmp r11b, 0x5A
+                ja skipSearchWrd
+                add r11b, 0x20  ; move to lower case if so
+            skipSearchWrd:
+            cmp r12b, 0x41      ; check if current word is upper case
+            jb skipCurrentWrd
+                cmp r12b, 0x5A
+                ja skipCurrentWrd
+                add r12b, 0x20  ; move to lwoer case if so
+            skipCurrentWrd:   
+        contCompare:
+        cmp r11b, r12b          ; check if bytes are equal
+        jne endWordLoop         ; exit if not equal
+        cmp r11b, NULL          ; if one of them is NULL then we know to exit
+        je endWordLoopInc
+        inc rdi
+        inc rsi
+    jmp wordLoop                ; loop up
+    endWordLoopInc:
+        mov ebx, dword[rcx]     ; move word count value into rbx
+        inc ebx                 ; increment word count
+        mov dword[rcx], ebx     ; move back into word address
+    endWordLoop:                ; no increment done, mismatched words
+    
+    pop rbx
     ret
 
 ; -------------------------------------------------------
@@ -296,7 +398,52 @@ checkWord:
 
 global displayResults
 displayResults:
+    push rbx
+    push r12
 
+    mov r12, rsi
+    mov rbx, rdi
+
+    mov rdi, resultStart    ; "found '"
+    call printString        
+    mov rdi, rbx            ; "<searchWord>"
+    call printString
+    mov rdi, resultSpace    ; "' "
+    call printString
+    
+    mov eax, r12d           ; move int value into eax
+    mov rsi, 6              ; senary radix
+    mov r10, 0x30           ; constant for conversion to ascii
+    mov rcx, 0              ; string length
+    mov r9, tmpString       ; move string address into r9
+    int2senaryloop1:    
+        mov edx, 0          ; extend positive sign bit
+        div esi             ; divide by radix
+        inc rcx             ; increment length
+        cmp eax, 0          ; compare to zero
+        jne int2senaryloop1 
+    mov eax, r12d           ; reset value of eax
+    add r9, rcx             ; set string to last digit
+    mov byte[r9], NULL      ; set last as NULL
+    dec r9                  ; decrement r9 once
+    int2senaryloop2:
+        mov edx, 0          ; extend positive sign bit
+        div esi             ; divide by radix
+        add edx, r10d       ; convert to ascii
+        mov byte[r9], dl    ; add converted ascii number to string  
+        dec r9              ; move one down string
+        cmp eax, 0          ; compare to zero
+        jne int2senaryloop2
+   
+    xor rdi, rdi 
+    mov edi, tmpString
+    call printString        ; number of occurances of word
+    
+    mov rdi, resultEnd
+    call printString
+
+    pop r12
+    pop rbx
     ret
 
 ; ******************************************************************
