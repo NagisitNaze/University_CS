@@ -105,12 +105,11 @@ errOpenIn   db  "Error, can not open input file."
 ;  Define constants and variables for getWord()
 
 MAXWORDLENGTH   equ 80
-BUFFSIZE    equ 250000
-;BUFFSIZE   equ 3
+;BUFFSIZE    equ 250000
+BUFFSIZE   equ 3
 
 bfMax       dq  BUFFSIZE
 curr        dq  BUFFSIZE
-wordIndex   dq  0
 
 wasEOF      db  FALSE
 
@@ -289,15 +288,16 @@ getWord:
     push r14
     
     mov rbx, rdi                    ; move first param into rbx    
-    mov r14, rsi
+    mov r14, rsi                    ; move file descriptor into r14
+    xor r8, r8                      ; xor r8 to keep track of word length
 
     reBuffer:
-    mov r10, qword[bfMax]
+    mov r10, qword[bfMax]           ; move bfMax into r10
     cmp qword[curr], r10            ; check if we still have data in buffer
     jb underBuffSize                ; if not read below
         cmp byte[wasEOF], TRUE      ; check if EOF has been reached
         jne notEOF
-            mov rax, FALSE
+            mov rax, FALSE          ; return false , no word
         jmp _dn
         notEOF:
         mov rax, SYS_read           ; set read option
@@ -325,7 +325,6 @@ getWord:
 
     xor r9, r9                      ; clear r9 register 
     xor r11, r11                    ; clear r11 register
-    xor r12, r12                    ; clear r12 register
     mov r12, buff                   ; move buffer address into r12
     mov r9, qword[curr]             ; move value of curr into r9
 
@@ -333,29 +332,35 @@ getWord:
         mov r11b, byte[r12+r9]      ; get character from buffer
         cmp r11b, 0x20              ; ensure character is not a space
         jbe endNextWord
+        cmp r8, MAXWORDLENGTH
+        jae ignoreSpaces 
         mov byte[rbx], r11b         ; move a byte from the buffer into string
         inc rbx                     ; increment rbx
         inc r9                      ; inc curr
+        inc r8
     jmp getNextWord
     endNextWord:
-
-    cmp r11b, 0x00                  ; if what casued the loop above to break was EOF
-    jne noReBuffer
+    
+    cmp r9, qword[bfMax]                  ; if what casued the loop above to break was EOF
+    jb noReBuffer
         mov qword[curr], r9         ; put value back into curr
         jmp reBuffer                ; refill buffer
     noReBuffer:   
-
+ 
     ;mov byte[rbx+r13], NULL
     ignoreSpaces:
         mov r11b, byte[r12+r9]      ; move character into buffer again
+        cmp r11b, 0x2F              ; ignore slashes(to prevent overflow)
+        je _inc                     ; increment if slash found
         cmp r11b, 0x20              ; check if below or equal to a space
         ja endIgnoreSpaces  
         cmp r11b, 0x00              ; also ensure we don't skip EOF
         je endIgnoreSpaces
+        _inc:
         inc r9                      ; increment curr
     jmp ignoreSpaces
     endIgnoreSpaces:
-
+    
     mov byte[rbx], NULL             ; move null into end of rbx
     mov qword[curr], r9             ; move curr back into variable
     mov rax, TRUE                   ; return true
