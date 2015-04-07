@@ -105,8 +105,8 @@ errOpenIn   db  "Error, can not open input file."
 ;  Define constants and variables for getWord()
 
 MAXWORDLENGTH   equ 80
-;BUFFSIZE    equ 250000
-BUFFSIZE   equ 3
+BUFFSIZE    equ 250000
+;BUFFSIZE   equ 3
 
 bfMax       dq  BUFFSIZE
 curr        dq  BUFFSIZE
