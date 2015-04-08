@@ -73,7 +73,9 @@ max		    dq	8589934590
 ;  Variables for thread functions.
 
 myValue		dq	0.0
-limit		dq	0
+myValue0	dq	0.0
+myValue1	dq 	0.0
+limit			dq	0
 
 ; -----
 ;  Thread data structures
@@ -126,10 +128,12 @@ main:
 	mov	dword [limit+4], 1
 
 	movsd	xmm0, qword [fltZero]
-	movsd	qword [myValue], xmm0
+	movsd	qword [myValue0], xmm0
+	movsd qword [myValue1], xmm0
+	movsd qword [myValue], xmm0
 
 ; ================================================================
-;  Sequential thread functions.
+;  Parallel thread functions.
 
 ;  Initial actions:
 ;	Display start message
@@ -146,12 +150,6 @@ main:
 	mov	rdi, msgStart
 	call	printString
 
-;  Compute formula - sequential, non-threaded
-;	Note, sets global variable 'myValue' to 0
-
-	movsd	xmm0, qword [fltZero]
-	movsd	qword [myValue], xmm0
-
 ; -----
 ;  Create new thread 0
 ;	pthread_create(&pthreadID0, NULL, &threadFunction0, NULL);
@@ -164,10 +162,6 @@ main:
 	mov	rcx, NULL
 	call	pthread_create
 
-	mov	rdi, qword [pthreadID0]
-	mov	rsi, NULL
-	call	pthread_join
-
 ;  Create new thread 1
 ;	pthread_create(&threadID1, NULL, threadFunction1, NULL);
 ;  Wait for thread to complete.
@@ -179,9 +173,21 @@ main:
 	mov	rcx, NULL
 	call	pthread_create
 
+; join both threads
+	
+	mov	rdi, qword [pthreadID0]
+	mov	rsi, NULL
+	call	pthread_join
+
 	mov	rdi, qword [pthreadID1]
 	mov	rsi, NULL
 	call	pthread_join
+
+; join each threads computed values
+
+	movsd xmm0, qword[myValue0]
+	addsd xmm0, qword[myValue1]
+	movsd qword[myValue], xmm0
 
 ; -----
 ;  Display final result for sequential, non-threaded result.
@@ -224,17 +230,17 @@ threadFunction0:
 	mov	rdi, msgThread0
 	call	printString
 
-	xor r10, r10
-	mov rbx, 2
-	mov rdx, 0
-	mov rax, qword[limit]
-	div rbx
+	xor r10, r10					; clear r10 register
+	mov rbx, 2						; move 2 into rbx
+	mov rdx, 0						; extend positive sign bit
+	mov rax, qword[limit]	; move limit into rax
+	div rbx								; limit / 2
 
 	calculate_lim0:
-		movsd xmm0, qword[myValue]
+		movsd xmm0, qword[myValue0]
 		divsd xmm0, qword[x]
 		addsd xmm0, qword[y]
-		movsd qword[myValue], xmm0
+		movsd qword[myValue0], xmm0
 		inc r10
 		cmp r10, rax
 		jl calculate_lim0	
@@ -269,10 +275,10 @@ threadFunction1:
 	div rbx									; limit/2
 	
 	calculate_lim1:
-		movsd xmm0, qword[myValue]
+		movsd xmm0, qword[myValue1]
 		divsd xmm0, qword[x]
 		addsd xmm0, qword[y]
-		movsd qword[myValue], xmm0
+		movsd qword[myValue1], xmm0
 		inc r10
 		cmp r10, rax
 		jl calculate_lim1
