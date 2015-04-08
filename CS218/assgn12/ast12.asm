@@ -224,7 +224,20 @@ threadFunction0:
 	mov	rdi, msgThread0
 	call	printString
 
-;	YOUR CODE GOES HERE
+	xor r10, r10
+	mov rbx, 2
+	mov rdx, 0
+	mov rax, qword[limit]
+	div rbx
+
+	calculate_lim0:
+		movsd xmm0, qword[myValue]
+		divsd xmm0, qword[x]
+		addsd xmm0, qword[y]
+		movsd qword[myValue], xmm0
+		inc r10
+		cmp r10, rax
+		jl calculate_lim0	
 
 	ret
 
@@ -249,7 +262,20 @@ threadFunction1:
 	mov	rdi, msgThread1
 	call	printString
 
-;	YOUR CODE GOES HERE
+	xor r10, r10						; set r10 to zero
+	mov rbx, 2							; move 2 into rbx
+	mov rdx, 0							; extend positive sign bit
+	mov rax, qword[limit]		; move limit into rax
+	div rbx									; limit/2
+	
+	calculate_lim1:
+		movsd xmm0, qword[myValue]
+		divsd xmm0, qword[x]
+		addsd xmm0, qword[y]
+		movsd qword[myValue], xmm0
+		inc r10
+		cmp r10, rax
+		jl calculate_lim1
 
 	ret
 
