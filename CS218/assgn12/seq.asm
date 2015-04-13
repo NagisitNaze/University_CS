@@ -73,7 +73,7 @@ max		    dq	8589934590
 ;  Variables for thread functions.
 
 myValue		dq	0.0
-limit		dq	0
+limit			dq	0
 
 ; -----
 ;  Thread data structures
@@ -146,12 +146,6 @@ main:
 	mov	rdi, msgStart
 	call	printString
 
-;  Compute formula - sequential, non-threaded
-;	Note, sets global variable 'myValue' to 0
-
-	movsd	xmm0, qword [fltZero]
-	movsd	qword [myValue], xmm0
-
 ; -----
 ;  Create new thread 0
 ;	pthread_create(&pthreadID0, NULL, &threadFunction0, NULL);
@@ -163,7 +157,7 @@ main:
 	mov	rdx, threadFunction0
 	mov	rcx, NULL
 	call	pthread_create
-
+	
 	mov	rdi, qword [pthreadID0]
 	mov	rsi, NULL
 	call	pthread_join
@@ -224,7 +218,20 @@ threadFunction0:
 	mov	rdi, msgThread0
 	call	printString
 
-;	YOUR CODE GOES HERE
+	xor r10, r10					; clear r10 register
+	mov rbx, 2						; move 2 into rbx
+	mov rdx, 0						; extend positive sign bit
+	mov rax, qword[limit]	; move limit into rax
+	div rbx								; limit / 2
+
+	calculate_lim0:
+		movsd xmm0, qword[myValue]
+		divsd xmm0, qword[x]
+		addsd xmm0, qword[y]
+		movsd qword[myValue], xmm0
+		inc r10
+		cmp r10, rax
+		jl calculate_lim0	
 
 	ret
 
@@ -249,7 +256,20 @@ threadFunction1:
 	mov	rdi, msgThread1
 	call	printString
 
-;	YOUR CODE GOES HERE
+	xor r10, r10						; set r10 to zero
+	mov rbx, 2							; move 2 into rbx
+	mov rdx, 0							; extend positive sign bit
+	mov rax, qword[limit]		; move limit into rax
+	div rbx									; limit/2
+	
+	calculate_lim1:
+		movsd xmm0, qword[myValue]
+		divsd xmm0, qword[x]
+		addsd xmm0, qword[y]
+		movsd qword[myValue], xmm0
+		inc r10
+		cmp r10, rax
+		jl calculate_lim1
 
 	ret
 
