@@ -125,7 +125,7 @@ main:
     la $s4, tAreas      # load tAreas into s4
     move $s5, $zero     # max var
     move $s7, $zero     # sum var
-    li $s6, 0xFFFFFFFF  # min var
+    li $s6, 0x10000000  # min var
     li $a0, 2           # shortcut for 2
     calcLoop:
         lw $t1, ($s1)               # get aSides
@@ -137,7 +137,13 @@ main:
         sw $t0, ($s4)               # set tAreas to value
 
         add $s7, $s7, $t0           # sum += area
-        
+
+        bge $t0, $s6, notSmaller
+            move $s6, $t0           # move t0 into min as new minimum
+        notSmaller:        
+        ble $t0, $s5, notBigger
+            move $s5, $t0           # move t0 into max as new maximum 
+        notBigger:
          
 
         sub $s0, $s0, 1             # subtract 1 from len
@@ -146,6 +152,40 @@ main:
         addu $s3, $s3, 4
         addu $s4, $s4, 4
         bnez $s0, calcLoop          # jump to calcLop if len is not zero
+
+    sw $s6, tMin        # store min into min var
+    sw $s5, tMax        # store max into max var
+    sw $s7, tSum        # store sum into sum var
+
+    lw $s6, len         # load length
+    div $s7, $s7, $s6   # sum / len
+    sw $s7, tAve        # store average into ave var
+
+    rem $s6, $s6, $a0   # len = len mod 2
+    bnez $s6, oddLen
+        move $s5, $zero
+        la $s1, tAreas
+        lw $s6, len                 # load len
+        div $s6, $s6, $a0           # len = len / 2
+        mul $s6, $s6, 4             # mul s6 by 4 bytes
+        add $s1, $s1, $s6           # move tAreas forward len / 2 times 
+        lw $t1, ($s1)
+        add $s5, $s5, $t1           # add tAreas[len / 2] into s5
+        sub $s1, $s1, 4             # len / 2 - 1
+        lw $t1, ($s1)
+        add $s5, $s5, $t1           # add tAreas[len / 2 - 1] into s5
+        div $s5, $s5, $a0           # s5 / 2
+        sw $s5, tMid
+        b doneMidPoint
+    oddLen:
+        la $s1, tAreas              # load address of tAreas
+        lw $s6, len                 # load len
+        div $s6, $s6, $s0           # len / 2
+        mul $s6, $s6, 4             # mul by 4 bytes
+        add $s1, $s1, $s6           # add to tAreas
+        lw $t1, ($s1)
+        sw $t1, tMid
+    doneMidPoint:
 
 ##########################################################
 #  Display results.
