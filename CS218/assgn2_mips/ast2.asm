@@ -190,11 +190,26 @@ main:
 ##########################################################
 #  Display results.
 
-    la  $a0, newLn      # print a newline
+    la $s1, tAreas      # prepare to print array
+    lw $s6, len
+    printAreas:
+        lw $t1, ($s1)
+        move $a0, $s1
+        li $v0, 1
+        syscall
+        
+        la $a0, blnks
+        li $v0, 4
+        syscall
+
+        sub $s6, $s6, 1             # subtract 1 from len
+        addu $s1, $s1, 4            # incr data by one element
+        bnez $s6, printAreas
+#  Print min message followed by result.
+
+    la  $a0, newLn
     li  $v0, 4
     syscall
-
-#  Print min message followed by result.
 
     la  $a0, a1_st
     li  $v0, 4
