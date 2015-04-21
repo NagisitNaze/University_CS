@@ -720,10 +720,11 @@ iSqrt:
         add $t1, $t1, $t0       # (iNumber / iSqrt_est) + iSqrt_est
         div $t1, $t1, 2         # divide all by two
         move $t0, $t1           # set to new iSqrt_est
-        bnez $t2, estimateSqrt
+        sub $t2, $t2, 1         # decrement count
+        bnez $t2, estimateSqrt  # loop if not zero yet
 
     move $v0, $t0       # set return value
-    jr $ra
+    jr $ra             
 .end    iSqrt
 
 #####################################################################
@@ -825,7 +826,7 @@ shellSort:
 #   Find sum of passed array.
 
 #    Arguments:
-#   $a0   - integer
+#   $a0   - starting address of list
 #   $a1   - len
 
 #    Returns:
@@ -834,10 +835,17 @@ shellSort:
 .globl  findSum
 .ent    findSum
 
+    move $t0, $zero
+    move $t2, $a1   # move len into t2
+    sumLoop:
+        lw $t1, ($a0)       # lst[i]
+        add $t0, $t0, $t1   # sum += lst[i]
+        sub $t2, $t2, 1     # decrement count
+        addu $a0, $a0, 4    # i = i + 1
+        bnez $t2, sumLoop
 
-#   YOUR CODE GOES HERE
-
-
+    move $v0, $t0   # move sum into v0
+    jr $ra
 
 .end    findSum
 
@@ -847,7 +855,7 @@ shellSort:
 #  Note, must call findSum() function.
 
 #    Arguments:
-#   $a0   - integer
+#   $a0   - starting address of list 
 #   $a1   - len
 
 #    Returns:
@@ -856,11 +864,10 @@ shellSort:
 .globl  findAverage
 .ent    findAverage
 findAverage:
-
-
-#   YOUR CODE GOES HERE
-
-
+    
+    jal findSum         # get sum
+    div $v0, $v0, $a1   # v0 = sum / length
+    jr $ra
 
 .end    findAverage
 
@@ -890,9 +897,54 @@ findAverage:
 .ent diagonalsStats
 diagonalsStats:
 
+    subu $sp, $sp, 4    # preserve registers
+    sw $fp, ($sp)       # fp in this case
+    
+    addu $fp, $sp, 4    # set fp to first argument to stack passed args
 
-#   YOUR CODE GOES HERE
+    lw $t7, ($fp)
+    lw $t6, 4($fp)
+    
+    lw $t0, ($a0)       # get min of sorted array
+    sw $t0, ($a2)       # store min into addr
 
+    move $t0, $a0       # get copy of addr
+    add $t0, $t0, $a1   # get end of list length
+    sub $t0, $t0, 1     # subtract one
+    lw $t0, 4($t0)      # get max
+    sw $t0, ($a3)       # store max into addr
+
+    move $t0, $a1       # get list length
+    rem $t0, $t0 2      # check if even or odd
+    bnez $t0, oddLen
+        move $t1, $a0       # get copy of addr
+        move $t2, $a1       # get length of list
+        div $t2, $t2, 2     # len / 2
+        mul $t2, $t2, 4     # multiply by data size
+        add $t1, $t1, $t2   # move to location
+        lw $t0, ($t1)       # get lst[len/2]
+        sub $t1, $t1, 4     # move back one
+        lw $t4, ($t4)       # get lst[len/2-1]
+        add $t0, $t0, $t4   # lst[len/2] + lst[len/2-1]
+        div $t0, $t0, 2     # median
+        sw $t0, ($t7)       
+        b doneMidPoint
+    oddLen:
+        move $t1, $a0       # get copy of addr
+        move $t2, $a1       # get copy of lenth
+        div $t2, $t2, 2     # len / 2
+        mul $t2, $t2, 4     # mul by data size
+        add $t1, $t1, $t2   # move lst to lst[len/2]
+        lw $t0, ($t1)       # get lst[len/2]
+        sw $t0, ($t7)
+    doneMidPoint:
+
+    jal findAverage         # calculate average
+    sw $v0, ($t8)           # store return result into addr of ave
+
+    lw $fp, ($sp)       # restore registers
+    addu $sp, $sp, 4
+    jr $ra
 
 .end diagonalsStats
 
