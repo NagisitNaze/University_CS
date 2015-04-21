@@ -308,15 +308,8 @@ hdrVolumes: .asciiz "\n\nDiagonals - Values: \n"
 # -----
 #  Local variables/constants for shellSort() function (if any).
 
-h:          .word   0
-wThree      .word   3
-i:          .word   0
-j:          .word   0
-tmp:        .word   0
-
 # -----
 #  Local variables/constants for diagonalsStats() function.
-
 
 # -----
 #  Local variables/constants for displayStats() function.
@@ -697,6 +690,7 @@ prtHeaders:
 #   diag[] areas array via passed address
 
 .globl  calcDiagonals
+.ent calcDiagonals
 calcDiagonals:
 
 
@@ -718,30 +712,37 @@ calcDiagonals:
 .ent    iSqrt
 iSqrt:
 
+    li $t2, 50          # iterate 50 times
+    move $t1, $zero
+    move $t0, $a0       # iSqrt_est
+    estimateSqrt:
+        div $t1, $a0, $t0       # iNumber / iSqrt_est
+        add $t1, $t1, $t0       # (iNumber / iSqrt_est) + iSqrt_est
+        div $t1, $t1, 2         # divide all by two
+        move $t0, $t1           # set to new iSqrt_est
+        bnez $t2, estimateSqrt
 
-#   YOUR CODE GOES HERE
-
-
-
+    move $v0, $t0       # set return value
+    jr $ra
 .end    iSqrt
 
 #####################################################################
 #  Sort a list of numbers using shell sort algorithm.
 
-#   h = 1;
+#   h = 1#
 #   while ( (h*3+1) < length ) {
-#      h = 3 * h + 1;
+#      h = 3 * h + 1#
 #   }
 
 #   while ( h>0 ) {
-#      for (i = h-1; i < length; i++) {
-#          tmp = lst[i];
-#          j = i;
-#          for ( j=i; (j>=h) && (lst[j-h]>tmp); j = j-h)
-#             lst[j] = lst[j-h];
-#          lst[j] = tmp;
+#      for (i = h-1# i < length; i++) {
+#          tmp = lst[i]#
+#          j = i#
+#          for ( j=i# (j>=h) && (lst[j-h]>tmp); j = j-h)
+#             lst[j] = lst[j-h]#
+#          lst[j] = tmp#
 #      }
-#      h = h / 3;
+#      h = h / 3#
 #   }
 
 # -----
@@ -753,7 +754,7 @@ iSqrt:
 #   sorted list (via reference)
 
 .globl shellSort
-.ent sehllSort
+.ent shellSort
 shellSort:
 
     # t0 -> h
@@ -761,47 +762,62 @@ shellSort:
     # t2 -> j
     # t3 -> tmp
 
-    li  $t0, 1      ; load 1 into t0, this is our h
+    li $t0, 1      # load 1 into t0, this is our h
     whileLoop1:
-        li  $t1, 3                  ; load 3 into t0
-        mul $t0, $t0, $t1           ; h = h * 3
-        add $t0, $t0, 1             ; h = h * 3 + 1
-        blt $t0, $a1, whileLooop1   ; reloop if h is less than length
+        li  $t1, 3                  # load 3 into t0
+        mul $t0, $t0, $t1           # h = h * 3
+        add $t0, $t0, 1             # h = h * 3 + 1
+        blt $t0, $a1, whileLoop1   # reloop if h is less than length
 
     move $t1, $zero
     move $t2, $zero
     move $t3, $zero
     whileLoop2:
-        ble $t0, $zero, exitWhileLoop2
-        sub $t0, $t0, 1             ; t - 1
-        move $t1, $t0               ; i = h - 1
+        bnez $t0, exitWhileLoop2
+        sub $t0, $t0, 1             # t - 1
+        move $t1, $t0               # i = h - 1
         forLoop1:                       
-            bge $t1, $a1, exitForLoop1  ; break if i >= length
-            move $t4, $a0               ; get list addr
-            move $t3, $t1               ; move i into tmp
-            mul $t3, $t3, 4             ; len *= 4
-            add $t4, $t4, $t3           ; list[i]
-            lw $t3, ($t4)               ; tmp = list[i]
-            move $t2, $t1               ; j = i
+            bge $t1, $a1, exitForLoop1  # break if i >= length
+            move $t4, $a0               # get list addr
+            move $t3, $t1               # move i into tmp
+            mul $t3, $t3, 4             # len *= 4
+            add $t4, $t4, $t3           # list[i]
+            lw $t3, ($t4)               # tmp = list[i]
+            move $t2, $t1               # j = i
             forLoop2:                       
-                blt $t2, $t0, exitForLoop2  ; break if j < h
-                move $t4, $a0               ; get list addr
-                move $t5, $t2               ; get j
-                sub $t5, $t5, $t0           ; j - h
-                mul $t5, $t5, 4             ; 4(j - h)
-                add $t4, $t4, $t5           ; lst[j-h]
-                sw $t4, ($t4)
-                ble $t4, $t3, exitForLoop2  ; break if lst[j-h] <= tmp
+                blt $t2, $t0, exitForLoop2  # break if j < h
+                move $t4, $a0               # get list addr
+                move $t5, $t2               # get j
+                sub $t5, $t5, $t0           # j - h
+                mul $t5, $t5, 4             # 4(j - h)
+                add $t4, $t4, $t5           # lst[j-h]
+                lw $t4, ($t4)
+                ble $t4, $t3, exitForLoop2  # break if lst[j-h] <= tmp
 
-                # code
+                move $t5, $a0               # get list addr
+                move $t6, $t2               # get j
+                mul $t6, $t6, 4             # 4j
+                add $t5, $t5, $t6           # move addr to lst[j]
+                sw $t4, ($t5)               # lst[j] = lst[j-h] 
 
-                sub $t2, $t2, $t0           ; j = j - h
+                sub $t2, $t2, $t0           # j = j - h
+                b forLoop2
             exitForLoop2:
-        add $t1, $t1, 1                     ; i = i + 1
+
+            move $t4, $a0                   # get lst addr
+            move $t5, $t2                   # get j
+            mul $t5, $t5, 4                 # 4j
+            add $t4, $t4, $t5               # move lst to list[j]
+            sw $t3, ($t4)                   # list[j] = tmp        
+
+            add $t1, $t1, 1                 # i = i + 1
+            b forLoop1
         exitForLoop1:
+        div $t0, $t0, 3           # h = h / 3 
+        b whileLoop2
     exitWhileLoop2:  
         
-
+    jr $ra
 .end shellSort
 
 #####################################################################
