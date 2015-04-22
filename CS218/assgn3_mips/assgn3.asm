@@ -1083,7 +1083,7 @@ displayStats:
     move $s2, $a1
 
     move $s3, $s1
-    move $s4, $s4
+    move $s4, $s2
     printVals:
         lw $t1, ($s3)
         move $a0, $s3
