@@ -772,7 +772,7 @@ calcDiagonals:
     lw $s5, 24($sp)
     lw $fp, 28($sp)
     lw $ra, 32($sp)
-    addu $sp, $sp, 32    # set frame pointer to first arg
+    addu $sp, $sp, 36    # set frame pointer to first arg
     jr $ra
 .end calcDiagonals
 
@@ -911,6 +911,7 @@ shellSort:
 
 .globl  findSum
 .ent    findSum
+findSum:
 
     move $t0, $zero
     move $t2, $a1   # move len into t2
@@ -941,9 +942,15 @@ shellSort:
 .globl  findAverage
 .ent    findAverage
 findAverage:
+
+    subu $sp, $sp, 4
+    sw $ra, ($sp)
     
     jal findSum         # get sum
     div $v0, $v0, $a1   # v0 = sum / length
+    
+    lw $ra, ($sp)
+    addu $sp, $sp, 4
     jr $ra
 
 .end    findAverage
@@ -974,10 +981,11 @@ findAverage:
 .ent diagonalsStats
 diagonalsStats:
 
-    subu $sp, $sp, 4    # preserve registers
+    subu $sp, $sp, 8    # preserve registers
     sw $fp, ($sp)       # fp in this case
-    
-    addu $fp, $sp, 4    # set fp to first argument to stack passed args
+    sw $ra, 4($sp)
+     
+    addu $fp, $sp, 8    # set fp to first argument to stack passed args
 
     lw $t7, ($fp)
     lw $t6, 4($fp)
@@ -986,9 +994,11 @@ diagonalsStats:
     sw $t0, ($a2)       # store min into addr
 
     move $t0, $a0       # get copy of addr
-    add $t0, $t0, $a1   # get end of list length
-    sub $t0, $t0, 1     # subtract one
-    lw $t0, 4($t0)      # get max
+    move $t1, $a1       # get length
+    mul $t1, $t1, 4     # length *= 4
+    sub $t1, $t1, 4     # subtract one
+    add $t0, $t0, $t1   # get to end of list
+    lw $t0, ($t0)       # get max
     sw $t0, ($a3)       # store max into addr
 
     move $t0, $a1       # get list length
@@ -1017,10 +1027,11 @@ diagonalsStats:
     doneMidPoint:
 
     jal findAverage         # calculate average
-    sw $v0, ($t8)           # store return result into addr of ave
+    sw $v0, ($t6)           # store return result into addr of ave
 
     lw $fp, ($sp)       # restore registers
-    addu $sp, $sp, 4
+    lw $ra, 4($sp)
+    addu $sp, $sp, 8
     jr $ra
 
 .end diagonalsStats
@@ -1050,10 +1061,54 @@ diagonalsStats:
 .globl  displayStats
 .ent    displayStats
 displayStats:
+    
+    subu $sp, $sp, 36
+    sw $a0, ($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    sw $s3, 16($sp)
+    sw $s4, 20($sp)
+    sw $s5, 24($sp)
+    sw $fp, 28($sp)
+    sw $ra, 32($sp)
 
+    addu $fp, $sp, 36
 
-#   YOUR CODE GOES HERE
+    la $a0, hdrVolumes
+    li $v0, 4
+    syscall
 
+    move $s1, $a0
+    move $s2, $a1
+
+    move $s3, $s1
+    move $s4, $s4
+    printVals:
+        lw $t1, ($s3)
+        move $a0, $s3
+        li $v0, 1
+        syscall
+    
+        la $a0, spc
+        li $v0, 4
+        syscall
+
+        sub $s4, $s4, 1
+        addu $s3, $s3, 4
+        bnez $s4, printVals
+    
+    lw $a0, ($sp)
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    lw $s2, 12($sp)
+    lw $s3, 16($sp)
+    lw $s4, 20($sp)
+    lw $s5, 24($sp)
+    lw $fp, 28($sp)
+    lw $ra, 32($sp)
+    addu $sp, $sp, 36
+    jr $ra
 
 .end displayStats
 
