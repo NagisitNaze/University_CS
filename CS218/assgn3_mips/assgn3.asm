@@ -387,7 +387,7 @@ main:
     la  $t6, fAve1
     sw  $t6, 4($sp)         # arg 6, on stack
     jal diagonalsStats
-    addu    $sp, $sp, 8         # clear stack
+    addu    $sp, $sp, 8     # clear stack
 
 #  Show final diagonals array stats.
 #   displayStats(diags, len, min, max, med, fAve)
@@ -693,10 +693,87 @@ prtHeaders:
 .ent calcDiagonals
 calcDiagonals:
 
+    subu $sp, $sp, 36   # preserve registers
+    sw $a0, ($sp)
+    sw $s0, 4($sp)
+    sw $s1, 8($sp)
+    sw $s2, 12($sp)
+    sw $s3, 16($sp)
+    sw $s4, 20($sp)
+    sw $s5, 24($sp)
+    sw $fp, 28($sp)
+    sw $ra, 32($sp)
 
-#   YOUR CODE GOES HERE
+    addu $fp, $sp, 36    # set fp to first arg
 
+    move $s0, $a0       # aSides
+    move $s1, $a1       # bSides
+    move $s2, $a2       # cSides
+    move $s3, $a3       # dSides
+    lw $s5, ($fp)       # len
+    lw $s4, 4($fp)      # diags
 
+    calcLoop:
+        lw $t1, ($s0)       # aSides
+        lw $t2, ($s1)       # bSides
+        lw $t3, ($s2)       # cSides
+        lw $t4, ($s3)       # dSides
+
+        move $t5, $zero     # sub value here
+        mul $t5, $t2, $t2   # b[i]^2
+        mul $t5, $t5, $t1   # a[i] x b[i]^2
+
+        move $t6, $zero     # sub value here
+        mul $t6, $t1, $t1   # a[i]^2
+        mul $t6, $t6, $t2   # a[i]^2 x b[i]
+
+        sub $t5, $t5, $t6   # a[i] x b[i]^2 - a[i]^2 x b[i]
+
+        move $t6, $zero     # sub value here
+        mul $t6, $t3, $t3   # c[i]^2
+        mul $t6, $t6, $t1   # a[i] x c[i]^2
+
+        sub $t5, $t5, $t6   # a[i] x b[i]^2 - a[i]^2 x b[i] - a[i] x c[i]^2
+
+        move $t6, $zero     # sub value here
+        mul $t6, $t4, $t4   # d[i]^2
+        mul $t6, $t6, $t2   # b[i] x d[i]^2
+
+        add $t5, $t5, $t6   # a[i] x b[i]^2 - a[i]^2 x b[i] - a[i] x c[i]^2 + b[i] x d[i]^2
+
+        move $t6, $zero     # denominator here
+        sub $t6, $t2, $t1   # b[i] - a[i]
+
+        div $t5, $t5, $t6   # numerator / denominator
+
+        move $a0, $t5
+        jal iSqrt
+
+        sw $v0, ($s4)       # set diags
+
+        sub $s5, $s5, 1
+        addu $s0, $s0, 4
+        addu $s1, $s1, 4
+        addu $s2, $s2, 4
+        addu $s3, $s3, 4
+        addu $s4, $s4, 4
+        bnez $s5, calcLoop  # jump back up if len is not zero
+
+    lw $a0, 4($fp)
+    lw $a1, ($fp)
+    jal shellSort
+           
+    lw $a0, ($sp)       # restore registers
+    lw $s0, 4($sp)
+    lw $s1, 8($sp)
+    lw $s2, 12($sp)
+    lw $s3, 16($sp)
+    lw $s4, 20($sp)
+    lw $s5, 24($sp)
+    lw $fp, 28($sp)
+    lw $ra, 32($sp)
+    addu $sp, $sp, 32    # set frame pointer to first arg
+    jr $ra
 .end calcDiagonals
 
 #####################################################################
@@ -736,10 +813,10 @@ iSqrt:
 #   }
 
 #   while ( h>0 ) {
-#      for (i = h-1# i < length; i++) {
+#      for (i = h-1# i < length# i++) {
 #          tmp = lst[i]#
 #          j = i#
-#          for ( j=i# (j>=h) && (lst[j-h]>tmp); j = j-h)
+#          for ( j=i# (j>=h) && (lst[j-h]>tmp)# j = j-h)
 #             lst[j] = lst[j-h]#
 #          lst[j] = tmp#
 #      }
