@@ -921,6 +921,10 @@ displayBoard:
     li $v0, 4
     syscall
 
+    la $a0, newLine 
+    li $v0, 4
+    syscall
+
     lw $s0, ($sp)
     lw $s1, 4($sp)
     lw $s2, 8($sp)
@@ -954,11 +958,104 @@ displayBoard:
 .ent    manhattanDistance
 manhattanDistance:
 
+    subu $sp, $sp, 20
+    sw $s0, ($sp)       # x_1
+    sw $s1, 4($sp)      # y_1
+    sw $s2, 8($sp)      # x_2
+    sw $s3, 12($sp)     # y_2
+    sw $ra, 16($sp)
 
+    move $v0, $zero
+    li $t0, 1           # start loop at 1
+    mul $t5, $a2, $a2   # order_size^2
+    sub $t5, $t5, 1     # order_size^2 - 1
+    _loopNumbers:
 
-#   YOUR CODE GOES HERE
+        move $t1, $zero             # rows
+        loopGoalRows:
+            move $t2, $zero             # cols
+            loopGoalCols:
 
+                move $t3, $a0               # get address of goal
+                mul $t4, $t1, $a2           # r * order_size
+                add $t4, $t4, $t2           # r * order_size + c
+                mul $t4, $t4, 4             # mult by data size
+            
+                add $t3, $t3, $t4           # add to address    
+                lw $t3, ($t3)               # goal_board[r][c]
+    
+                bne $t3, $t0, skip          # check if value matches one were looking for
+                move $s0, $t1               # set row of correct value
+                move $s1, $t2               # set col of correct value
+                skip:
+    
+                add $t2, $t2, 1             # cols++
+                bne $t2, $a2, loopGoalCols  # loop while cols < col_size
+       
+            add $t1, $t1, 1             # rows++
+            bne $t1, $a2, loopGoalRows  # loop while rows < row_size
 
+        move $t1, $zero             # rows
+        loopRows:
+            move $t2, $zero             # cols
+            loopCols:
+                
+                move $t3, $a1               # get address of goal
+                mul $t4, $t1, $a2           # r * order_size
+                add $t4, $t4, $t2           # r * order_size + c
+                mul $t4, $t4, 4             # mult by data size
+            
+                add $t3, $t3, $t4           # add to address    
+                lw $t3, ($t3)               # goal_board[r][c]
+    
+                bne $t3, $t0, _skip          # check if value matches one were looking for
+                move $s2, $t1               # set row of correct value
+                move $s3, $t2               # set col of correct value
+                _skip:
+
+                add $t2, $t2, 1             # cols++
+                bne $t2, $a2, loopCols      # loop while cols < col_size
+        
+            add $t1, $t1, 1             # rows++
+            bne $t1, $a2, loopRows      # loop while rows < row_size
+
+        sub $t4, $s0, $s2           # x_1 - x_0
+        abs $t4, $t4                # | x_1 - x_0 |
+        
+        sub $t3, $s1, $s3           # y_1 - y_0
+        abs $t3, $t3                # | y_1 - y_0 |
+
+        add $t4, $t4, $t3           # | x_1 - x_0 | + | y_1 - y_0 |
+        add $v0, $v0, $t4           # add to running sum
+
+        add $t0, $t0, 1             # increment num
+        bne $t0, $t5, _loopNumbers 
+
+    move $s1, $v0   # save sum
+
+    la $a0, MDmsg
+    li $v0, 4
+    syscall
+
+    move $a0, $s1
+    li $v0, 1
+    syscall
+
+    la $a0, newLine
+    li $v0, 4
+    syscall
+
+    la $a0, newLine
+    li $v0, 4
+    syscall
+
+    lw $s0, ($sp)
+    lw $s1, 4($sp)
+    lw $s2, 8($sp)
+    lw $s3, 12($sp)
+    lw $ra, 16($sp)
+    add $sp, $sp, 20
+    jr $ra
 
 .end    manhattanDistance
 
@@ -982,14 +1079,23 @@ validateBoard:
     mul $t1, $a1, $a1       # boardOrder^2
     sub $t1, $t1, 1         # boardOrder^2 - 1
     loopNumbers:
-        move $t3, $zero     # rows
-        move $t5, $a0       # get address to list
-        
+        move $t3, $zero         # rows
+        move $a3, $zero         # number count
         loopBoardRows:
-            move $t4, $zero             # cols
+            move $t4, $zero         # cols
             loopBoardCols:
             
+            move $t5, $a0               # get board address
+            mul $t6, $t3, $a1           # rows * colSize
+            add $t6, $t6, $t4           # rows * colsSize + cols
+            mul $t6, $t6, 4             # multiply by data size
             
+            add $t5, $t5, $t6           # move list to board location
+            lw $t5, ($t5)               # board[r][c]
+ 
+            bne $t5, $t0, noEq          # check if board contains this number
+            add $a3, $a3, 1             # increment count
+            noEq:
     
             add $t4, $t4, 1             # cols = cols + 1
             bne $t4, $a1, loopBoardCols # loop while cols < order
@@ -997,8 +1103,17 @@ validateBoard:
         add $t3, $t3, 1             # rows = rows + 1
         bne $t3, $a1, loopBoardRows # loop while rows < order
 
-        add $t0, $t0, 1
+        beq $a3, $zero, inValid # if no number found, invalid
+
+        add $t0, $t0, 1         # increment number to look for
         bne $t0, $t1, loopNumbers
+
+    li $v0, 1               # if function finishes set to true
+    b valid                 # skip returning false 
+    inValid:
+        li $v0, 0
+    valid:
+    jr $ra
 
 .end validateBoard
 
