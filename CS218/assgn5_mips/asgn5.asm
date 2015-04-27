@@ -158,17 +158,17 @@ readParkingLotSize:
     li $v0, 4
     syscall
 
-    li $v0, 5       # call code for read int
-    syscall         # read int
-
-    bgt $v0, MINSIZE, checkDone
+    li $v0, 5                   # call code for read int
+    syscall                     # read int
+    
+    bgt $v0, MINSIZE, checkDone # ensure int is > MINSIZE
         la $a0, errValue
         li $v0, 4
         syscall
         b readAgain
     checkDone:
     ble $v0, MAXSIZE, _checkDone
-        la $a0, errValue
+        la $a0, errValue        # ensure int is <= MAXSIZE
         li $v0, 4
         syscall
         b readAgain
@@ -191,9 +191,36 @@ readParkingLotSize:
 .globl  nellisParkingLot
 .ent    nellisParkingLot
 nellisParkingLot:
-
-    li $v0, 10   
  
+    subu $sp, $sp, 16
+    sw $s0, ($sp)
+    sw $s1, 4($sp)
+    sw $s2, 8($sp)
+    sw $ra, 12($sp)
+   
+    li $v0, 1               # if size is 1, base case
+    ble $a0, 1, baseCase
+    
+    li $v0, 2               # is size is 2, base case
+    beq $a0, 2, baseCase
+
+    move $s0, $a0           # save n
+    sub $a0, $s0, 3         # n - 3
+    jal nellisParkingLot    # func(n - 3)
+    move $s1, $v0           # s1 = func(n - 3)
+    sub $a0, $s0, 2         # n - 2
+    jal nellisParkingLot    # func(n - 2)
+    add $s1, $s1, $v0       # s1 = func(n - 3) + func(n - 2)
+    sub $a0, $s0, 1         # n - 1
+    jal nellisParkingLot    # func(n - 1)
+    add $v0, $v0, $s1       # v0 = func(n - 3) + func(n - 2) + func(n - 1)
+
+    baseCase: 
+    lw $s0, ($sp)
+    lw $s1, 4($sp)
+    lw $s2, 8($sp)
+    lw $ra, 12($sp)
+    addu $sp, $sp, 16
     jr $ra
 
 .end nellisParkingLot
@@ -213,32 +240,37 @@ nellisParkingLot:
 .ent    displayResult
 displayResult:
 
-    subu $sp, $sp, 8
-    sw $s0, ($sp)
-    sw $s1, 4($sp)
+    subu $sp, $sp, 12
+    sw $s0, ($sp)           # save s0
+    sw $s1, 4($sp)          # save s1
+    sw $ra, 8($sp)
 
-    move $s0, $a0
+    move $s0, $a0           # store args in saved registers
     move $s1, $a1
 
-    la $a0, maxMsg1 
+    la $a0, maxMsg1         # print label
     li $v0, 4
     syscall
 
-    move $a0, $s0
+    move $a0, $s0           # print parking lot size
     li $v0, 1
     syscall
 
-    la $a0, maxMsg2
+    la $a0, maxMsg2         # print " is " label
     li $v0, 4
     syscall
     
-    move $a0, $s1
+    move $a0, $s1           # print max num of ways to park
     li $v0, 1
     syscall 
 
-    lw $s0, ($sp)
+    jal prtNewline
+    jal prtNewline
+
+    lw $s0, ($sp)           # reload registers
     lw $s1, 4($sp)
-    addu $sp, $sp, 8
+    lw $ra, 8($sp)
+    addu $sp, $sp, 12
 
     jr $ra
 
@@ -265,40 +297,39 @@ displayResult:
 .ent    askPrompt
 askPrompt:
 
-    rePrompt:
-    la $a0, againPrompt
+    rePrompt:               # tag for it input is invalid
+    la $a0, againPrompt     # prompt user for input
     li $v0, 4
     syscall
 
-    la $a0, ans
+    la $a0, ans             # store input in ans with length of 3 
     li $a1, 3
     li $v0, 8
     syscall
 
-    lb $t0, ($a0)
-    li $t1, 0x79
-
+    lb $t0, ($a0)           # load the first byte from the ans  
+    li $t1, 0x79            # 'y'
     beq $t0, $t1, isYes
-    li $t1, 0x59
+    li $t1, 0x59            # 'Y'
     beq $t0, $t1, isYes
-    li $t1, 0x6E
+    li $t1, 0x6E            # 'n'
     beq $t0, $t1, isNo
-    li $t1, 0x4E
+    li $t1, 0x4E            # 'N'
     beq $t0, $t1, isNo
         
-    la $a0, ansErr
-    li $v0, 4   
-    syscall
-    b rePrompt
+    la $a0, ansErr          # if it reaches this point input is bad
+    li $v0, 4       
+    syscall 
+    b rePrompt              # jump up to reprompt
         
     isNo:
-        la $v0, FALSE
+        la $v0, FALSE       # is 'n' or 'N' set FALSE
         b dn
     isYes:
-        la $v0, TRUE
+        la $v0, TRUE        # is 'y' or 'Y' set TRUE
         b dn
     dn:
-    jr $ra
+    jr $ra             
 
 .end    askPrompt
 
