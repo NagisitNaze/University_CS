@@ -138,6 +138,26 @@ prtNewline:
 readParkingLotSize:
 
     readAgain:
+    la $a0, strtMsg1 
+    li $v0, 4
+    syscall
+
+    la $a0, MINSIZE
+    li $v0, 1
+    syscall
+
+    la $a0, strtMsg2
+    li $v0, 4
+    syscall
+    
+    la $a0, MAXSIZE
+    li $v0, 1
+    syscall
+    
+    la $a0, strtMsg3
+    li $v0, 4
+    syscall
+
     li $v0, 5       # call code for read int
     syscall         # read int
 
@@ -172,10 +192,9 @@ readParkingLotSize:
 .ent    nellisParkingLot
 nellisParkingLot:
 
-
-#   YOUR CODE GOES HERE
-
-
+    li $v0, 10   
+ 
+    jr $ra
 
 .end nellisParkingLot
 
@@ -194,10 +213,34 @@ nellisParkingLot:
 .ent    displayResult
 displayResult:
 
+    subu $sp, $sp, 8
+    sw $s0, ($sp)
+    sw $s1, 4($sp)
 
-#   YOUR CODE GOES HERE
+    move $s0, $a0
+    move $s1, $a1
 
+    la $a0, maxMsg1 
+    li $v0, 4
+    syscall
 
+    move $a0, $s0
+    li $v0, 1
+    syscall
+
+    la $a0, maxMsg2
+    li $v0, 4
+    syscall
+    
+    move $a0, $s1
+    li $v0, 1
+    syscall 
+
+    lw $s0, ($sp)
+    lw $s1, 4($sp)
+    addu $sp, $sp, 8
+
+    jr $ra
 
 .end    displayResult
 
@@ -222,10 +265,40 @@ displayResult:
 .ent    askPrompt
 askPrompt:
 
+    rePrompt:
+    la $a0, againPrompt
+    li $v0, 4
+    syscall
 
-#   YOUR CODE GOES HERE
+    la $a0, ans
+    li $a1, 3
+    li $v0, 8
+    syscall
 
+    lb $t0, ($a0)
+    li $t1, 0x79
 
+    beq $t0, $t1, isYes
+    li $t1, 0x59
+    beq $t0, $t1, isYes
+    li $t1, 0x6E
+    beq $t0, $t1, isNo
+    li $t1, 0x4E
+    beq $t0, $t1, isNo
+        
+    la $a0, ansErr
+    li $v0, 4   
+    syscall
+    b rePrompt
+        
+    isNo:
+        la $v0, FALSE
+        b dn
+    isYes:
+        la $v0, TRUE
+        b dn
+    dn:
+    jr $ra
 
 .end    askPrompt
 
