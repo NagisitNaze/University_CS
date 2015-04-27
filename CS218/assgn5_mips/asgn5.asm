@@ -297,6 +297,10 @@ displayResult:
 .ent    askPrompt
 askPrompt:
 
+    subu $sp, $sp, 8
+    sw $s0, ($sp)
+    sw $ra, 4($sp)
+
     rePrompt:               # tag for it input is invalid
     la $a0, againPrompt     # prompt user for input
     li $v0, 4
@@ -329,6 +333,12 @@ askPrompt:
         la $v0, TRUE        # is 'y' or 'Y' set TRUE
         b dn
     dn:
+    move $s0, $v0
+    jal prtNewline
+    move $v0, $s0
+    lw $s0, ($sp)
+    lw $ra, 4($sp)
+    addu $sp, $sp, 8
     jr $ra             
 
 .end    askPrompt
